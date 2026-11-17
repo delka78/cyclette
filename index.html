@@ -171,11 +171,11 @@ body:not(.has-screen) .lb-short { display: none; }
 .label { font-size: 12px; font-weight: 800; letter-spacing: .08em; color: #dfe6ee;
   color: color-mix(in srgb, var(--acc) 45%, #ffffff); }
 .unit { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, .62); white-space: nowrap; }
-.val { font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -.02em; white-space: nowrap; color: #fff;
+.val { font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -.02em; white-space: nowrap; color: #fff; text-align: center;
   font-size: clamp(30px, min(11vw, 6.2dvh), 72px); margin: 6px 0 2px; text-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
 .big { min-height: min(19dvh, 190px); }
 .big .val { font-size: clamp(48px, min(21vw, 10.5dvh), 140px); }
-.zone { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, .78); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.zone { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, .78); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 .tile:not(.big) .zone { font-size: 12px; }
 .tile:not(.big) .val { margin-top: auto; margin-bottom: auto; }   /* valore centrato nei riquadri piccoli */
 
@@ -267,6 +267,13 @@ body.layout-edit #layoutBar { display: flex; }
 #layoutBar b { color: var(--text); }
 #layoutBar .btn { flex: 0 0 auto; height: 42px; }
 #btnLayout.on { background: var(--green); border-color: var(--green); color: #04210f; }
+#updBar { position: fixed; z-index: 90; left: 50%; transform: translateX(-50%); top: calc(env(safe-area-inset-top) + 8px);
+  width: min(94vw, 520px); display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 16px;
+  background: #0f3320; border: 1.5px solid var(--green); box-shadow: 0 10px 30px rgba(0, 0, 0, .55); }
+#updBar[hidden] { display: none; }
+#updBar span { flex: 1; font-size: 14px; line-height: 1.3; }
+#updBar .btn { flex: 0 0 auto; height: 40px; }
+#updBar .icon-btn { flex: 0 0 auto; width: 40px; height: 40px; }
 #btnLayout2 { display: none; }
 body.layout-edit #toast { bottom: calc(env(safe-area-inset-bottom) + 96px); }
 body.overlay #btnLayout2 { display: grid; }
@@ -322,19 +329,28 @@ body.overlay #routeInfo { position: fixed; top: auto; z-index: 7; left: calc(env
   bottom: calc(env(safe-area-inset-bottom) + 112px); max-width: calc(100vw - 20px); }
 body.overlay.has-media #routeInfo { bottom: calc(env(safe-area-inset-bottom) + 160px); }
 body.overlay #dash { position: fixed; z-index: 6; left: 0; right: 0; top: 0; bottom: auto; overflow: visible;
-  grid-template-columns: repeat(3, 1fr); gap: 5px;
-  padding: calc(env(safe-area-inset-top) + 6px) calc(env(safe-area-inset-right) + 6px) 22px calc(env(safe-area-inset-left) + 6px);
-  background: linear-gradient(to bottom, rgba(0, 0, 0, .78), rgba(0, 0, 0, .45) 78%, transparent); }
-body.overlay .tile { min-height: auto; padding: 5px 8px 5px 11px; box-shadow: none;
-  background: color-mix(in srgb, var(--acc) 34%, rgba(8, 11, 16, .72)); }
+  grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px;
+  padding: calc(env(safe-area-inset-top) + 6px) max(8px, calc(env(safe-area-inset-right) - 40px)) 16px max(8px, calc(env(safe-area-inset-left) - 40px));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .62), rgba(0, 0, 0, .28) 75%, transparent); }
+/* riquadri compatti: etichetta piccola in alto, valore grande e centrato, nessuno spazio vuoto */
+body.overlay .tile { min-height: 0; padding: 7px 5px 6px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  align-items: center; justify-content: center; gap: 2px; text-align: center;
+  background: color-mix(in srgb, var(--acc) 30%, rgba(10, 13, 19, .74));
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+body.overlay .tile::before { right: 0; bottom: auto; width: auto; height: 3px; }      /* striscia colorata in alto */
+body.overlay .t-head { justify-content: center; width: 100%; }
+body.overlay .label { font-size: 9.5px; letter-spacing: .07em; white-space: nowrap; overflow: hidden; max-width: 100%; }
 body.overlay .val, body.overlay .big .val, body.overlay .tile:not(.big) .val {
-  font-size: clamp(22px, min(8.2vw, 5dvh), 54px); text-align: left; margin: 2px 0 0; }
-body.overlay #tTime.hours .val { font-size: clamp(18px, min(6.2vw, 4dvh), 42px); }
+  width: 100%; text-align: center; margin: 0; font-size: 28px; }        /* la misura esatta la calcola fitVals() */
 body.overlay #dash > * { grid-column: auto !important; }
 body.overlay #dash > #progBar { grid-column: 1 / -1 !important; padding: 5px 10px 6px 13px; }
 body.overlay .pb-left { font-size: 22px; }
-body.overlay .timer-btns { grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
-body.overlay .tbtn { height: 100%; min-height: 40px; font-size: 15px; border-radius: 12px; box-shadow: none; }
+body.overlay .timer-btns { display: none !important; }
+/* Start / Pausa / Reset in basso, insieme agli altri comandi */
+.otb { display: none; }
+body.overlay .otb:not([hidden]) { display: grid; }
+.otb.start { width: 54px; background: var(--green); border-color: var(--green); color: #04210f; font-size: 17px; }
+.otb.pause { width: 54px; background: var(--amber); border-color: var(--amber); color: #2a1a00; font-size: 15px; font-weight: 900; }
 
 /* =====================================================================
    ORIENTAMENTO ORIZZONTALE (telefono ruotato sul supporto)
@@ -361,17 +377,9 @@ body.overlay .tbtn { height: 100%; min-height: 40px; font-size: 15px; border-rad
   body:not(.has-screen) #dash { grid-template-columns: repeat(5, 1fr); padding-left: 10px; }
   body:not(.has-screen) .timer-btns { grid-column: span 2; }
   body:not(.has-screen) .extra { grid-column: 1 / -1; }
-  /* sovrimpressione: tutti i dati su una riga in alto */
-  body.overlay #dash { grid-template-columns: repeat(9, 1fr); padding-bottom: 18px; }
-  body.overlay #dash > .timer-btns { grid-column: auto !important; grid-template-columns: 1fr; }
-  body.overlay .timer-btns .tbtn:not(:disabled) { display: block; }
-  body.overlay .timer-btns .tbtn:disabled { display: none; }
-  body.overlay .tbtn { height: auto; min-height: 36px; }
-  body.overlay .tile:not(.big) .val { margin-top: 2px; }
-  body.overlay .tile { justify-content: flex-start; }
-  body.overlay .val, body.overlay .big .val, body.overlay .tile:not(.big) .val { font-size: clamp(18px, min(3vw, 8.5dvh), 38px); }
-  body.overlay #tTime.hours .val { font-size: clamp(14px, min(2.2vw, 6.5dvh), 28px); }
-  body.overlay .label { font-size: 10px; letter-spacing: .04em; }
+  /* sovrimpressione: tutti gli 8 dati su una sola riga in alto */
+  body.overlay #dash { grid-template-columns: repeat(8, minmax(0, 1fr)); padding-bottom: 12px; }
+  body.overlay .tile { padding: 6px 4px 5px; }
 }
 
 /* =====================================================================
@@ -603,6 +611,9 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
       <input type="file" id="fileInput" class="vh" accept="video/*,audio/*,.mp3,.mp4,.m4a,.mov,.aac,.wav" multiple>
       <span id="volIcon">🔊</span>
       <input type="range" id="vol" min="0" max="1" step="0.05" value="1" aria-label="Volume">
+      <button class="pbtn otb start" id="oStart" aria-label="Start">▶</button>
+      <button class="pbtn otb pause" id="oPause" aria-label="Pausa" hidden>❚❚</button>
+      <button class="pbtn otb" id="oReset" aria-label="Reset" hidden>↺</button>
       <button class="pbtn" id="btnOverlay" aria-label="Sovrimpressione">⛶</button>
       <button class="pbtn" id="btnLayout2" aria-label="Disponi i riquadri">✥</button>
     </div>
@@ -865,6 +876,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     <label class="switch"><input type="checkbox" id="setVoice"> <span>Annunci vocali durante i programmi (cambio esercizio)</span></label>
     <label class="switch"><input type="checkbox" id="setScanAll"> <span>Mostra <b>tutti</b> i dispositivi nella ricerca Bluetooth (attivalo se la cyclette o la fascia non compaiono)</span></label>
     <button class="btn primary" id="btnSaveSettings" style="width:100%">Salva</button>
+    <button class="btn" id="btnCheckUpd" style="width:100%;margin-top:8px">🔄 Controlla se c'è una versione nuova</button>
     <p class="hint" id="setInfo"></p>
   </div>
 </div>
@@ -883,6 +895,13 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
   <span>✥ <b>Disponi:</b> trascina un riquadro sopra un altro, oppure tocca due riquadri per scambiarli.</span>
   <button class="btn" id="btnLayoutDefault" aria-label="Disposizione predefinita">↺</button>
   <button class="btn primary" id="btnLayoutDone">✓ Fine</button>
+</div>
+
+<!-- Avviso di nuova versione -->
+<div id="updBar" hidden>
+  <span>🆕 È pronta la versione <b id="updVer"></b> dell'app</span>
+  <button class="btn primary" id="btnUpd">Aggiorna</button>
+  <button class="icon-btn" id="btnUpdX" aria-label="Più tardi">✕</button>
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>
@@ -910,7 +929,7 @@ const CONFIG = {
   HR_ZONES: [0.50, 0.60, 0.70, 0.80, 0.90], // limiti inferiori Z1…Z5 in % della FC massima
   FATMAX_BAND: 0.90,                      // "zona brucia-grassi": ossidazione grassi ≥ 90% del massimo stimato
   STORAGE_KEY: 'cyclette-dashboard-v1',
-  APP_VERSION: '1.6',
+  APP_VERSION: '1.7',
 };
 
 /* =========================================================================
@@ -1873,6 +1892,9 @@ function renderTimer() {
   el.btnStart.disabled = S.running;
   el.btnPause.disabled = !S.running;
   el.btnReset.disabled = ms <= 0;
+  el.oStart.hidden = S.running;                        // copie in sovrimpressione
+  el.oPause.hidden = !S.running;
+  el.oReset.hidden = S.running || ms <= 0;
   el.btnStart.querySelector('.tx').textContent = (!S.running && ms > 0) ? ' Riprendi' : ' Start';
   el.uTime.textContent = S.running ? '● in corso' : (ms > 0 ? 'in pausa' : 'pronto');
   el.uTime.classList.toggle('running', S.running);
@@ -3047,6 +3069,7 @@ function bindPlayer() {
     el.btnOverlay.textContent = on ? '✕' : '⛶';
     applyTileOrder();                                  // disposizione "tutto schermo" o "normale"
     requestAnimationFrame(fitRoute);
+    scheduleFit();
   });
 }
 
@@ -3664,6 +3687,60 @@ function bindRoutes() {
 }
 
 /* =========================================================================
+   12e. SOVRIMPRESSIONE: ogni valore alla misura più grande che entra nel suo riquadro
+   (mai tagliato), con un massimo che dipende dall'orientamento dello schermo
+   ========================================================================= */
+const fitKeys = new Map();
+let fitRaf = 0;
+function fitVals() {
+  fitRaf = 0;
+  const on = document.body.classList.contains('overlay');
+  const land = window.innerWidth > window.innerHeight;
+  const maxPx = Math.round(land ? Math.min(34, window.innerHeight * 0.1) : Math.min(36, window.innerWidth * 0.092));
+  document.querySelectorAll('#dash .tile .val').forEach((v) => {
+    if (!on) { if (v.style.fontSize) v.style.fontSize = ''; fitKeys.delete(v); return; }
+    const key = `${v.textContent.length}|${v.clientWidth}|${maxPx}`;
+    if (fitKeys.get(v) === key) return;
+    v.style.fontSize = maxPx + 'px';
+    if (v.scrollWidth > v.clientWidth + 0.5) {
+      let lo = 10, hi = maxPx;
+      while (hi - lo > 0.5) { const mid = (lo + hi) / 2; v.style.fontSize = mid + 'px'; if (v.scrollWidth <= v.clientWidth) lo = mid; else hi = mid; }
+      v.style.fontSize = Math.floor(lo) + 'px';
+    }
+    fitKeys.set(v, `${v.textContent.length}|${v.clientWidth}|${maxPx}`);
+  });
+}
+const scheduleFit = () => { if (!fitRaf) fitRaf = requestAnimationFrame(fitVals); };
+
+/* =========================================================================
+   12f. AGGIORNAMENTI: all'apertura controlla se su GitHub c'è una versione più nuova
+   e la propone con un pulsante (scavalca le copie salvate dal browser)
+   ========================================================================= */
+const verParts = (v) => String(v).split('.').map((n) => parseInt(n, 10) || 0);
+function cmpVer(a, b) {
+  const x = verParts(a), y = verParts(b);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d > 0 ? 1 : -1; }
+  return 0;
+}
+let lastUpdCheck = 0;
+async function checkUpdate(manual = false) {
+  if (!/^https?:$/.test(location.protocol)) { if (manual) toast('Il controllo funziona solo dall\'indirizzo pubblicato'); return; }
+  lastUpdCheck = Date.now();
+  try {
+    const r = await fetch(location.pathname + '?check', { cache: 'no-store' });
+    const m = (await r.text()).match(/APP_VERSION:\s*'([\d.]+)'/);
+    if (!m) throw new Error('versione non trovata');
+    if (cmpVer(m[1], CONFIG.APP_VERSION) > 0) { el.updVer.textContent = m[1]; el.updBar.hidden = false; }
+    else if (manual) toast(`Hai già l'ultima versione (${CONFIG.APP_VERSION}) ✓`);
+  } catch (e) { if (manual) toast('Controllo non riuscito: serve internet'); }
+}
+function applyUpdate() {
+  const go = () => location.replace(location.pathname + '?v=' + encodeURIComponent(el.updVer.textContent || Date.now()));
+  el.btnUpd.disabled = true;
+  if (window.caches) caches.keys().then((ks) => Promise.all(ks.map((k) => caches.delete(k)))).then(go, go); else go();
+}
+
+/* =========================================================================
    12c. RIQUADRI RIPOSIZIONABILI — pressione lunga + trascinamento per scambiarli
    Funziona con il dito (iPhone/Android) e con il mouse. Disposizione salvata per profilo,
    separata per cruscotto normale e tutto schermo.
@@ -3863,6 +3940,7 @@ function init() {
     'confirmBox', 'confirmMsg', 'confirmYes', 'confirmNo', 'toast', 'setVoice', 'dash', 'setLockLayout', 'btnLayoutReset', 'btnLayout2', 'btnLayoutDone', 'btnLayoutDefault',
     'progBar', 'pbStep', 'pbLeft', 'pbTarget', 'pbStatus', 'pbNext', 'pbTrack', 'tWatt', 'vWatt', 'zWatt',
     'scene', 'btnScenes', 'sheetScenes', 'sceneList', 'btnSceneOff',
+    'oStart', 'oPause', 'oReset', 'updBar', 'updVer', 'btnUpd', 'btnUpdX', 'btnCheckUpd',
     'ytWrap', 'routeInfo', 'routeHint', 'btnRPlay', 'btnRNext', 'btnRMute', 'rCur', 'rSeek', 'rDur',
     'routeChips', 'routeList', 'btnRouteRandom', 'btnRouteAdd', 'setRouteSync', 'setRouteLoop',
     'btnPrograms', 'sheetPrograms', 'progList', 'btnProgFree', 'btnProgNew', 'btnProgReset',
@@ -3950,6 +4028,15 @@ function init() {
   el.btnSettings.addEventListener('click', openSettings);
   el.btnSaveSettings.addEventListener('click', saveSettings);
   el.btnLayout.addEventListener('click', () => setLayoutEdit(!layoutEdit));
+  el.oStart.addEventListener('click', () => el.btnStart.click());
+  el.oPause.addEventListener('click', () => el.btnPause.click());
+  el.oReset.addEventListener('click', () => el.btnReset.click());
+  el.btnUpd.addEventListener('click', applyUpdate);
+  el.btnUpdX.addEventListener('click', () => { el.updBar.hidden = true; });
+  el.btnCheckUpd.addEventListener('click', () => checkUpdate(true));
+  new MutationObserver(scheduleFit).observe(el.dash, { subtree: true, characterData: true, childList: true });
+  window.addEventListener('resize', scheduleFit);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastUpdCheck > 30 * 60000) checkUpdate(); });
   el.btnLayout2.addEventListener('click', () => setLayoutEdit(!layoutEdit));
   el.btnLayoutDone.addEventListener('click', () => { setLayoutEdit(false); toast('Disposizione salvata'); });
   el.btnLayoutDefault.addEventListener('click', async () => {
@@ -4016,10 +4103,13 @@ function init() {
   if (/demo/i.test(location.hash + location.search)) { el.noBt.hidden = true; startDemo(); }
   else checkDraft();
   window.__cyclette = { live, route, Store, saveRoutePos };   // per la diagnostica dalla console
-  if (Store.data.settings.hintVer !== '1.6') {          // novità della versione, una sola volta
-    Store.data.settings.hintVer = '1.6'; Store.save();
-    setTimeout(() => toast('Novità: 🎬 Percorsi reali girati in bici, che scorrono alla tua velocità', 5000), 2500);
+  if (Store.data.settings.hintVer !== '1.7') {          // novità della versione, una sola volta
+    const first = !Store.data.settings.hintVer || Store.data.settings.hintVer < '1.6';
+    Store.data.settings.hintVer = '1.7'; Store.save();
+    setTimeout(() => toast(first ? 'Novità: 🎬 Percorsi reali girati in bici, che scorrono alla tua velocità'
+      : 'Novità: parametri a tutto schermo più grandi e leggibili', 5000), 2500);
   }
+  setTimeout(() => checkUpdate(false), 4000);          // c'è una versione più nuova pubblicata?
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
