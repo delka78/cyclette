@@ -108,13 +108,28 @@ button:disabled { opacity: .32; }
 #media { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
 #audioArt { display: none; position: absolute; inset: 0; align-items: center; gap: 12px; padding: 0 14px;
   background: linear-gradient(135deg, #1b2433, #0d1118); }
-body.audio-only:not(.scene-on) #audioArt { display: flex; }
+body.audio-only:not(.scene-on):not(.route-on) #audioArt { display: flex; }
 #audioArt .note { font-size: 28px; }
 #audioName { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* scena animata integrata ("video" generato dall'app) */
 #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
 body.scene-on:not(.has-video) #scene { display: block; }
 #pctl { display: flex; flex-direction: column; gap: 6px; }
+/* percorso reale (YouTube): il filmato riempie lo schermo, i comandi sono i nostri */
+#ytWrap { position: absolute; inset: 0; display: none; overflow: hidden; background: #000; }
+body.route-on #ytWrap { display: block; }
+#ytWrap iframe, #ytHost { position: absolute; border: 0; left: 0; top: 0; width: 100%; height: 100%; }
+body.route-on #scene, body.route-on #audioArt, body.route-on #media, body.route-on #trackName { display: none !important; }
+#prowRoute { display: none; }
+body.route-on #prowRoute { display: flex; }
+#routeInfo { display: none; position: absolute; left: 6px; top: 6px; max-width: calc(100% - 12px); z-index: 2; pointer-events: none;
+  font-size: 12px; font-weight: 700; color: #fff; background: rgba(0, 0, 0, .58); padding: 3px 8px; border-radius: 8px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.route-on #routeInfo { display: block; }
+#routeHint { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; pointer-events: none;
+  background: rgba(0, 0, 0, .66); color: #fff; font-weight: 800; font-size: clamp(15px, 4.4vw, 22px); padding: 10px 16px;
+  border-radius: 14px; text-align: center; white-space: nowrap; }
+body.route-on #routeHint.on { display: block; }
 .prow { display: flex; align-items: center; gap: 8px; min-width: 0; }
 #prowMain, #volIcon, #vol, #btnOverlay, #trackName { display: none; }
 body.has-media #prowMain, body.has-media #vol { display: flex; }
@@ -261,7 +276,7 @@ body.overlay #btnLayout2 { display: grid; }
    griglia a 6 colonne: RPM+BPM grandi · velocità/watt/tempo · distanza/calorie/grassi · pulsanti
    ===================================================================== */
 body.has-screen #screen { display: block; height: min(56.25vw, 26dvh); }
-body.has-media.audio-only:not(.scene-on) #screen { height: 60px; }
+body.has-media.audio-only:not(.scene-on):not(.route-on) #screen { height: 60px; }
 body.has-screen .c-sub { display: none; }
 body.has-screen .conn { min-height: 44px; }
 body.has-screen .pbtn, body.has-screen .loadbtn { height: 36px; }
@@ -302,7 +317,10 @@ body.overlay #pctl { position: fixed; z-index: 7; bottom: calc(env(safe-area-ins
   left: calc(env(safe-area-inset-left) + 8px); right: calc(env(safe-area-inset-right) + 8px);
   background: rgba(0, 0, 0, .5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: 6px; border-radius: 14px; }
 body.overlay #pctl .prow { justify-content: flex-start; }
-body.overlay:not(.has-media) #pctl { right: auto; }
+body.overlay:not(.has-media):not(.route-on) #pctl { right: auto; }
+body.overlay #routeInfo { position: fixed; top: auto; z-index: 7; left: calc(env(safe-area-inset-left) + 10px);
+  bottom: calc(env(safe-area-inset-bottom) + 112px); max-width: calc(100vw - 20px); }
+body.overlay.has-media #routeInfo { bottom: calc(env(safe-area-inset-bottom) + 160px); }
 body.overlay #dash { position: fixed; z-index: 6; left: 0; right: 0; top: 0; bottom: auto; overflow: visible;
   grid-template-columns: repeat(3, 1fr); gap: 5px;
   padding: calc(env(safe-area-inset-top) + 6px) calc(env(safe-area-inset-right) + 6px) 22px calc(env(safe-area-inset-left) + 6px);
@@ -328,7 +346,7 @@ body.overlay .tbtn { height: 100%; min-height: 40px; font-size: 15px; border-rad
   .conn { min-height: 42px; } .c-sub { display: none; }
   #player { grid-area: player; display: flex; flex-direction: column; min-height: 0; }
   body.has-screen #screen { flex: 1 1 auto; height: auto; min-height: 0; }
-  body.has-media.audio-only:not(.scene-on) #screen { flex: 0 0 60px; }
+  body.has-media.audio-only:not(.scene-on):not(.route-on) #screen { flex: 0 0 60px; }
   #dash { grid-area: dash; padding-left: 0; }
   .big { min-height: auto; }
   .val { font-size: clamp(24px, min(4.6vw, 9dvh), 64px); }
@@ -489,6 +507,29 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 .ed-step .del { height: 34px; border-radius: 9px; background: rgba(255, 59, 48, .15); color: #ff8a80; }
 .ed-badd { font-size: 13.5px; color: #8ab4ff; padding: 8px 0 0; }
 
+/* --- Scelta percorsi reali --- */
+.sheet h3.first { margin-top: 2px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: 0 0 auto; height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--line); background: var(--panel2);
+  font-size: 13.5px; font-weight: 600; white-space: nowrap; color: var(--text); }
+.chip.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.route-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.route-opt { position: relative; border-radius: 14px; overflow: hidden; border: 2px solid var(--line); background: var(--panel2); cursor: pointer; }
+.route-opt.active { border-color: var(--green); }
+.ro-img { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #24384f, #10161f); display: grid; place-items: center; font-size: 30px; }
+.ro-img[data-k="mount"]::before { content: '⛰️'; } .ro-img[data-k="lake"]::before { content: '🏞️'; }
+.ro-img[data-k="sea"]::before { content: '🌊'; } .ro-img[data-k="green"]::before { content: '🌳'; } .ro-img[data-k="mine"]::before { content: '⭐'; }
+.ro-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ro-dur, .ro-res { position: absolute; bottom: 6px; font-size: 11px; font-weight: 800; color: #fff; padding: 1px 6px; border-radius: 6px; }
+.ro-dur { right: 5px; background: rgba(0, 0, 0, .78); }
+.ro-res { left: 5px; background: rgba(10, 132, 255, .92); }
+.ro-bar { position: absolute; left: 0; bottom: 0; height: 3px; background: #ff453a; }
+.ro-txt { padding: 6px 9px 8px; display: flex; flex-direction: column; gap: 2px; }
+.ro-txt b { font-size: 13.5px; line-height: 1.25; }
+.ro-txt small { font-size: 12px; color: var(--muted); }
+.ro-del { position: absolute; top: 5px; right: 5px; width: 34px; height: 34px; border-radius: 10px; background: rgba(0, 0, 0, .65); font-size: 16px; }
+.rbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 6px; }
 /* --- Scelta video integrati --- */
 .scene-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .scene-opt { border-radius: 14px; overflow: hidden; border: 2px solid var(--line); background: #000; text-align: left; padding: 0; }
@@ -532,10 +573,22 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
   <div id="screen">
     <video id="media" playsinline webkit-playsinline preload="auto"></video>
     <canvas id="scene" aria-label="Video integrato"></canvas>
+    <div id="ytWrap"><div id="ytHost"></div></div>
+    <div id="routeInfo"></div>
+    <div id="routeHint"></div>
     <div id="audioArt"><div class="note">🎵</div><div id="audioName"></div></div>
     <div id="trackName"></div>
   </div>
   <div id="pctl">
+    <!-- comandi del percorso reale (YouTube) -->
+    <div class="prow" id="prowRoute">
+      <button class="pbtn play" id="btnRPlay" aria-label="Play/Pausa percorso">▶</button>
+      <button class="pbtn" id="btnRNext" aria-label="Altro percorso">⏭</button>
+      <button class="pbtn" id="btnRMute" aria-label="Audio del percorso">🔇</button>
+      <span class="ptime" id="rCur">0:00</span>
+      <input type="range" id="rSeek" min="0" max="1000" step="1" value="0" aria-label="Avanzamento percorso">
+      <span class="ptime" id="rDur">0:00</span>
+    </div>
     <div class="prow" id="prowMain">
       <button class="pbtn" id="btnPrev" aria-label="Precedente">⏮</button>
       <button class="pbtn play" id="btnPlay" aria-label="Play/Pausa">▶</button>
@@ -546,7 +599,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     </div>
     <div class="prow">
       <label class="loadbtn" for="fileInput">📂<span class="lb-long"> Carica Video / Musica</span><span class="lb-short"> File</span></label>
-      <button class="loadbtn scenes" id="btnScenes">🎬<span class="lb-long"> Video integrati</span></button>
+      <button class="loadbtn scenes" id="btnScenes">🎬<span class="lb-long"> Percorsi e video</span><span class="lb-short"> Percorsi</span></button>
       <input type="file" id="fileInput" class="vh" accept="video/*,audio/*,.mp3,.mp4,.m4a,.mov,.aac,.wav" multiple>
       <span id="volIcon">🔊</span>
       <input type="range" id="vol" min="0" max="1" step="0.05" value="1" aria-label="Volume">
@@ -718,10 +771,22 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 <!-- ======================= VIDEO INTEGRATI ======================= -->
 <div class="sheet" id="sheetScenes" hidden>
   <div class="sheet-card">
-    <div class="sheet-head"><h2>🎬 Video integrati</h2><button class="icon-btn" data-close aria-label="Chiudi">✕</button></div>
-    <p class="hint">Animazioni generate dall'app: la strada scorre alla tua velocità reale e il programma in corso è sempre visibile. Puoi ascoltare musica (MP3) mentre guardi la scena. Con ⛶ vai a tutto schermo: i parametri restano in alto.</p>
+    <div class="sheet-head"><h2>🎬 Percorsi e video</h2><button class="icon-btn" data-close aria-label="Chiudi">✕</button></div>
+    <h3 class="first">🌍 Percorsi reali</h3>
+    <p class="hint">Filmati veri girati in bici, da 30 minuti a diverse ore (da YouTube: serve internet, meglio il Wi-Fi).
+      Il video <b>scorre alla tua velocità</b> e si ferma quando smetti di pedalare. Ogni percorso riprende da dove l'avevi lasciato
+      e con il giro continuo, finito un percorso, ne parte un altro. Con ⛶ vai a tutto schermo con i parametri in alto; puoi ascoltare la tua musica (📂) insieme al video.</p>
+    <div class="chips" id="routeChips"></div>
+    <div id="routeList" class="route-list"></div>
+    <div class="rbtns">
+      <button class="btn" id="btnRouteRandom">🔀 A sorpresa</button>
+      <button class="btn" id="btnRouteAdd">＋ Da YouTube</button>
+    </div>
+    <label class="switch"><input type="checkbox" id="setRouteSync"> <span>Il video scorre alla mia velocità e si ferma quando smetto di pedalare</span></label>
+    <label class="switch"><input type="checkbox" id="setRouteLoop"> <span>Giro continuo: finito un percorso ne parte un altro che non hai visto di recente</span></label>
+    <h3>🎨 Animazioni (funzionano anche senza internet)</h3>
     <div id="sceneList" class="scene-list"></div>
-    <button class="btn" id="btnSceneOff" style="width:100%;margin-top:10px">Nessun video integrato</button>
+    <button class="btn" id="btnSceneOff" style="width:100%;margin-top:10px">Nessun video</button>
   </div>
 </div>
 
@@ -845,7 +910,7 @@ const CONFIG = {
   HR_ZONES: [0.50, 0.60, 0.70, 0.80, 0.90], // limiti inferiori Z1…Z5 in % della FC massima
   FATMAX_BAND: 0.90,                      // "zona brucia-grassi": ossidazione grassi ≥ 90% del massimo stimato
   STORAGE_KEY: 'cyclette-dashboard-v1',
-  APP_VERSION: '1.5',
+  APP_VERSION: '1.6',
 };
 
 /* =========================================================================
@@ -1254,6 +1319,29 @@ function swapInOrder(order, a, b) {
   [o[i], o[j]] = [o[j], o[i]];
   return o;
 }
+/* ---- Percorsi reali (YouTube) ---- */
+/** Estrae l'ID del video (11 caratteri) da un link YouTube: watch?v=, youtu.be/, embed/, shorts/, live/ oppure l'ID da solo */
+function parseYouTubeId(s) {
+  s = String(s || '').trim();
+  const m = s.match(/(?:[?&]v=|youtu\.be\/|\/embed\/|\/shorts\/|\/live\/|\/v\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/);
+  if (m) return m[1];
+  return /^[A-Za-z0-9_-]{11}$/.test(s) ? s : null;
+}
+/** Velocità di riproduzione = tua velocità / velocità media del filmato, agganciata al valore più vicino
+ *  tra quelli che YouTube accetta (0,5 … 2) */
+function pickPlaybackRate(userKmh, videoKmh, rates) {
+  const list = (rates && rates.length ? rates : [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]).filter((r) => r >= 0.5 && r <= 2);
+  const x = Math.max(0.01, (userKmh || 0) / (videoKmh > 0 ? videoKmh : 20));
+  let best = 1, bd = Infinity;
+  for (const r of list) { const d = Math.abs(Math.log(r) - Math.log(x)); if (d < bd - 1e-9) { bd = d; best = r; } }
+  return best;
+}
+/** Riquadro w×h con video di proporzioni ratio: 'contain' (tutto visibile) o 'cover' (riempie tagliando i bordi) */
+function fitBox(w, h, ratio, cover) {
+  let fw = w, fh = w / ratio;
+  if (cover ? fh < h : fh > h) { fh = h; fw = h * ratio; }
+  return { w: fw, h: fh, x: (w - fw) / 2, y: (h - fh) / 2 };
+}
 // === PARSERS END ===
 
 /* =========================================================================
@@ -1313,8 +1401,10 @@ function closeConfirm(value) {
   if (r) r(asking ? (value ? el.confirmInput.value.trim() : null) : value);
 }
 /** Come askConfirm ma con un campo di testo: restituisce il testo scritto, oppure null se annulli */
-function askText(msg, value, okLabel = 'OK') {
+function askText(msg, value, okLabel = 'OK', { maxLen = 16, mode = 'text' } = {}) {
   const pr = askConfirm(msg, okLabel);
+  el.confirmInput.maxLength = maxLen;
+  el.confirmInput.inputMode = mode;
   el.confirmInput.value = value || '';
   el.confirmInput.hidden = false;
   setTimeout(() => { el.confirmInput.focus(); el.confirmInput.select(); }, 50);
@@ -1373,7 +1463,8 @@ const Store = {
   data: null,
   defaults() {
     return { version: 1, activeProfile: 'p1',
-             settings: { beep: true, voice: true, scanAll: false, kcalSource: 'auto', scene: null },
+             settings: { beep: true, voice: true, scanAll: false, kcalSource: 'auto', scene: null,
+                         route: null, routeSync: true, routeLoop: true, routeSound: false, routePos: {}, routeDur: {}, routeHist: [], myRoutes: [] },
              programs: clone(DEFAULT_PROGRAMS), activeProgramId: null,
              profiles: { p1: makeProfile('Profilo 1') } };   // i profili si aggiungono senza limiti
   },
@@ -2940,6 +3031,7 @@ function bindPlayer() {
   m.addEventListener('loadedmetadata', () => {
     el.tDur.textContent = fmtMedia(m.duration);
     document.body.classList.toggle('audio-only', !m.videoWidth);
+    if (m.videoWidth && route.cur) { stopRoute(); toast('Percorso chiuso: ora vedi il tuo video'); }
     updateScreenState();
   });
   m.addEventListener('timeupdate', () => {
@@ -2954,6 +3046,7 @@ function bindPlayer() {
     const on = document.body.classList.toggle('overlay');
     el.btnOverlay.textContent = on ? '✕' : '⛶';
     applyTileOrder();                                  // disposizione "tutto schermo" o "normale"
+    requestAnimationFrame(fitRoute);
   });
 }
 
@@ -2985,14 +3078,16 @@ const STARS = (() => { const r = seeded(3); return Array.from({ length: 90 }, ()
 function updateScreenState() {
   const b = document.body.classList;
   b.toggle('has-video', b.contains('has-media') && !b.contains('audio-only'));
-  b.toggle('has-screen', b.contains('scene-on') || b.contains('has-media'));
+  b.toggle('has-screen', b.contains('scene-on') || b.contains('has-media') || b.contains('route-on'));
   if (!b.contains('has-screen') && b.contains('overlay')) { b.remove('overlay'); el.btnOverlay.textContent = '⛶'; applyTileOrder(); }
-  if (b.contains('scene-on') && !b.contains('has-video')) startSceneLoop(); else stopSceneLoop();
+  if (b.contains('scene-on') && !b.contains('has-video') && !b.contains('route-on')) startSceneLoop(); else stopSceneLoop();
+  requestAnimationFrame(fitRoute);
 }
 function setScene(id) {
   sceneState.id = SCENES.some((s) => s.id === id) ? id : null;
   Store.data.settings.scene = sceneState.id; Store.save();
   if (sceneState.id && document.body.classList.contains('has-video')) { unloadMedia(); toast('Video del telefono chiuso: ora vedi la scena'); }
+  if (sceneState.id && route.cur) stopRoute();
   document.body.classList.toggle('scene-on', !!sceneState.id);
   updateScreenState();
 }
@@ -3176,6 +3271,396 @@ function renderSceneList() {
     const c = b.querySelector('canvas');
     drawSceneFrame(c.getContext('2d'), c.width, c.height, b.dataset.scene, 137, 40, 1);
   });
+}
+
+/* =========================================================================
+   12d. PERCORSI REALI — filmati veri girati in bici (YouTube), sincronizzati con la tua velocità
+   - Il filmato scorre più veloce o più lento in proporzione alla tua velocità
+     (tua velocità ÷ velocità media del filmato), si ferma se smetti di pedalare e riparte quando riprendi.
+   - Ogni percorso riprende da dove l'avevi lasciato; con il "giro continuo", finito un percorso
+     ne parte un altro che non hai visto di recente: l'allenamento non si ripete.
+   - Serve internet (meglio il Wi-Fi). Senza rete restano le animazioni disegnate dall'app.
+   ========================================================================= */
+const ROUTE_KINDS = [
+  { k: 'mount', name: '⛰️ Montagna' }, { k: 'lake', name: '🏞️ Laghi e fiumi' },
+  { k: 'sea', name: '🌊 Mare' }, { k: 'green', name: '🌳 Campagna e boschi' }, { k: 'mine', name: '⭐ I miei' },
+];
+// yt = ID del video su YouTube · min = durata indicativa · kmh = velocità media stimata del filmato
+const ROUTES = [
+  { yt: '-PvzIkUp_D8', kind: 'mount', name: 'Strade alpine dell\'Alto Adige', place: 'Alto Adige', min: 45, kmh: 18 },
+  { yt: 'H5FPwJIU3WY', kind: 'mount', name: 'Prato Piazza', place: 'Dolomiti di Braies', min: 44, kmh: 13 },
+  { yt: 'HF4nQYNrFRg', kind: 'mount', name: 'Sentieri delle Dolomiti', place: 'Dolomiti', min: 40, kmh: 14 },
+  { yt: 'c5EVL2OS_84', kind: 'mount', name: 'Sella Ronda in mountain bike', place: 'Dolomiti', min: 60, kmh: 16 },
+  { yt: '_3gFzb2M8Xo', kind: 'mount', name: 'Alto Adige al sole', place: 'Alto Adige', min: 60, kmh: 16 },
+  { yt: 'BHFNZawcH2U', kind: 'mount', name: 'Dal Tirolo a Neuschwanstein', place: 'Austria · Baviera', kmh: 18 },
+  { yt: 'dK98ElxOG-U', kind: 'lake', name: 'Lago di Garda', place: 'Trentino', min: 60, kmh: 20 },
+  { yt: 'iBgCV3Q4vtc', kind: 'lake', name: 'Garda, la strada delle 45 gallerie', place: 'Limone · Tremosine', min: 60, kmh: 18 },
+  { yt: 'v9ZuzUkOX4E', kind: 'lake', name: 'Alba lungo il fiume Isar', place: 'Baviera', min: 60, kmh: 18 },
+  { yt: 'Dgt8tZSoQKw', kind: 'lake', name: 'Lungo il fiume Otta', place: 'Norvegia', kmh: 22 },
+  { yt: 'nqb0pdf1u6k', kind: 'lake', name: 'Valle di Vatedalen', place: 'Norvegia', kmh: 22 },
+  { yt: 'oQevMvlGjVU', kind: 'lake', name: 'Laghi e boschi norvegesi (49 km)', place: 'Norvegia', kmh: 20 },
+  { yt: 'HrPQrMX_A8E', kind: 'sea', name: 'Da Rapallo a Portofino', place: 'Riviera ligure', kmh: 15 },
+  { yt: '_gcrpo8qBx8', kind: 'sea', name: 'Il giro dell\'isola di Procida', place: 'Campania', kmh: 14 },
+  { yt: '1UxoHtG2qas', kind: 'sea', name: 'Costiera Amalfitana (72 km)', place: 'Campania', kmh: 20 },
+  { yt: 'mrie7Fpm9uY', kind: 'sea', name: 'Da Vietri a Positano e ritorno', place: 'Costiera Amalfitana', kmh: 22 },
+  { yt: 'MHSVEMqTHGY', kind: 'sea', name: 'La costa di Maiorca', place: 'Spagna', min: 120, kmh: 25 },
+  { yt: 'Tz08FgZqYmQ', kind: 'sea', name: 'Colline e spiagge fino ad Avila Beach', place: 'California', min: 90, kmh: 20 },
+  { yt: 'USUJa3N3TOM', kind: 'sea', name: 'Coleman Valley Road (con musica)', place: 'California', min: 300, kmh: 20 },
+  { yt: 'VbH08GNaS34', kind: 'green', name: 'Il Chianti in gravel', place: 'Toscana', kmh: 18 },
+  { yt: 'AX8sC_kR46M', kind: 'green', name: 'La Baviera in autunno', place: 'Germania', min: 60, kmh: 18 },
+  { yt: 'yt0xcYTGTiw', kind: 'green', name: 'Sentieri nel bosco in MTB', place: 'Inghilterra', min: 30, kmh: 14 },
+];
+
+const route = {
+  api: null, player: null, ready: false, cur: null, state: -1,
+  waitStart: false, userPaused: false, autoPaused: false, slowSince: 0,
+  rate: 1, wantRate: 1, wantSince: 0, rateTry: 0,
+  lastSave: 0, errors: 0, unmuteAt: 0, startedAt: 0, seeking: false, filter: 'all', bad: new Set(), silent: false,
+};
+const allRoutes = () => ROUTES.concat((Store.data.settings.myRoutes || []).map((r) => Object.assign({ kind: 'mine', mine: true }, r)));
+const routeById = (yt) => allRoutes().find((r) => r.yt === yt) || null;
+
+/** Carica (una sola volta) la libreria ufficiale di YouTube per i video incorporati */
+function loadYouTubeApi() {
+  if (window.YT && window.YT.Player) return Promise.resolve(window.YT);
+  if (route.api) return route.api;
+  route.api = new Promise((resolve, reject) => {
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => { if (typeof prev === 'function') { try { prev(); } catch (e) {} } resolve(window.YT); };
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    s.async = true;
+    s.onerror = () => { route.api = null; s.remove(); reject(new Error('offline')); };
+    document.head.appendChild(s);
+    setTimeout(() => { if (!(window.YT && window.YT.Player)) { route.api = null; reject(new Error('timeout')); } }, 15000);
+  });
+  return route.api;
+}
+
+function routePos(yt) { return (Store.data.settings.routePos || {})[yt] || 0; }
+function saveRoutePos(force) {
+  const p = route.player, r = route.cur;
+  if (!p || !route.ready || !r) return;
+  let t = 0, d = 0;
+  try { t = p.getCurrentTime() || 0; d = p.getDuration() || 0; } catch (e) { return; }
+  const s = Store.data.settings;
+  s.routePos = s.routePos || {}; s.routeDur = s.routeDur || {};
+  if (d > 0) s.routeDur[r.yt] = Math.round(d);
+  if (t > 5) s.routePos[r.yt] = d > 0 && t > d - 20 ? 0 : Math.floor(t);   // finito: la prossima volta riparte dall'inizio
+  if (force || Date.now() - route.lastSave > 15000) { route.lastSave = Date.now(); Store.save(); }
+}
+
+/** Avvia un percorso. autoplay=false: il video resta pronto e parte quando pedali (o premi ▶) */
+async function startRoute(yt, { autoplay = true, silent = false } = {}) {
+  const r = routeById(yt);
+  if (!r) return;
+  if (route.cur && route.cur.yt !== yt) saveRoutePos(true);
+  const b = document.body.classList;
+  if (sceneState.id) { sceneState.id = null; Store.data.settings.scene = null; b.remove('scene-on'); }
+  if (b.contains('has-video')) unloadMedia();
+  Object.assign(route, { cur: r, state: -1, waitStart: !autoplay, userPaused: false, autoPaused: false, slowSince: 0,
+    rate: 1, wantRate: 1, wantSince: 0, rateTry: 0, unmuteAt: 0, startedAt: Date.now(), silent });
+  const s = Store.data.settings;
+  s.route = yt;
+  s.routeHist = [yt].concat((s.routeHist || []).filter((x) => x !== yt)).slice(0, Math.max(1, Math.min(12, allRoutes().length - 2)));
+  Store.save();
+  b.add('route-on');
+  updateScreenState();
+  renderRouteInfo();
+  let YTo;
+  try { YTo = await loadYouTubeApi(); } catch (e) {
+    if (route.cur !== r) return;
+    if (!silent) toast('Per i percorsi reali serve internet. Senza rete usa le animazioni 🎨', 5000);
+    stopRoute(!silent);
+    return;
+  }
+  if (route.cur !== r) return;                         // nel frattempo è stato scelto altro
+  const start = Math.floor(routePos(yt));
+  if (route.player && route.ready) {
+    try {
+      if (autoplay) route.player.loadVideoById({ videoId: yt, startSeconds: start });
+      else route.player.cueVideoById({ videoId: yt, startSeconds: start });
+    } catch (e) {}
+    fitRoute();
+    return;
+  }
+  if (route.player) return;                            // si sta già creando: onReady userà route.cur
+  const vars = { playsinline: 1, controls: 0, rel: 0, modestbranding: 1, iv_load_policy: 3, fs: 0, disablekb: 1,
+    cc_load_policy: 0, autoplay: autoplay ? 1 : 0, mute: 1, start };
+  if (/^https?:/.test(location.origin)) vars.origin = location.origin;
+  route.player = new YTo.Player('ytHost', {
+    width: '100%', height: '100%', videoId: yt, playerVars: vars,
+    events: {
+      onReady: () => {
+        route.ready = true;
+        fitRoute();
+        try { route.player.mute(); } catch (e) {}
+        const c = route.cur;
+        if (!c) { try { route.player.stopVideo(); } catch (e) {} return; }
+        if (c.yt !== yt) startRoute(c.yt, { autoplay: !route.waitStart });   // cambiato mentre si caricava
+        else if (!route.waitStart) { try { route.player.playVideo(); } catch (e) {} }
+        renderRouteButtons();
+      },
+      onStateChange: (e) => onRouteState(e.data),
+      onError: (e) => onRouteError(e.data),
+      onPlaybackRateChange: (e) => { route.rate = e.data; renderRouteInfo(); },
+      onAutoplayBlocked: () => { route.waitStart = true; renderRouteInfo(); },
+    },
+  });
+}
+
+function stopRoute(forget = true) {
+  if (!route.cur && !document.body.classList.contains('route-on')) return;
+  saveRoutePos(true);
+  try { if (route.player && route.ready) route.player.stopVideo(); } catch (e) {}
+  route.cur = null;
+  if (forget) { Store.data.settings.route = null; Store.save(); }
+  document.body.classList.remove('route-on');
+  el.routeHint.classList.remove('on');
+  updateScreenState();
+}
+
+function onRouteState(st) {
+  route.state = st;
+  const p = route.player, s = Store.data.settings;
+  if (st === 1) {                                      // in riproduzione
+    route.errors = 0; route.waitStart = false;
+    if (s.routeSound && p.isMuted && p.isMuted() && !route.unmuteAt) { try { p.unMute(); p.setVolume(100); } catch (e) {} route.unmuteAt = Date.now(); }
+  } else if (st === 2) {                               // in pausa: se è stato il telefono a bloccare l'audio, riparte muto
+    if (route.unmuteAt && Date.now() - route.unmuteAt < 2000 && !route.userPaused && !route.autoPaused) {
+      try { p.mute(); p.playVideo(); } catch (e) {}
+      s.routeSound = false; Store.save();
+      toast('Il telefono ha bloccato l\'audio del video: puoi ascoltare la tua musica con 📂', 5000);
+    }
+    saveRoutePos(true);
+  } else if (st === 0) {                               // finito
+    if (route.cur) { s.routePos = s.routePos || {}; s.routePos[route.cur.yt] = 0; Store.save(); }
+    if (s.routeLoop !== false) { toast('Percorso finito: si parte per il prossimo! 🚴', 3500); nextRoute(); }
+  }
+  renderRouteButtons(); renderRouteInfo();
+}
+
+function onRouteError(code) {
+  const r = route.cur;
+  if (!r) return;
+  route.errors++;
+  route.bad.add(r.yt);
+  if (route.errors >= 3 || code === 153) {
+    toast(code === 153 ? 'YouTube non permette la riproduzione in questo browser' : 'I video non si caricano: controlla la connessione', 5000);
+    stopRoute(false);
+    return;
+  }
+  toast(`"${r.name}" non è più disponibile su YouTube: passo a un altro percorso`, 4000);
+  nextRoute();
+}
+
+/** Prossimo percorso: a caso tra quelli non visti di recente (mai lo stesso di adesso) */
+function nextRoute() {
+  const s = Store.data.settings, curId = route.cur && route.cur.yt;
+  const all = allRoutes().filter((r) => !route.bad.has(r.yt) && r.yt !== curId);
+  if (!all.length) return;
+  const recent = s.routeHist || [];
+  let pool = all.filter((r) => !recent.includes(r.yt));
+  if (!pool.length) pool = all;
+  const r = pool[Math.floor(Math.random() * pool.length)];
+  startRoute(r.yt, { autoplay: true });
+}
+
+/** Dimensiona il filmato: intero in verticale, a riempimento quando lo schermo è largo (telefono ruotato) */
+function fitRoute() {
+  const f = document.getElementById('ytHost');
+  if (!f || !document.body.classList.contains('route-on')) return;
+  const w = el.ytWrap.clientWidth, h = el.ytWrap.clientHeight;
+  if (!w || !h) return;
+  const a = w / h;
+  let box;
+  if (document.body.classList.contains('overlay') && a < 1) {
+    // tutto schermo in verticale: il filmato riempie lo spazio tra i parametri e i comandi
+    // (ingrandito fino a mostrare almeno il 60% della larghezza: la strada resta al centro)
+    const wr = el.ytWrap.getBoundingClientRect();
+    const top = Math.max(0, el.dash.getBoundingClientRect().bottom - wr.top - 16);
+    const ri = el.routeInfo.getBoundingClientRect(), pc = document.getElementById('pctl').getBoundingClientRect();
+    const bottom = Math.min(h, (ri.height ? ri.top : pc.top) - wr.top - 8);
+    const ah = Math.max(80, bottom - top);
+    let fh = ah, fw = (fh * 16) / 9;
+    if (fw > w / 0.6) { fw = w / 0.6; fh = (fw * 9) / 16; }
+    if (fw < w) { fw = w; fh = (w * 9) / 16; }
+    box = { w: fw, h: fh, x: (w - fw) / 2, y: top + (ah - fh) / 2 };
+  } else box = fitBox(w, h, 16 / 9, a > 1.25 && a < 2.6);
+  Object.assign(f.style, { width: box.w + 'px', height: box.h + 'px', left: box.x + 'px', top: box.y + 'px' });
+}
+
+function toggleRoutePlay() {
+  const p = route.player;
+  if (!p || !route.ready || !route.cur) return;
+  if (route.state === 1 || route.state === 3) { route.userPaused = true; try { p.pauseVideo(); } catch (e) {} }
+  else { route.userPaused = false; route.autoPaused = false; route.waitStart = false; route.slowSince = 0; try { p.playVideo(); } catch (e) {} }
+  renderRouteInfo();
+}
+function toggleRouteSound() {
+  const p = route.player;
+  if (!p || !route.ready) return;
+  const s = Store.data.settings;
+  let muted = true;
+  try { muted = p.isMuted(); } catch (e) {}
+  s.routeSound = muted;
+  try { if (muted) { p.unMute(); p.setVolume(100); route.unmuteAt = Date.now(); } else p.mute(); } catch (e) {}
+  Store.save();
+  setTimeout(renderRouteButtons, 150);
+}
+
+/** Ogni mezzo secondo: posizione, barra di avanzamento e sincronizzazione con la tua velocità */
+function routeTick() {
+  const p = route.player, r = route.cur;
+  if (!p || !route.ready || !r) return;
+  const now = Date.now(), s = Store.data.settings;
+  let t = 0, d = 0;
+  try { t = p.getCurrentTime() || 0; d = p.getDuration() || 0; } catch (e) { return; }
+  if (!route.seeking) {
+    el.rCur.textContent = fmtMedia(t); el.rDur.textContent = fmtMedia(d);
+    el.rSeek.value = d ? Math.round((t / d) * 1000) : 0;
+  }
+  if (route.state === 1) saveRoutePos(false);
+  if (document.body.classList.contains('overlay')) fitRoute();   // i parametri in alto possono cambiare altezza
+  const spd = live.speed;
+  if (s.routeSync !== false && spd != null) {
+    const stopped = spd < 2;
+    if (stopped) { if (!route.slowSince) route.slowSince = now; } else route.slowSince = 0;
+    if (route.waitStart && spd >= 3 && !route.userPaused) { route.waitStart = false; try { p.playVideo(); } catch (e) {} }
+    if (stopped && now - route.slowSince > 2500 && (route.state === 1 || route.state === 3) && !route.autoPaused) {
+      route.autoPaused = true; try { p.pauseVideo(); } catch (e) {}
+    } else if (!stopped && spd >= 3 && route.autoPaused && !route.userPaused) {
+      route.autoPaused = false; try { p.playVideo(); } catch (e) {}
+    }
+    if (!stopped) {
+      let rates = null;
+      try { rates = p.getAvailablePlaybackRates(); } catch (e) {}
+      const want = pickPlaybackRate(spd, r.kmh || 20, rates);
+      if (want !== route.wantRate) { route.wantRate = want; route.wantSince = now; }
+      let cur = route.rate;
+      try { cur = p.getPlaybackRate() || cur; } catch (e) {}
+      route.rate = cur;
+      if (want !== cur && now - route.wantSince > 1500 && now - route.rateTry > 4000) {
+        route.rateTry = now; try { p.setPlaybackRate(want); } catch (e) {}
+      }
+    }
+  } else {
+    if (route.autoPaused && !route.userPaused) { route.autoPaused = false; try { p.playVideo(); } catch (e) {} }
+    if (route.rate !== 1 && now - route.rateTry > 4000) { route.rateTry = now; try { p.setPlaybackRate(1); } catch (e) {} }
+  }
+  // autoplay rimasto bloccato dal telefono
+  if (!route.waitStart && route.state === -1 && now - route.startedAt > 6000 && !route.userPaused) route.waitStart = true;
+  renderRouteInfo();
+}
+
+function renderRouteButtons() {
+  const playing = route.state === 1 || route.state === 3;
+  el.btnRPlay.textContent = playing ? '❚❚' : '▶';
+  let muted = true;
+  try { if (route.player && route.ready) muted = route.player.isMuted(); } catch (e) {}
+  el.btnRMute.textContent = muted ? '🔇' : '🔊';
+}
+function renderRouteInfo() {
+  const r = route.cur;
+  if (!r) return;
+  const s = Store.data.settings;
+  const bike = live.speed != null && s.routeSync !== false;
+  let hint = '';
+  if (route.autoPaused) hint = '🚴 Pedala per ripartire';
+  else if (route.waitStart && !route.userPaused) hint = bike ? '🚴 Pedala per partire' : '▶ Premi play per partire';
+  else if (!route.ready && !route.player) hint = '⏳ Caricamento…';
+  el.routeHint.textContent = hint;
+  el.routeHint.classList.toggle('on', !!hint);
+  const parts = [`📍 ${r.name}`];
+  if (r.place) parts.push(r.place);
+  if (route.state === 3) parts.push('⏳');
+  if (bike && route.state === 1 && route.rate !== 1) parts.push(`×${String(route.rate).replace('.', ',')}`);
+  el.routeInfo.textContent = parts.join(' · ');
+  renderRouteButtons();
+}
+
+/** Elenco dei percorsi nel foglio 🎬 */
+function renderRouteList() {
+  const s = Store.data.settings, f = route.filter;
+  const kinds = [{ k: 'all', name: 'Tutti' }].concat(ROUTE_KINDS.filter((k) => k.k !== 'mine' || (s.myRoutes || []).length));
+  el.routeChips.innerHTML = kinds.map((k) => `<button class="chip ${k.k === f ? 'on' : ''}" data-f="${k.k}">${k.name}</button>`).join('');
+  const list = allRoutes().filter((r) => f === 'all' || r.kind === f);
+  el.routeList.innerHTML = list.map((r) => {
+    const pos = (s.routePos || {})[r.yt] || 0, dur = (s.routeDur || {})[r.yt] || (r.min ? r.min * 60 : 0);
+    const act = !!(route.cur && route.cur.yt === r.yt);
+    return `<div class="route-opt ${act ? 'active' : ''}" role="button" tabindex="0" data-route="${esc(r.yt)}">
+      <div class="ro-img" data-k="${esc(r.kind)}"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/${encodeURIComponent(r.yt)}/mqdefault.jpg" onerror="this.remove()">
+        ${dur ? `<span class="ro-dur">${fmtDur(dur)}</span>` : ''}${pos > 30 ? `<span class="ro-res">▶ ${fmtMedia(pos)}</span>` : ''}
+        ${pos > 30 && dur ? `<span class="ro-bar" style="width:${Math.min(100, (pos / dur) * 100).toFixed(1)}%"></span>` : ''}</div>
+      <div class="ro-txt"><b>${act ? '✅ ' : ''}${esc(r.name)}</b><small>${esc(r.place || '')}</small></div>
+      ${r.mine ? `<button class="ro-del" data-del="${esc(r.yt)}" aria-label="Elimina percorso">🗑</button>` : ''}
+    </div>`;
+  }).join('') || '<p class="hint">Nessun percorso in questo gruppo.</p>';
+  el.setRouteSync.checked = s.routeSync !== false;
+  el.setRouteLoop.checked = s.routeLoop !== false;
+}
+
+/** Aggiunge un video YouTube qualsiasi (incolla il link) */
+async function addRoute() {
+  const link = await askText('Incolla il link di un video YouTube (es. un giro in bici in prima persona)', '', 'Avanti', { maxLen: 400, mode: 'url' });
+  if (link == null) return;
+  const yt = parseYouTubeId(link);
+  if (!yt) { toast('Link non valido: copia l\'indirizzo del video da YouTube (Condividi → Copia link)', 4500); return; }
+  const s = Store.data.settings;
+  s.myRoutes = s.myRoutes || [];
+  if (routeById(yt)) { el.sheetScenes.hidden = true; startRoute(yt); return; }
+  const name = (await askText('Come vuoi chiamare questo percorso?', 'Il mio percorso', 'Avanti', { maxLen: 40 })) || 'Il mio percorso';
+  const kmhTxt = await askText('Velocità media di chi ha girato il video, in km/h (serve per farlo scorrere alla tua velocità; nel dubbio lascia 20)', '20', 'Salva', { maxLen: 5, mode: 'decimal' });
+  const kmh = Math.min(60, Math.max(5, parseFloat(String(kmhTxt || '20').replace(',', '.')) || 20));
+  s.myRoutes.push({ yt, name: name.trim().slice(0, 40) || 'Il mio percorso', place: 'YouTube', kmh });
+  Store.save();
+  route.filter = 'mine';
+  el.sheetScenes.hidden = true;
+  startRoute(yt);
+}
+
+function bindRoutes() {
+  el.routeChips.addEventListener('click', (e) => { const b = e.target.closest('[data-f]'); if (!b) return; route.filter = b.dataset.f; renderRouteList(); });
+  el.routeList.addEventListener('click', async (e) => {
+    const del = e.target.closest('[data-del]');
+    if (del) {
+      e.stopPropagation();
+      const r = routeById(del.dataset.del);
+      if (!r || !(await askConfirm(`Togliere "${r.name}" dai tuoi percorsi?`, 'Togli', true))) return;
+      const s = Store.data.settings;
+      s.myRoutes = (s.myRoutes || []).filter((x) => x.yt !== r.yt);
+      if (route.cur && route.cur.yt === r.yt) stopRoute();
+      Store.save();
+      if (!s.myRoutes.length && route.filter === 'mine') route.filter = 'all';
+      renderRouteList();
+      return;
+    }
+    const c = e.target.closest('[data-route]');
+    if (!c) return;
+    el.sheetScenes.hidden = true;
+    startRoute(c.dataset.route, { autoplay: true });
+  });
+  el.btnRouteRandom.addEventListener('click', () => { el.sheetScenes.hidden = true; nextRoute(); });
+  el.btnRouteAdd.addEventListener('click', addRoute);
+  el.setRouteSync.addEventListener('change', () => { Store.data.settings.routeSync = el.setRouteSync.checked; Store.save(); });
+  el.setRouteLoop.addEventListener('change', () => { Store.data.settings.routeLoop = el.setRouteLoop.checked; Store.save(); });
+  el.btnRPlay.addEventListener('click', toggleRoutePlay);
+  el.btnRNext.addEventListener('click', nextRoute);
+  el.btnRMute.addEventListener('click', toggleRouteSound);
+  el.rSeek.addEventListener('input', () => {
+    route.seeking = true;
+    let d = 0; try { d = route.player.getDuration(); } catch (e) {}
+    el.rCur.textContent = fmtMedia((el.rSeek.value / 1000) * d);
+  });
+  el.rSeek.addEventListener('change', () => {
+    let d = 0; try { d = route.player.getDuration(); } catch (e) {}
+    try { if (d) route.player.seekTo((el.rSeek.value / 1000) * d, true); } catch (e) {}
+    route.seeking = false;
+    setTimeout(() => saveRoutePos(true), 800);
+  });
+  window.addEventListener('resize', () => requestAnimationFrame(fitRoute));
+  if (window.ResizeObserver) new ResizeObserver(() => fitRoute()).observe(el.ytWrap);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) saveRoutePos(true); });
 }
 
 /* =========================================================================
@@ -3378,6 +3863,8 @@ function init() {
     'confirmBox', 'confirmMsg', 'confirmYes', 'confirmNo', 'toast', 'setVoice', 'dash', 'setLockLayout', 'btnLayoutReset', 'btnLayout2', 'btnLayoutDone', 'btnLayoutDefault',
     'progBar', 'pbStep', 'pbLeft', 'pbTarget', 'pbStatus', 'pbNext', 'pbTrack', 'tWatt', 'vWatt', 'zWatt',
     'scene', 'btnScenes', 'sheetScenes', 'sceneList', 'btnSceneOff',
+    'ytWrap', 'routeInfo', 'routeHint', 'btnRPlay', 'btnRNext', 'btnRMute', 'rCur', 'rSeek', 'rDur',
+    'routeChips', 'routeList', 'btnRouteRandom', 'btnRouteAdd', 'setRouteSync', 'setRouteLoop',
     'btnPrograms', 'sheetPrograms', 'progList', 'btnProgFree', 'btnProgNew', 'btnProgReset',
     'sheetEditor', 'edName', 'edSummary', 'edPreview', 'edBlocks', 'btnEdAddBlock', 'btnEdSave',
     'dashTabs', 'dashKpi', 'weekMetric', 'chWeek', 'trendMetric', 'chTrend', 'dashZones', 'dashRecords', 'chWeight', 'chFatPct',
@@ -3456,9 +3943,10 @@ function init() {
   el.btnEdSave.addEventListener('click', saveEditor);
 
   // --- Video integrati ---
-  el.btnScenes.addEventListener('click', () => { renderSceneList(); el.sheetScenes.hidden = false; });
+  el.btnScenes.addEventListener('click', () => { renderSceneList(); renderRouteList(); el.sheetScenes.hidden = false; });
+  bindRoutes();
   el.sceneList.addEventListener('click', (e) => { const b = e.target.closest('[data-scene]'); if (!b) return; setScene(b.dataset.scene); el.sheetScenes.hidden = true; });
-  el.btnSceneOff.addEventListener('click', () => { setScene(null); el.sheetScenes.hidden = true; });
+  el.btnSceneOff.addEventListener('click', () => { setScene(null); stopRoute(); el.sheetScenes.hidden = true; });
   el.btnSettings.addEventListener('click', openSettings);
   el.btnSaveSettings.addEventListener('click', saveSettings);
   el.btnLayout.addEventListener('click', () => setLayoutEdit(!layoutEdit));
@@ -3515,7 +4003,9 @@ function init() {
   window.addEventListener('pagehide', saveDraft);
 
   if (!('bluetooth' in navigator)) el.noBt.hidden = false;
-  if (Store.data.settings.scene) setScene(Store.data.settings.scene); else updateScreenState();
+  if (Store.data.settings.route && routeById(Store.data.settings.route)) startRoute(Store.data.settings.route, { autoplay: false, silent: true });
+  else if (Store.data.settings.scene) setScene(Store.data.settings.scene); else updateScreenState();
+  setInterval(routeTick, 500);
   // app installabile/offline (Android Chrome); dove non è supportato viene semplicemente ignorato
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 
@@ -3525,10 +4015,10 @@ function init() {
 
   if (/demo/i.test(location.hash + location.search)) { el.noBt.hidden = true; startDemo(); }
   else checkDraft();
-  if (Store.data.settings.hintVer !== '1.5') { Store.data.settings.hintVer = '1.5'; Store.data.settings.hintDrag = false; }
-  if (!Store.data.settings.hintDrag) {                 // suggerimento una sola volta
-    setTimeout(() => toast('Novità: tocca ✥ per spostare i riquadri e 👤 per gestire i profili', 5000), 2500);
-    Store.data.settings.hintDrag = true; Store.save();
+  window.__cyclette = { live, route, Store, saveRoutePos };   // per la diagnostica dalla console
+  if (Store.data.settings.hintVer !== '1.6') {          // novità della versione, una sola volta
+    Store.data.settings.hintVer = '1.6'; Store.save();
+    setTimeout(() => toast('Novità: 🎬 Percorsi reali girati in bici, che scorrono alla tua velocità', 5000), 2500);
   }
 }
 
