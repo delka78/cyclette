@@ -66,6 +66,20 @@ button:disabled { opacity: .32; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .seg button.active { background: var(--blue); color: #fff; }
 .seg.locked button:not(.active) { opacity: .35; }
+/* selettore profilo: un pulsante con il nome, apre l'elenco dei profili */
+.prof-chip { flex: 1; min-width: 0; height: 42px; display: flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: 12px;
+  background: var(--blue); color: #fff; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, .3); }
+.prof-chip span { flex: 1; min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prof-chip small { opacity: .8; }
+.prof-chip.locked { opacity: .75; }
+.pf { display: flex; gap: 6px; align-items: stretch; margin-bottom: 8px; }
+.pf-main { flex: 1; min-width: 0; text-align: left; background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.pf-main b { display: block; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pf-main small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.pf.active .pf-main { border-color: var(--green); box-shadow: inset 0 0 0 1px var(--green); }
+.pf .btn { flex: 0 0 46px; height: auto; padding: 0; }
+.ask-input { width: 100%; font: inherit; font-size: 17px; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel2); color: var(--text); margin: 0 0 14px; }
 .icon-btn { width: 42px; height: 42px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line);
   font-size: 19px; display: grid; place-items: center; flex: 0 0 auto; }
 
@@ -211,6 +225,36 @@ body.prog-on #progBar { display: block; }
    ===================================================================== */
 #progBar, #noBt { grid-column: 1 / -1; }
 body.prog-on .big { min-height: auto; }
+/* ordine: avviso e programma in cima, poi i riquadri nell'ordine scelto dall'utente (style.order 1…8), poi pulsanti */
+#noBt { order: -1; } #progBar { order: 0; } .timer-btns { order: 20; } .extra { order: 21; }
+.big .val:last-child { margin-top: auto; margin-bottom: auto; }
+
+/* --- Trascinamento dei riquadri (pressione lunga) --- */
+#dash .tile { -webkit-touch-callout: none; touch-action: pan-y; }
+.tile.press { transform: scale(.97); transition: transform .4s ease; }
+.tile.drag-src { opacity: .28; outline: 2px dashed rgba(255, 255, 255, .6); outline-offset: -5px; }
+.tile.drop-target { outline: 3px dashed #fff; outline-offset: -6px; transform: scale(.95); transition: transform .15s ease; }
+.drag-ghost { position: fixed !important; z-index: 90; margin: 0 !important; pointer-events: none; opacity: .95;
+  transform: scale(1.06) rotate(-1.5deg); box-shadow: 0 18px 44px rgba(0, 0, 0, .65) !important; }
+body.dragging, body.dragging * { cursor: grabbing !important; }
+/* modalità "Disponi" */
+body.layout-edit #dash .tile { touch-action: none; cursor: grab; outline: 2px dashed rgba(255, 255, 255, .55); outline-offset: -5px;
+  animation: wiggle .45s ease-in-out infinite alternate; }
+body.layout-edit #dash .tile:nth-of-type(even) { animation-delay: .22s; }
+@keyframes wiggle { from { transform: rotate(-.7deg); } to { transform: rotate(.7deg); } }
+body.layout-edit #dash .tile.sel { animation: none; outline: 3px solid #fff; transform: scale(.95); }
+body.layout-edit #dash .tile.drag-src, body.layout-edit #dash .tile.drop-target { animation: none; }
+#layoutBar { display: none; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 12px);
+  z-index: 85; width: min(94vw, 540px); align-items: center; gap: 8px; padding: 10px 12px; border-radius: 16px;
+  background: rgba(18, 24, 34, .97); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0, 0, 0, .55); }
+body.layout-edit #layoutBar { display: flex; }
+#layoutBar span { flex: 1; font-size: 13px; color: var(--muted); line-height: 1.3; }
+#layoutBar b { color: var(--text); }
+#layoutBar .btn { flex: 0 0 auto; height: 42px; }
+#btnLayout.on { background: var(--green); border-color: var(--green); color: #04210f; }
+#btnLayout2 { display: none; }
+body.layout-edit #toast { bottom: calc(env(safe-area-inset-bottom) + 96px); }
+body.overlay #btnLayout2 { display: grid; }
 
 /* =====================================================================
    CRUSCOTTO COMPATTO con video o scena: schermo in alto, dati sotto, tutto visibile
@@ -225,14 +269,9 @@ body.has-screen #dash { grid-template-columns: repeat(6, 1fr); gap: 6px; }
 body.has-screen .big { min-height: auto; }
 body.has-screen .tile { padding: 7px 9px 7px 13px; }
 body.has-screen .label, body.has-screen .unit { font-size: 11px; }
-body.has-screen #tRpm, body.has-screen #tBpm { grid-column: span 3; }
-body.has-screen #tSpd, body.has-screen #tWatt, body.has-screen #tTime,
-body.has-screen #tDist, body.has-screen #tKcal, body.has-screen #tFat { grid-column: span 2; }
+body.has-screen .tile.big { grid-column: span 3; }          /* i primi due riquadri dell'ordine sono i "grandi" */
+body.has-screen .tile:not(.big) { grid-column: span 2; }
 body.has-screen .timer-btns, body.has-screen .extra { grid-column: 1 / -1; }
-body.has-screen #progBar { order: 0; } body.has-screen #tRpm { order: 1; } body.has-screen #tBpm { order: 2; }
-body.has-screen #tSpd { order: 3; } body.has-screen #tWatt { order: 4; } body.has-screen #tTime { order: 5; }
-body.has-screen #tDist { order: 6; } body.has-screen #tKcal { order: 7; } body.has-screen #tFat { order: 8; }
-body.has-screen .timer-btns { order: 9; } body.has-screen .extra { order: 10; }
 body.has-screen .zone, body.has-screen .tile:not(.big) .zone { font-size: 11px; }
 body.has-screen .zx { display: none; }
 body.has-screen .big .val { font-size: clamp(40px, min(15vw, 8dvh), 110px); }
@@ -276,9 +315,6 @@ body.overlay #tTime.hours .val { font-size: clamp(18px, min(6.2vw, 4dvh), 42px);
 body.overlay #dash > * { grid-column: auto !important; }
 body.overlay #dash > #progBar { grid-column: 1 / -1 !important; padding: 5px 10px 6px 13px; }
 body.overlay .pb-left { font-size: 22px; }
-body.overlay #progBar { order: 0; } body.overlay #tBpm { order: 1; } body.overlay #tSpd { order: 2; } body.overlay #tWatt { order: 3; }
-body.overlay #tRpm { order: 4; } body.overlay #tTime { order: 5; } body.overlay #tKcal { order: 6; }
-body.overlay #tDist { order: 7; } body.overlay #tFat { order: 8; } body.overlay .timer-btns { order: 9; }
 body.overlay .timer-btns { grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
 body.overlay .tbtn { height: 100%; min-height: 40px; font-size: 15px; border-radius: 12px; box-shadow: none; }
 
@@ -471,10 +507,8 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 
 <!-- ======================= INTESTAZIONE ======================= -->
 <header id="header">
-  <div class="seg" id="profileSeg" role="tablist" aria-label="Profilo utente">
-    <button data-p="p1" class="active">Profilo 1</button>
-    <button data-p="p2">Profilo 2</button>
-  </div>
+  <button class="prof-chip" id="btnProfile" aria-label="Profilo utente">👤 <span id="profName">Profilo 1</span> <small>▾</small></button>
+  <button class="icon-btn" id="btnLayout" aria-label="Disponi i riquadri">✥</button>
   <button class="icon-btn" id="btnConnMini" aria-label="Mostra connessioni">🚲❤️</button>
   <button class="icon-btn" id="btnPrograms" aria-label="Programmi di allenamento">🏁</button>
   <button class="icon-btn" id="btnHistory" aria-label="Dashboard e storico">📊</button>
@@ -517,6 +551,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
       <span id="volIcon">🔊</span>
       <input type="range" id="vol" min="0" max="1" step="0.05" value="1" aria-label="Volume">
       <button class="pbtn" id="btnOverlay" aria-label="Sovrimpressione">⛶</button>
+      <button class="pbtn" id="btnLayout2" aria-label="Disponi i riquadri">✥</button>
     </div>
   </div>
 </section>
@@ -534,47 +569,47 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     <div class="pb-track" id="pbTrack"></div>
   </div>
 
-  <div class="tile big" id="tRpm" data-zone="none">
+  <div class="tile big" id="tRpm" data-k="rpm" data-zone="none">
     <div class="t-head"><span class="label">CADENZA</span><span class="unit">RPM</span></div>
     <div class="val" id="vRpm">--</div>
     <div class="zone" id="zRpm">In attesa dati</div>
   </div>
 
-  <div class="tile big" id="tBpm" data-state="none">
+  <div class="tile big" id="tBpm" data-k="bpm" data-state="none">
     <div class="t-head"><span class="label">CUORE</span><span class="unit">BPM</span></div>
     <div class="val" id="vBpm">--</div>
     <div class="zone" id="zBpm">Soglia 146</div>
   </div>
 
-  <div class="tile" id="tSpd">
+  <div class="tile" id="tSpd" data-k="spd">
     <div class="t-head"><span class="label">VELOCITÀ</span><span class="unit" id="uSpd">km/h</span></div>
     <div class="val" id="vSpd">--</div>
   </div>
 
-  <div class="tile" id="tWatt" data-est="0">
+  <div class="tile" id="tWatt" data-k="watt" data-est="0">
     <div class="t-head"><span class="label">POTENZA</span><span class="unit">W</span></div>
     <div class="val" id="vWatt">--</div>
     <div class="zone" id="zWatt">dalla cyclette</div>
   </div>
 
-  <div class="tile" id="tKcal">
+  <div class="tile" id="tKcal" data-k="kcal">
     <div class="t-head"><span class="label">CALORIE</span><span class="unit">kcal</span></div>
     <div class="val" id="vKcal">--</div>
     <div class="zone" id="zKcal">⚙️ inserisci peso ed età</div>
   </div>
 
-  <div class="tile" id="tFat" data-fz="0">
+  <div class="tile" id="tFat" data-k="fat" data-fz="0">
     <div class="t-head"><span class="label">GRASSI</span><span class="unit">g</span></div>
     <div class="val" id="vFat">--</div>
     <div class="zone" id="zFat">stima dai battiti</div>
   </div>
 
-  <div class="tile" id="tDist">
+  <div class="tile" id="tDist" data-k="dist">
     <div class="t-head"><span class="label">DISTANZA</span><span class="unit">km</span></div>
     <div class="val" id="vDist">0,00</div>
   </div>
 
-  <div class="tile" id="tTime">
+  <div class="tile" id="tTime" data-k="time">
     <div class="t-head"><span class="label">TEMPO</span><span class="unit" id="uTime">pronto</span></div>
     <div class="val" id="vTime">00:00</div>
   </div>
@@ -639,6 +674,16 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
         <div class="row"><button class="btn" id="btnCopy">Copia</button><button class="btn primary" id="btnImportText">Importa testo</button></div>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- ======================= PROFILI ======================= -->
+<div class="sheet" id="sheetProfiles" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><h2>👤 Profili</h2><button class="icon-btn" data-close aria-label="Chiudi">✕</button></div>
+    <p class="hint">Crea tutti i profili che vuoi. Ognuno ha i suoi dati fisici, il suo storico, le misure e la disposizione dei riquadri; i programmi di allenamento sono in comune.</p>
+    <div id="profList"></div>
+    <button class="btn primary" id="btnProfNew" style="width:100%;margin-top:10px">＋ Nuovo profilo</button>
   </div>
 </div>
 
@@ -744,6 +789,12 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     </div>
     <p class="hint" id="setAuto"></p>
 
+    <h3>🧩 Disposizione dei riquadri</h3>
+    <p class="hint">Tocca <b>✥</b> in alto (o tieni premuto un riquadro): i riquadri tremolano. <b>Trascinane uno sopra un altro</b>, oppure <b>tocca due riquadri</b> uno dopo l'altro: si scambiano di posto. Poi tocca <b>✓ Fine</b>.
+      I primi due in alto sono quelli grandi. La disposizione normale e quella a tutto schermo (⛶, lì c'è un altro pulsante ✥) si scelgono separatamente e restano salvate per questo profilo.</p>
+    <label class="switch"><input type="checkbox" id="setLockLayout"> <span>Disattiva la pressione lunga sui riquadri (resta solo il pulsante ✥)</span></label>
+    <button class="btn" id="btnLayoutReset" style="width:100%">↺ Ripristina la disposizione predefinita</button>
+
     <h3>⚙️ App</h3>
     <label class="switch"><input type="checkbox" id="setBeep"> <span>Avvisi sonori (BPM sopra soglia e cambi esercizio dei programmi)</span></label>
     <label class="switch"><input type="checkbox" id="setVoice"> <span>Annunci vocali durante i programmi (cambio esercizio)</span></label>
@@ -757,8 +808,16 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 <div class="sheet center" id="confirmBox" hidden>
   <div class="sheet-card">
     <p id="confirmMsg"></p>
+    <input id="confirmInput" class="ask-input" maxlength="16" autocomplete="off" hidden>
     <div class="row"><button class="btn" id="confirmNo">Annulla</button><button class="btn primary" id="confirmYes">OK</button></div>
   </div>
+</div>
+
+<!-- Barra della modalità "Disponi" -->
+<div id="layoutBar" role="dialog" aria-label="Disponi i riquadri">
+  <span>✥ <b>Disponi:</b> trascina un riquadro sopra un altro, oppure tocca due riquadri per scambiarli.</span>
+  <button class="btn" id="btnLayoutDefault" aria-label="Disposizione predefinita">↺</button>
+  <button class="btn primary" id="btnLayoutDone">✓ Fine</button>
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>
@@ -786,7 +845,7 @@ const CONFIG = {
   HR_ZONES: [0.50, 0.60, 0.70, 0.80, 0.90], // limiti inferiori Z1…Z5 in % della FC massima
   FATMAX_BAND: 0.90,                      // "zona brucia-grassi": ossidazione grassi ≥ 90% del massimo stimato
   STORAGE_KEY: 'cyclette-dashboard-v1',
-  APP_VERSION: '1.3',
+  APP_VERSION: '1.5',
 };
 
 /* =========================================================================
@@ -1178,6 +1237,23 @@ function niceMax(v) {
   const p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p;
   return [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].find((s) => m <= s) * p;
 }
+
+/* ---------------- Disposizione dei riquadri ---------------- */
+const TILE_KEYS = { rpm: 'tRpm', bpm: 'tBpm', spd: 'tSpd', watt: 'tWatt', kcal: 'tKcal', fat: 'tFat', dist: 'tDist', time: 'tTime' };
+const DEFAULT_LAYOUT = { normal: ['rpm', 'bpm', 'spd', 'watt', 'kcal', 'fat', 'dist', 'time'],   // cruscotto normale
+                         full: ['bpm', 'spd', 'watt', 'rpm', 'time', 'kcal', 'dist', 'fat'] };   // tutto schermo (⛶)
+/** Ordine valido = contiene esattamente tutti i riquadri, una volta sola */
+function validTileOrder(o) {
+  const keys = Object.keys(TILE_KEYS);
+  return Array.isArray(o) && o.length === keys.length && keys.every((k) => o.includes(k));
+}
+/** Scambia due riquadri e restituisce il nuovo ordine (l'originale non cambia) */
+function swapInOrder(order, a, b) {
+  const o = order.slice(), i = o.indexOf(a), j = o.indexOf(b);
+  if (i < 0 || j < 0 || i === j) return o;
+  [o[i], o[j]] = [o[j], o[i]];
+  return o;
+}
 // === PARSERS END ===
 
 /* =========================================================================
@@ -1232,7 +1308,17 @@ function askConfirm(msg, okLabel = 'OK', danger = false) {
 function closeConfirm(value) {
   el.confirmBox.hidden = true;
   const r = confirmResolve; confirmResolve = null;
-  if (r) r(value);
+  const asking = !el.confirmInput.hidden;
+  el.confirmInput.hidden = true;
+  if (r) r(asking ? (value ? el.confirmInput.value.trim() : null) : value);
+}
+/** Come askConfirm ma con un campo di testo: restituisce il testo scritto, oppure null se annulli */
+function askText(msg, value, okLabel = 'OK') {
+  const pr = askConfirm(msg, okLabel);
+  el.confirmInput.value = value || '';
+  el.confirmInput.hidden = false;
+  setTimeout(() => { el.confirmInput.focus(); el.confirmInput.select(); }, 50);
+  return pr;
 }
 
 /* =========================================================================
@@ -1272,32 +1358,40 @@ const DEFAULT_PROGRAMS = [
 ];
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
+/** Nuovo profilo vuoto (tutti i campi con i valori predefiniti) */
+function makeProfile(name) {
+  return { name, hrThreshold: CONFIG.HR_THRESHOLD_DEFAULT, history: [],
+    sex: 'M', age: null, weight: null, height: null, activity: '', hrRest: null, hrMax: null, vo2max: null,
+    zoneMethod: 'auto',
+    // dati facoltativi da bilancia impedenziometrica
+    fatPct: null, bmrScale: null, muscleKg: null, boneKg: null, waterPct: null, visceral: null,
+    bodyLog: [],        // registro misure corporee nel tempo
+    tileLayout: null };  // disposizione personale dei riquadri
+}
+
 const Store = {
   data: null,
   defaults() {
-    const p = (name) => ({ name, hrThreshold: CONFIG.HR_THRESHOLD_DEFAULT, history: [],
-      sex: 'M', age: null, weight: null, height: null, activity: '', hrRest: null, hrMax: null, vo2max: null,
-      zoneMethod: 'auto',
-      // dati facoltativi da bilancia impedenziometrica
-      fatPct: null, bmrScale: null, muscleKg: null, boneKg: null, waterPct: null, visceral: null,
-      bodyLog: [] });   // registro misure corporee nel tempo
     return { version: 1, activeProfile: 'p1',
              settings: { beep: true, voice: true, scanAll: false, kcalSource: 'auto', scene: null },
              programs: clone(DEFAULT_PROGRAMS), activeProgramId: null,
-             profiles: { p1: p('Profilo 1'), p2: p('Profilo 2') } };
+             profiles: { p1: makeProfile('Profilo 1') } };   // i profili si aggiungono senza limiti
   },
   load() {
     let d = null;
     try { d = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || 'null'); } catch (e) { d = null; }
     const def = this.defaults();
-    if (!d || typeof d !== 'object' || !d.profiles) d = def;
+    if (!d || typeof d !== 'object' || !d.profiles || typeof d.profiles !== 'object') d = def;
     d.settings = Object.assign(def.settings, d.settings || {});
-    for (const k of ['p1', 'p2']) {
-      d.profiles[k] = Object.assign(def.profiles[k], d.profiles[k] || {});
+    for (const k of Object.keys(d.profiles)) {
+      const p = d.profiles[k];
+      if (!p || typeof p !== 'object') { delete d.profiles[k]; continue; }
+      d.profiles[k] = Object.assign(makeProfile(p.name || 'Profilo'), p);
       if (!Array.isArray(d.profiles[k].history)) d.profiles[k].history = [];
       if (!Array.isArray(d.profiles[k].bodyLog)) d.profiles[k].bodyLog = [];
     }
-    if (!d.profiles[d.activeProfile]) d.activeProfile = 'p1';
+    if (!Object.keys(d.profiles).length) d.profiles = def.profiles;
+    if (!d.profiles[d.activeProfile]) d.activeProfile = Object.keys(d.profiles)[0];
     if (!Array.isArray(d.programs)) d.programs = clone(DEFAULT_PROGRAMS);
     if (d.activeProgramId && !d.programs.some((x) => x.id === d.activeProgramId)) d.activeProgramId = null;
     this.data = d;
@@ -1691,7 +1785,7 @@ function renderTimer() {
   el.btnStart.querySelector('.tx').textContent = (!S.running && ms > 0) ? ' Riprendi' : ' Start';
   el.uTime.textContent = S.running ? '● in corso' : (ms > 0 ? 'in pausa' : 'pronto');
   el.uTime.classList.toggle('running', S.running);
-  el.profileSeg.classList.toggle('locked', ms > 0);
+  el.btnProfile.classList.toggle('locked', ms > 0);
   renderProgram();
 }
 
@@ -2136,20 +2230,62 @@ async function checkDraft() {
    10. PROFILI, IMPOSTAZIONI E STORICO
    ========================================================================= */
 function renderProfiles() {
-  el.profileSeg.querySelectorAll('button').forEach((b) => {
-    const k = b.dataset.p;
-    b.textContent = Store.data.profiles[k].name;
-    b.classList.toggle('active', k === Store.data.activeProfile);
-  });
+  el.profName.textContent = Store.profile.name;
+  if (!el.sheetProfiles.hidden) renderProfileList();
 }
 
 function setProfile(key) {
-  if (key === Store.data.activeProfile || !Store.data.profiles[key]) return;
-  if (elapsedMs() > 0) { toast('Termina prima l\'allenamento (Reset) per cambiare profilo', 3500); return; }
+  if (key === Store.data.activeProfile || !Store.data.profiles[key]) return true;
+  if (elapsedMs() > 0) { toast('Termina prima l\'allenamento (Reset) per cambiare profilo', 3500); return false; }
   Store.data.activeProfile = key;
   Store.save();
-  renderProfiles(); renderLive();
+  renderProfiles(); renderLive(); applyTileOrder();
   toast(`Profilo attivo: ${Store.profile.name}`);
+  return true;
+}
+
+/* --- Gestione profili: elenco, nuovo, rinomina, elimina --- */
+function renderProfileList() {
+  const act = Store.data.activeProfile;
+  el.profList.innerHTML = Object.entries(Store.data.profiles).map(([id, p]) => {
+    const last = p.history[0] ? new Date(p.history[0].date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) : null;
+    const info = `${p.history.length} ${p.history.length === 1 ? 'sessione' : 'sessioni'}${last ? ' · ultima ' + last : ''}${p.age && p.weight ? ` · ${p.age} anni, ${fmtDec(p.weight, 1)} kg` : ''}`;
+    return `<div class="pf ${id === act ? 'active' : ''}" data-id="${esc(id)}">
+      <button class="pf-main" data-act="use"><b>${id === act ? '✅ ' : ''}${esc(p.name)}</b><small>${esc(info)}</small></button>
+      <button class="btn" data-act="ren" aria-label="Rinomina">✏️</button>
+      <button class="btn" data-act="del" aria-label="Elimina">🗑</button></div>`;
+  }).join('');
+}
+async function profileAction(act, id) {
+  const p = Store.data.profiles[id];
+  if (!p) return;
+  if (act === 'use') { if (setProfile(id)) el.sheetProfiles.hidden = true; }
+  else if (act === 'ren') {
+    const name = await askText('Nuovo nome del profilo', p.name, 'Salva');
+    if (!name) return;
+    p.name = name.slice(0, 16); Store.save(); renderProfiles(); renderProfileList();
+  } else if (act === 'del') {
+    if (Object.keys(Store.data.profiles).length <= 1) { toast('Deve rimanere almeno un profilo'); return; }
+    if (id === Store.data.activeProfile && elapsedMs() > 0) { toast('Termina prima l\'allenamento (Reset)'); return; }
+    const ok = await askConfirm(`Eliminare il profilo «${p.name}» con tutto il suo storico (${p.history.length} sessioni)? Non si può annullare: se vuoi, prima esporta un backup.`, 'Elimina', true);
+    if (!ok) return;
+    delete Store.data.profiles[id];
+    if (Store.data.activeProfile === id) Store.data.activeProfile = Object.keys(Store.data.profiles)[0];
+    Store.save(); renderProfiles(); renderLive(); applyTileOrder(); renderProfileList();
+    toast('Profilo eliminato');
+  }
+}
+async function createProfile() {
+  if (elapsedMs() > 0) { toast('Termina prima l\'allenamento (Reset) per creare un profilo', 3500); return; }
+  const name = await askText('Nome del nuovo profilo', '', 'Crea');
+  if (!name) return;
+  const id = 'p' + Date.now().toString(36);
+  Store.data.profiles[id] = makeProfile(name.slice(0, 16));
+  Store.save();
+  setProfile(id);
+  el.sheetProfiles.hidden = true;
+  openSettings();                                        // subito i dati fisici del nuovo profilo
+  toast('Profilo creato: inserisci età, peso e gli altri dati', 4000);
 }
 
 /* Campi numerici del profilo: [chiave, id campo, min, max, nome, intero] */
@@ -2181,6 +2317,7 @@ function openSettings() {
   el.setKcalSrc.value = Store.data.settings.kcalSource || 'auto';
   el.setBeep.checked = !!Store.data.settings.beep;
   el.setVoice.checked = Store.data.settings.voice !== false;
+  el.setLockLayout.checked = !!Store.data.settings.lockLayout;
   el.setScanAll.checked = !!Store.data.settings.scanAll;
   el.setInfo.textContent = `Calorie, grassi, VO₂max e zone sono stime calcolate con formule scientifiche validate ` +
     `(errore tipico ±15–25%), non misure di laboratorio. ` +
@@ -2274,13 +2411,14 @@ function saveSettings() {
     if (d[key] != null && !(d[key] >= lo && d[key] <= hi)) { toast(`${label} non valido (${lo}–${hi})`); return; }
   }
   if (hrMaxFor(d) && hrMaxFor(d) - hrRestFor(d) < 30) { toast('FC massima troppo vicina alla FC a riposo'); return; }
-  p.name = el.setName.value.trim().slice(0, 16) || (Store.data.activeProfile === 'p1' ? 'Profilo 1' : 'Profilo 2');
+  p.name = el.setName.value.trim().slice(0, 16) || p.name || 'Profilo';
   p.hrThreshold = thr;
   Object.assign(p, d);
   logBody(p);
   Store.data.settings.kcalSource = el.setKcalSrc.value;
   Store.data.settings.beep = el.setBeep.checked;
   Store.data.settings.voice = el.setVoice.checked;
+  Store.data.settings.lockLayout = el.setLockLayout.checked;
   Store.data.settings.scanAll = el.setScanAll.checked;
   Store.save();
   renderProfiles(); renderLive();
@@ -2621,10 +2759,15 @@ function importBackup(text) {
   let d;
   try { d = JSON.parse(text); } catch (e) { toast('Backup non valido'); return; }
   if (!d || !d.profiles) { toast('Backup non riconosciuto'); return; }
-  let added = 0;
-  for (const k of ['p1', 'p2']) {
+  let added = 0, newProf = 0;
+  for (const k of Object.keys(d.profiles)) {
     const src = d.profiles[k];
-    if (!src || !Array.isArray(src.history)) continue;
+    if (!src || typeof src !== 'object' || !Array.isArray(src.history)) continue;
+    if (!Store.data.profiles[k]) {                      // profilo che qui non esiste: lo aggiungo intero
+      Store.data.profiles[k] = Object.assign(makeProfile(src.name || 'Profilo'), clone(src));
+      newProf++; added += src.history.length;
+      continue;
+    }
     const dst = Store.data.profiles[k];
     const ids = new Set(dst.history.map((s) => s.id));
     for (const s of src.history) if (s && s.id && !ids.has(s.id)) { dst.history.push(s); added++; }
@@ -2637,8 +2780,8 @@ function importBackup(text) {
     }
   }
   Store.save();
-  renderHistory();
-  toast(`Importate ${added} sessioni`);
+  renderProfiles(); renderHistory();
+  toast(`Importate ${added} sessioni` + (newProf ? ` e ${newProf} profili nuovi` : ''));
 }
 
 /* =========================================================================
@@ -2810,6 +2953,7 @@ function bindPlayer() {
   el.btnOverlay.addEventListener('click', () => {
     const on = document.body.classList.toggle('overlay');
     el.btnOverlay.textContent = on ? '✕' : '⛶';
+    applyTileOrder();                                  // disposizione "tutto schermo" o "normale"
   });
 }
 
@@ -2842,7 +2986,7 @@ function updateScreenState() {
   const b = document.body.classList;
   b.toggle('has-video', b.contains('has-media') && !b.contains('audio-only'));
   b.toggle('has-screen', b.contains('scene-on') || b.contains('has-media'));
-  if (!b.contains('has-screen') && b.contains('overlay')) { b.remove('overlay'); el.btnOverlay.textContent = '⛶'; }
+  if (!b.contains('has-screen') && b.contains('overlay')) { b.remove('overlay'); el.btnOverlay.textContent = '⛶'; applyTileOrder(); }
   if (b.contains('scene-on') && !b.contains('has-video')) startSceneLoop(); else stopSceneLoop();
 }
 function setScene(id) {
@@ -3035,6 +3179,139 @@ function renderSceneList() {
 }
 
 /* =========================================================================
+   12c. RIQUADRI RIPOSIZIONABILI — pressione lunga + trascinamento per scambiarli
+   Funziona con il dito (iPhone/Android) e con il mouse. Disposizione salvata per profilo,
+   separata per cruscotto normale e tutto schermo.
+   ========================================================================= */
+const layoutMode = () => (document.body.classList.contains('overlay') ? 'full' : 'normal');
+function tileOrder(mode) {
+  const L = Store.profile.tileLayout;
+  return L && validTileOrder(L[mode]) ? L[mode].slice() : DEFAULT_LAYOUT[mode].slice();
+}
+function applyTileOrder() {
+  tileOrder(layoutMode()).forEach((k, i) => {
+    const t = document.getElementById(TILE_KEYS[k]);
+    t.style.order = i + 1;
+    t.classList.toggle('big', i < 2);
+  });
+}
+function swapTiles(a, b) {
+  const mode = layoutMode(), p = Store.profile;
+  p.tileLayout = Object.assign({}, p.tileLayout, { [mode]: swapInOrder(tileOrder(mode), a, b) });
+  Store.save();
+  applyTileOrder();
+}
+
+const drag = { timer: 0, pending: false, active: false, src: null, ghost: null, target: null, x0: 0, y0: 0, dx: 0, dy: 0, lastTouch: 0 };
+let layoutEdit = false, selTile = null;
+
+/** Modalità "Disponi": i riquadri tremolano, si trascinano subito (senza pressione lunga) o si scambiano toccandone due */
+function setLayoutEdit(on) {
+  layoutEdit = !!on;
+  document.body.classList.toggle('layout-edit', layoutEdit);
+  if (selTile) { selTile.classList.remove('sel'); selTile = null; }
+  el.btnLayout.classList.toggle('on', layoutEdit);
+  if (!layoutEdit) dragCancel();
+}
+function tapSelect(t) {
+  if (!selTile) { selTile = t; t.classList.add('sel'); vibrate(10); return; }
+  if (selTile === t) { t.classList.remove('sel'); selTile = null; return; }
+  const a = selTile.dataset.k, b = t.dataset.k;
+  selTile.classList.remove('sel'); selTile = null;
+  swapTiles(a, b); vibrate(15);
+}
+
+function dragPrepare(tile, x, y) {
+  dragCancel();
+  Object.assign(drag, { src: tile, x0: x, y0: y });
+  if (layoutEdit) { drag.pending = true; return; }          // in "Disponi" il trascinamento parte al primo movimento
+  if (Store.data.settings.lockLayout) { drag.src = null; return; }
+  tile.classList.add('press');
+  drag.timer = setTimeout(() => { setLayoutEdit(true); dragActivate(); }, 450);   // pressione lunga = entra in "Disponi"
+}
+function dragActivate() {
+  drag.timer = 0; drag.pending = false;
+  const t = drag.src;
+  if (!t) return;
+  t.classList.remove('press', 'sel');
+  if (selTile === t) selTile = null;
+  const r = t.getBoundingClientRect(), cs = getComputedStyle(t);
+  const g = t.cloneNode(true);
+  g.removeAttribute('id'); g.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'));
+  g.classList.remove('sel', 'press');
+  g.classList.add('drag-ghost');
+  g.style.setProperty('--acc', cs.getPropertyValue('--acc'));
+  Object.assign(g.style, { width: r.width + 'px', height: r.height + 'px', left: r.left + 'px', top: r.top + 'px',
+    background: cs.background, borderColor: cs.borderColor, padding: cs.padding });
+  g.querySelectorAll('.val').forEach((v, n) => { v.style.fontSize = getComputedStyle(t.querySelectorAll('.val')[n]).fontSize; });
+  document.body.appendChild(g);
+  Object.assign(drag, { ghost: g, active: true, dx: drag.x0 - r.left, dy: drag.y0 - r.top });
+  t.classList.add('drag-src');
+  document.body.classList.add('dragging');
+  vibrate(25);
+}
+function dragMove(x, y, e) {
+  const moved = Math.abs(x - drag.x0) > 6 || Math.abs(y - drag.y0) > 6;
+  if (drag.pending) {
+    if (e.cancelable) e.preventDefault();
+    if (!moved) return;
+    dragActivate();
+  }
+  if (drag.timer && (Math.abs(x - drag.x0) > 10 || Math.abs(y - drag.y0) > 10)) { dragCancel(); return; }   // è uno scorrimento
+  if (!drag.active) return;
+  if (e.cancelable) e.preventDefault();
+  drag.ghost.style.left = x - drag.dx + 'px';
+  drag.ghost.style.top = y - drag.dy + 'px';
+  const under = document.elementFromPoint(x, y);
+  const tgt = under && under.closest('#dash .tile');
+  if (drag.target && drag.target !== tgt) drag.target.classList.remove('drop-target');
+  drag.target = tgt && tgt !== drag.src ? tgt : null;
+  if (drag.target) drag.target.classList.add('drop-target');
+  const dr = el.dash.getBoundingClientRect();                  // scorrimento automatico ai bordi
+  if (y < dr.top + 36) el.dash.scrollTop -= 12; else if (y > dr.bottom - 36) el.dash.scrollTop += 12;
+}
+function dragEnd() {
+  if (drag.pending && !drag.active) { const t = drag.src; dragCancel(); tapSelect(t); return; }   // tocco senza movimento
+  if (drag.active && drag.target) {
+    const a = drag.src.dataset.k, b = drag.target.dataset.k;
+    dragCancel();
+    swapTiles(a, b);
+    vibrate(15);
+    return;
+  }
+  dragCancel();
+}
+function dragCancel() {
+  clearTimeout(drag.timer); drag.timer = 0; drag.pending = false;
+  if (drag.ghost) drag.ghost.remove();
+  if (drag.src) drag.src.classList.remove('press', 'drag-src');
+  if (drag.target) drag.target.classList.remove('drop-target');
+  document.body.classList.remove('dragging');
+  Object.assign(drag, { active: false, src: null, ghost: null, target: null });
+}
+function bindTileDrag() {
+  Object.values(TILE_KEYS).forEach((id) => {
+    const t = document.getElementById(id);
+    t.addEventListener('touchstart', (e) => {
+      drag.lastTouch = Date.now();
+      if (e.touches.length !== 1) { dragCancel(); return; }
+      if (layoutEdit && e.cancelable) e.preventDefault();      // in "Disponi" niente gesti di sistema (lente, menu, scorrimento)
+      dragPrepare(t, e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: false });
+    t.addEventListener('mousedown', (e) => {
+      if (e.button === 0 && Date.now() - drag.lastTouch > 800) { e.preventDefault(); dragPrepare(t, e.clientX, e.clientY); }
+    });
+    t.addEventListener('contextmenu', (e) => e.preventDefault());   // niente menu della pressione lunga
+  });
+  document.addEventListener('touchmove', (e) => { if (drag.src) dragMove(e.touches[0].clientX, e.touches[0].clientY, e); }, { passive: false });
+  document.addEventListener('touchend', () => { if (drag.src) dragEnd(); });
+  document.addEventListener('touchcancel', dragCancel);
+  document.addEventListener('mousemove', (e) => { if (drag.src && Date.now() - drag.lastTouch > 800) dragMove(e.clientX, e.clientY, e); });
+  document.addEventListener('mouseup', () => { if (drag.src && Date.now() - drag.lastTouch > 800) dragEnd(); });
+  window.addEventListener('blur', dragCancel);
+}
+
+/* =========================================================================
    13. SCHERMO SEMPRE ACCESO (se il browser lo consente)
    ========================================================================= */
 let wakeLock = null;
@@ -3089,7 +3366,7 @@ function startDemo() {
    ========================================================================= */
 function init() {
   [
-    'profileSeg', 'btnHistory', 'btnSettings', 'noBt', 'btnBike', 'btnHr',
+    'btnProfile', 'profName', 'btnLayout', 'sheetProfiles', 'profList', 'btnProfNew', 'confirmInput', 'btnHistory', 'btnSettings', 'noBt', 'btnBike', 'btnHr',
     'media', 'audioName', 'btnPrev', 'btnPlay', 'btnNext', 'tCur', 'seek', 'tDur', 'fileInput', 'volIcon', 'vol', 'btnOverlay', 'trackName',
     'tRpm', 'vRpm', 'zRpm', 'tBpm', 'vBpm', 'zBpm', 'vSpd', 'uSpd', 'vDist', 'tTime', 'vTime', 'uTime',
     'vKcal', 'zKcal', 'tFat', 'vFat', 'zFat',
@@ -3098,7 +3375,7 @@ function init() {
     'bodySummary', 'zoneTable', 'bodyLogList', 'btnStart', 'btnPause', 'btnReset', 'extra',
     'sheetHistory', 'histProfile', 'histTotals', 'histList', 'btnExport', 'importFile', 'btnShowText', 'backupBox', 'backupText', 'btnCopy', 'btnImportText',
     'sheetSettings', 'setTitle', 'setName', 'setHr', 'setBeep', 'setScanAll', 'btnSaveSettings', 'setInfo',
-    'confirmBox', 'confirmMsg', 'confirmYes', 'confirmNo', 'toast', 'setVoice', 'dash',
+    'confirmBox', 'confirmMsg', 'confirmYes', 'confirmNo', 'toast', 'setVoice', 'dash', 'setLockLayout', 'btnLayoutReset', 'btnLayout2', 'btnLayoutDone', 'btnLayoutDefault',
     'progBar', 'pbStep', 'pbLeft', 'pbTarget', 'pbStatus', 'pbNext', 'pbTrack', 'tWatt', 'vWatt', 'zWatt',
     'scene', 'btnScenes', 'sheetScenes', 'sceneList', 'btnSceneOff',
     'btnPrograms', 'sheetPrograms', 'progList', 'btnProgFree', 'btnProgNew', 'btnProgReset',
@@ -3108,6 +3385,8 @@ function init() {
 
   Store.load();
   attachProgram(Store.data.activeProgramId, false);
+  applyTileOrder();
+  bindTileDrag();
 
   // --- Dispositivi Bluetooth ---
   bikeLink = new BleLink({
@@ -3136,7 +3415,13 @@ function init() {
   el.btnReset.addEventListener('click', resetTimer);
 
   // --- Profili, storico, impostazioni ---
-  el.profileSeg.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setProfile(b.dataset.p); });
+  el.btnProfile.addEventListener('click', () => { renderProfileList(); el.sheetProfiles.hidden = false; });
+  el.profList.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-act]'), row = e.target.closest('[data-id]');
+    if (b && row) profileAction(b.dataset.act, row.dataset.id);
+  });
+  el.btnProfNew.addEventListener('click', createProfile);
+  el.confirmInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') closeConfirm(true); });
   // --- Dashboard ---
   el.btnHistory.addEventListener('click', () => {
     el.backupBox.hidden = true; el.sheetHistory.hidden = false;
@@ -3176,6 +3461,17 @@ function init() {
   el.btnSceneOff.addEventListener('click', () => { setScene(null); el.sheetScenes.hidden = true; });
   el.btnSettings.addEventListener('click', openSettings);
   el.btnSaveSettings.addEventListener('click', saveSettings);
+  el.btnLayout.addEventListener('click', () => setLayoutEdit(!layoutEdit));
+  el.btnLayout2.addEventListener('click', () => setLayoutEdit(!layoutEdit));
+  el.btnLayoutDone.addEventListener('click', () => { setLayoutEdit(false); toast('Disposizione salvata'); });
+  el.btnLayoutDefault.addEventListener('click', async () => {
+    if (!(await askConfirm(`Riportare i riquadri nella disposizione predefinita (${layoutMode() === 'full' ? 'tutto schermo' : 'normale'})?`, 'Ripristina'))) return;
+    const p = Store.profile; p.tileLayout = Object.assign({}, p.tileLayout, { [layoutMode()]: null }); Store.save(); applyTileOrder();
+  });
+  el.btnLayoutReset.addEventListener('click', async () => {
+    if (!(await askConfirm('Riportare i riquadri nella disposizione predefinita (normale e tutto schermo)?', 'Ripristina'))) return;
+    Store.profile.tileLayout = null; Store.save(); applyTileOrder(); toast('Disposizione predefinita ripristinata');
+  });
   el.sheetSettings.addEventListener('input', updateSummary);
   el.sheetSettings.addEventListener('change', updateSummary);
   el.histList.addEventListener('click', (e) => {
@@ -3229,6 +3525,11 @@ function init() {
 
   if (/demo/i.test(location.hash + location.search)) { el.noBt.hidden = true; startDemo(); }
   else checkDraft();
+  if (Store.data.settings.hintVer !== '1.5') { Store.data.settings.hintVer = '1.5'; Store.data.settings.hintDrag = false; }
+  if (!Store.data.settings.hintDrag) {                 // suggerimento una sola volta
+    setTimeout(() => toast('Novità: tocca ✥ per spostare i riquadri e 👤 per gestire i profili', 5000), 2500);
+    Store.data.settings.hintDrag = true; Store.save();
+  }
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
