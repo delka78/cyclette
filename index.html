@@ -186,6 +186,9 @@ body:not(.has-screen) .lb-short { display: none; }
 #tRpm[data-zone="low"], #tRpm[data-zone="idle"], #tRpm[data-zone="none"] { --acc: #64748b; }
 #tRpm[data-zone="low"] .val, #tRpm[data-zone="idle"] .val { color: #cbd5e1; }
 
+/* il riquadro dei battiti prende il colore della zona */
+#tBpm[data-z="1"] { --acc: #8796a8; } #tBpm[data-z="2"] { --acc: #0a84ff; } #tBpm[data-z="3"] { --acc: #2ee86b; }
+#tBpm[data-z="4"] { --acc: #ffb020; } #tBpm[data-z="5"] { --acc: #ff3b30; }
 /* --- Stato frequenza cardiaca --- */
 #tBpm[data-state="near"] { --acc: var(--amber); }
 #tBpm[data-state="alert"] { --acc: var(--red); border-color: var(--red); animation: hrpulse .9s ease-in-out infinite; }
@@ -242,6 +245,23 @@ body.prog-on #progBar { display: block; }
 body.prog-on .big { min-height: auto; }
 /* ordine: avviso e programma in cima, poi i riquadri nell'ordine scelto dall'utente (style.order 1…8), poi pulsanti */
 #noBt { order: -1; } #progBar { order: 0; } .timer-btns { order: 20; } .extra { order: 21; }
+/* --- Indicatore zona: sotto i due riquadri grandi (stesso "order" del secondo, ma dopo nel codice) --- */
+#zoneBar { --zc: #64748b; order: 2; grid-column: 1 / -1; border-radius: var(--r); padding: 8px 10px 9px 12px;
+  background: linear-gradient(155deg, color-mix(in srgb, var(--zc) 30%, #121923), color-mix(in srgb, var(--zc) 12%, #111720));
+  border: 1.5px solid color-mix(in srgb, var(--zc) 60%, transparent); transition: background .4s, border-color .4s; }
+#zoneBar[hidden] { display: none; }
+.zb-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; min-width: 0; }
+.zb-name { font-weight: 900; font-size: 17px; letter-spacing: .01em; white-space: nowrap; color: color-mix(in srgb, var(--zc) 30%, #fff); }
+.zb-info { margin-left: auto; font-size: 12.5px; font-weight: 700; color: rgba(255, 255, 255, .78); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; min-width: 0; font-variant-numeric: tabular-nums; }
+.zb-track { position: relative; display: flex; gap: 3px; height: 20px; }
+.zs { flex: 1; border-radius: 6px; opacity: .32; display: grid; place-items: center; overflow: hidden; transition: opacity .3s; }
+.zs.on { opacity: 1; }
+.zs i { font-style: normal; font-size: 10px; font-weight: 900; color: #0b0f14; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+.zs.z1 { background: #8796a8; }
+.zb-mark { position: absolute; top: -5px; bottom: -5px; width: 5px; margin-left: -2.5px; border-radius: 3px; background: #fff;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, .7), 0 0 8px rgba(255, 255, 255, .6); transition: left .6s ease; }
+
 .big .val:last-child { margin-top: auto; margin-bottom: auto; }
 
 /* --- Trascinamento dei riquadri (pressione lunga) --- */
@@ -346,6 +366,16 @@ body.overlay #dash > * { grid-column: auto !important; }
 body.overlay #dash > #progBar { grid-column: 1 / -1 !important; padding: 5px 10px 6px 13px; }
 body.overlay .pb-left { font-size: 22px; }
 body.overlay .timer-btns { display: none !important; }
+body.overlay #zoneBar { order: 50; grid-column: 1 / -1 !important; display: flex; align-items: center; gap: 10px; padding: 5px 10px;
+  border-radius: 12px; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--zc) 32%, rgba(10, 13, 19, .74)); }
+body.overlay #zoneBar[hidden] { display: none; }
+body.overlay .zb-head { margin: 0; flex: 0 1 auto; gap: 8px; }
+body.overlay .zb-name { font-size: 14px; }
+body.overlay .zb-info { font-size: 11.5px; }
+@media (orientation: portrait) { body.overlay .zb-rng { display: none; } }
+body.overlay .zb-track { flex: 1 1 40%; height: 12px; min-width: 90px; }
+body.overlay .zs i { display: none; }
 /* Start / Pausa / Reset in basso, insieme agli altri comandi */
 .otb { display: none; }
 body.overlay .otb:not([hidden]) { display: grid; }
@@ -443,6 +473,9 @@ textarea { width: 100%; min-height: 140px; font: 12px/1.4 ui-monospace, Menlo, m
 .zt-row b { font-variant-numeric: tabular-nums; }
 .zt-badge { font-size: 12px; font-weight: 800; color: #0b0f14; border-radius: 6px; text-align: center; padding: 3px 0; }
 .zt-foot { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.zt-row small { color: var(--muted); font-size: 12px; }
+.linkbtn { background: none; border: 0; color: var(--blue); text-decoration: underline; font: inherit; padding: 0; }
+#setHr:disabled { opacity: .75; }
 .dl { color: var(--muted); font-size: 11px; font-weight: 600; }
 
 /* --- Dashboard a tutto schermo --- */
@@ -678,6 +711,15 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     <div class="val" id="vTime">00:00</div>
   </div>
 
+  <!-- Zona di allenamento in questo momento -->
+  <div class="wide" id="zoneBar" hidden>
+    <div class="zb-head"><span class="zb-name" id="zbName"></span><span class="zb-info"><span id="zbInfo"></span><span class="zb-rng" id="zbRng"></span></span></div>
+    <div class="zb-track" id="zbTrack">
+      <span class="zs z1"><i>Recupero</i></span><span class="zs z2"><i>Grassi</i></span><span class="zs z3"><i>Cardio</i></span>
+      <span class="zs z4"><i>Soglia</i></span><span class="zs z5"><i>Max</i></span><b class="zb-mark" id="zbMark"></b>
+    </div>
+  </div>
+
   <div class="timer-btns wide">
     <button class="tbtn start" id="btnStart"><span class="ic">▶</span><span class="tx"> Start</span></button>
     <button class="tbtn pause" id="btnPause" disabled><span class="ic">❚❚</span><span class="tx"> Pausa</span></button>
@@ -829,16 +871,24 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 
     <h3>❤️ Cuore</h3>
     <div class="fields2">
-      <label class="field">FC a riposo <input id="setHrRest" type="number" inputmode="numeric" min="30" max="110" placeholder="auto"></label>
+      <label class="field">FC a riposo <input id="setHrRest" type="number" inputmode="numeric" min="30" max="110" placeholder="facoltativa"></label>
       <label class="field">FC massima <input id="setHrMax" type="number" inputmode="numeric" min="120" max="230" placeholder="auto"></label>
-      <label class="field">Soglia avviso (BPM) <input id="setHr" type="number" inputmode="numeric" min="80" max="220"></label>
+      <label class="field">FC di soglia (da test) <input id="setLthr" type="number" inputmode="numeric" min="100" max="210" placeholder="facoltativa"></label>
       <label class="field">Calcolo zone
         <select id="setZoneMethod">
           <option value="auto">Automatico</option>
-          <option value="pct">% FC massima</option>
-          <option value="hrr">Riserva cardiaca (Karvonen)</option>
+          <option value="pct">% FC max (Polar)</option>
+          <option value="hrr">Riserva (Karvonen)</option>
+          <option value="lthr">Soglia da test</option>
         </select></label>
+      <label class="field">Soglia d'allarme
+        <select id="setAlarmMode">
+          <option value="auto">Automatica</option>
+          <option value="manual">Scelta da me</option>
+        </select></label>
+      <label class="field">Allarme oltre (bpm) <input id="setHr" type="number" inputmode="numeric" min="80" max="220"></label>
     </div>
+    <p class="hint" id="hrInfo"></p>
     <div id="zoneTable"></div>
 
     <h3>⚖️ Bilancia impedenziometrica <span class="opt">facoltativo</span></h3>
@@ -926,10 +976,9 @@ const CONFIG = {
   RECONNECT_ATTEMPTS: 3,                  // tentativi di riconnessione automatica
   FTMS_START_FALLBACK_MS: 4000,           // se la cyclette FTMS tace, le si invia "Start"
   BEEP_REPEAT_MS: 30000,                  // ripeti il beep ogni 30 s finché sei sopra soglia
-  HR_ZONES: [0.50, 0.60, 0.70, 0.80, 0.90], // limiti inferiori Z1…Z5 in % della FC massima
   FATMAX_BAND: 0.90,                      // "zona brucia-grassi": ossidazione grassi ≥ 90% del massimo stimato
   STORAGE_KEY: 'cyclette-dashboard-v1',
-  APP_VERSION: '1.7',
+  APP_VERSION: '1.8',
 };
 
 /* =========================================================================
@@ -1072,9 +1121,14 @@ function parseHeartRate(dv) {
 
    A) BMI = peso / altezza² → categoria OMS (sottopeso / normopeso / sovrappeso / obesità).
       % grasso → fasce sane per età e sesso (Gallagher et al., Am J Clin Nutr 2000).
-   B) FC max: inserita, altrimenti Tanaka (uomo 208 − 0,7×età) / Gulati (donna 206 − 0,88×età).
-      Zone Z1–Z5 al 50/60/70/80/90%: della FC max, oppure della riserva cardiaca (Karvonen)
-      quando la FC a riposo è misurata.
+   B) FC max: inserita (da test) › la più alta registrata dalla fascia (tenuta ≥ 8 s) se supera la stima ›
+      stima di Tanaka 2001: 208 − 0,7 × età, uguale per uomini e donne (meta-analisi di 351 studi,
+      18.712 persone; errore tipico ±10 bpm). Gulati (donne) è stata abbandonata: sottostima di ~8 bpm.
+      Zone Z1–Z5 (come Polar): 50/60/70/80/90% della FC max; con la FC a riposo misurata, riserva cardiaca
+      (Karvonen) 20/35/50/67/85%, cioè le stesse zone per una persona media (ACSM: 64% FC max ≈ 40% riserva,
+      77% ≈ 60%) ma adattate alla forma fisica; con la FC di soglia da test, zone di Friel per il ciclismo.
+      Soglia d'allarme automatica = inizio Z5 = intensità "molto alta" delle linee guida ESC 2020
+      (> 90% FC max, > 85% della riserva).
    C) VO₂max: inserito; altrimenti equazioni senza test di Jackson et al. 1990
       (attività + età + sesso + % grasso, oppure BMI se manca il grasso), mediato con
       Uth (15,3 × FC max / FC riposo) se la FC a riposo è misurata.
@@ -1123,11 +1177,14 @@ function fatClass(pct, age, sex) {
   return { key: 'obese', label: 'Grasso molto alto', healthy };
 }
 
-/** FC massima: valore inserito, altrimenti Tanaka (uomo) / Gulati (donna) */
+/** FC massima stimata dall'età: Tanaka 2001 (208 − 0,7 × età), valida per uomini e donne */
+function hrMaxPredicted(p) { return p && p.age > 0 ? Math.round(208 - 0.7 * p.age) : null; }
+/** FC massima usata: inserita › registrata dalla fascia (se più alta della stima) › stimata */
 function hrMaxFor(p) {
   if (p && p.hrMax > 0) return p.hrMax;
-  if (!p || !(p.age > 0)) return null;
-  return Math.round(p.sex === 'F' ? 206 - 0.88 * p.age : 208 - 0.7 * p.age);
+  const pr = hrMaxPredicted(p);
+  if (!pr) return null;
+  return p.hrMaxObs > pr ? p.hrMaxObs : pr;
 }
 function hrRestFor(p) { return p && p.hrRest > 0 ? p.hrRest : (p && p.sex === 'F' ? 70 : 65); }
 
@@ -1199,26 +1256,58 @@ function fatMaxOf(p) {
   return best;
 }
 
-/** Metodo zone: Karvonen se la FC a riposo è misurata (o scelto), altrimenti % FC max */
+/** Limiti inferiori delle 5 zone, per metodo:
+ *  pct  = % FC max (Polar: 50–60–70–80–90%)
+ *  hrr  = % riserva cardiaca (Karvonen), equivalenti alle precedenti per una persona media, Z5 = ESC "molto alta"
+ *  lthr = % FC di soglia da test (Friel, ciclismo: Z2 81%, Z3 90%, Z4 94%, Z5 100%; Z1 da 65%) */
+const ZONE_BOUNDS = { pct: [0.50, 0.60, 0.70, 0.80, 0.90], hrr: [0.20, 0.35, 0.50, 0.67, 0.85], lthr: [0.65, 0.81, 0.90, 0.94, 1.00] };
+/** Metodo zone: automatico = soglia da test se c'è › riserva cardiaca se la FC a riposo è misurata › % FC max */
 function zoneMethodFor(p) {
   const m = (p && p.zoneMethod) || 'auto';
-  if (m === 'auto') return p && p.hrRest > 0 ? 'hrr' : 'pct';
-  return m;
+  if (m === 'lthr') return p.lthr > 0 ? 'lthr' : 'pct';
+  if (m === 'hrr' || m === 'pct') return m;
+  if (p && p.lthr > 0) return 'lthr';
+  return p && p.hrRest > 0 ? 'hrr' : 'pct';
 }
 /** Limiti inferiori in bpm delle zone Z1…Z5 */
-function zoneLowsBpm(p, bounds) {
+function zoneLowsBpm(p) {
   const hrMax = hrMaxFor(p);
   if (!hrMax) return null;
-  const rest = hrRestFor(p);
-  return bounds.map((b) => Math.round(zoneMethodFor(p) === 'hrr' ? rest + b * (hrMax - rest) : b * hrMax));
+  const m = zoneMethodFor(p), rest = hrRestFor(p);
+  return ZONE_BOUNDS[m].map((f) => Math.round(m === 'hrr' ? rest + f * (hrMax - rest) : f * (m === 'lthr' ? p.lthr : hrMax)));
 }
 /** Zona cardio 1…5 (0 = sotto Z1) */
-function hrZoneFor(hr, p, bounds) {
-  const lows = zoneLowsBpm(p, bounds);
+function hrZoneFor(hr, p) {
+  const lows = zoneLowsBpm(p);
   if (!lows || !(hr > 0)) return 0;
   let z = 0;
   lows.forEach((lo, i) => { if (hr >= lo) z = i + 1; });
   return z;
+}
+/** Posizione 0…1 sulla scala delle 5 zone (ogni zona occupa 1/5), per l'indicatore */
+function zonePosition(hr, p) {
+  const lows = zoneLowsBpm(p), max = hrMaxFor(p);
+  if (!lows || !(hr > 0)) return null;
+  if (hr < lows[0]) return 0;
+  for (let i = 0; i < 5; i++) {
+    const lo = lows[i], hi = i < 4 ? lows[i + 1] : Math.max(max, lo + 1);
+    if (hr < hi || i === 4) return Math.min(1, (i + clamp((hr - lo) / Math.max(1, hi - lo), 0, 1)) / 5);
+  }
+  return 1;
+}
+/** Soglia d'allarme automatica: ingresso nella zona 5, cioè intensità "molto alta" per le linee guida
+ *  ESC 2020 (> 90% della FC max, oppure > 85% della riserva cardiaca se la FC a riposo è misurata) */
+function hrAlarmAuto(p) {
+  const hrMax = hrMaxFor(p);
+  if (!hrMax) return null;
+  const m = zoneMethodFor(p);
+  if (m === 'pct' || m === 'hrr') return zoneLowsBpm(p)[4];
+  return p.hrRest > 0 ? Math.round(p.hrRest + 0.85 * (hrMax - p.hrRest)) : Math.round(0.9 * hrMax);
+}
+/** Soglia d'allarme in uso: quella scelta a mano, altrimenti automatica */
+function hrAlarmFor(p, fallback = 146) {
+  if (p && p.hrAlarm === 'manual' && p.hrThreshold > 0) return p.hrThreshold;
+  return hrAlarmAuto(p) || (p && p.hrThreshold) || fallback;
 }
 
 /** Potenza stimata dai battiti (se la cyclette non invia i watt): VO₂ dal modello → equazione ACSM invertita */
@@ -1472,6 +1561,9 @@ function makeProfile(name) {
   return { name, hrThreshold: CONFIG.HR_THRESHOLD_DEFAULT, history: [],
     sex: 'M', age: null, weight: null, height: null, activity: '', hrRest: null, hrMax: null, vo2max: null,
     zoneMethod: 'auto',
+    hrAlarm: 'auto',    // soglia d'allarme: 'auto' (linee guida) o 'manual' (hrThreshold, es. indicata dal medico)
+    lthr: null,         // FC di soglia da test (facoltativa)
+    hrMaxObs: null, hrMaxObsDate: null,   // FC più alta registrata dalla fascia (tenuta ≥ 8 s)
     // dati facoltativi da bilancia impedenziometrica
     fatPct: null, bmrScale: null, muscleKg: null, boneKg: null, waterPct: null, visceral: null,
     bodyLog: [],        // registro misure corporee nel tempo
@@ -1534,6 +1626,7 @@ function newSession() {
     secAbove: 0, secIdeal: 0, secForce: 0,
     kcal: 0, fatG: 0, choG: 0, kcalSrc: null,
     secZ: [0, 0, 0, 0, 0],        // secondi in zona cardio Z1…Z5
+    hrPeak: 0,                    // FC più alta tenuta per almeno 8 secondi (filtra i disturbi della fascia)
     powMax: 0, kj: 0, powEst: false,
     prog: null,                   // programma in corso: { id, name, offsetMs, idx, done, secT, secIn, beepSec }
     trace: { iv: 5, hr: [], spd: [], rpm: [], pw: [] },   // campioni ogni 5 s per i grafici della sessione
@@ -1787,7 +1880,7 @@ function currentMetabolic() {
 
 let fatMaxCache = { key: '', val: null };
 function fatMaxFor(p) {
-  const key = [p.weight, p.age, p.sex, p.height, p.activity, p.hrRest, p.hrMax, p.vo2max, p.fatPct, p.bmrScale].join('|');
+  const key = [p.weight, p.age, p.sex, p.height, p.activity, p.hrRest, hrMaxFor(p), p.vo2max, p.fatPct, p.bmrScale].join('|');
   if (fatMaxCache.key !== key) fatMaxCache = { key, val: fatMaxOf(p) };
   return fatMaxCache.val;
 }
@@ -1827,17 +1920,19 @@ function renderLive() {
   // --- BPM con avviso soglia ---
   const p = Store.profile;
   const bpm = currentBpm();
-  const thr = p.hrThreshold;
+  const thr = hrAlarmFor(p, CONFIG.HR_THRESHOLD_DEFAULT);
   const hrMax = hrMaxFor(p);
   el.vBpm.textContent = bpm == null ? '--' : bpm;
-  let st = 'none', label = `Soglia ${thr}`;
+  let st = 'none', label = `Allarme oltre ${thr}`;
+  const hz = bpm != null ? hrZoneFor(bpm, p) : 0;
   if (bpm != null) {
-    const z = hrZoneFor(bpm, p, CONFIG.HR_ZONES);
-    const zTxt = hrMax ? `${z ? 'Z' + z : 'Sotto Z1'} · ${Math.round((bpm / hrMax) * 100)}% FCmax` : `Soglia ${thr}`;
-    if (bpm > thr) { st = 'alert'; label = `⚠️ SOPRA SOGLIA ${thr}`; }
-    else if (bpm >= thr - CONFIG.HR_NEAR_MARGIN) { st = 'near'; label = (hrMax ? `Z${z} · ` : '') + `vicino a ${thr}`; }
+    const zTxt = hrMax ? (hz ? `${ZONES[hz - 1].icon} Z${hz} ${ZONES[hz - 1].name}` : 'Sotto Z1 · riscaldamento') : `Allarme oltre ${thr}`;
+    if (bpm > thr) { st = 'alert'; label = `⚠️ RALLENTA: oltre ${thr}`; }
+    else if (bpm >= thr - CONFIG.HR_NEAR_MARGIN) { st = 'near'; label = `Vicino al limite ${thr}`; }
     else { st = 'ok'; label = zTxt; }
   } else if (hrLink && hrLink.connected && !live.hrContact) label = 'Inumidisci gli elettrodi';
+  el.tBpm.dataset.z = hz;
+  renderZone(bpm, p);
   el.tBpm.dataset.state = st;
   el.zBpm.textContent = label;
   document.body.dataset.hr = st;
@@ -1902,10 +1997,45 @@ function renderTimer() {
   renderProgram();
 }
 
+/* ---------------- Indicatore della zona di allenamento ---------------- */
+const ZONES = [
+  { name: 'Recupero', short: 'Recupero', icon: '🌿', level: 'molto leggera', desc: 'riscaldamento, defaticamento e recupero' },
+  { name: 'Brucia grassi', short: 'Grassi', icon: '🔥', level: 'leggera', desc: 'fondo lento: la quota di grassi bruciati è la più alta' },
+  { name: 'Cardio', short: 'Cardio', icon: '❤️', level: 'moderata', desc: 'allena cuore e resistenza aerobica' },
+  { name: 'Soglia', short: 'Soglia', icon: '⚡', level: 'intensa', desc: 'ritmo duro: migliora la velocità che riesci a tenere' },
+  { name: 'Massima', short: 'Max', icon: '🔴', level: 'massimale', desc: 'solo sforzi brevi (pochi minuti)' },
+];
+const ZONE_HEX = ['#8796a8', '#0a84ff', '#2ee86b', '#ffb020', '#ff3b30'];
+let lastZoneKey = '';
+function renderZone(bpm, p) {
+  let hr = bpm, est = false;
+  if (!(hr > 0) && live.powerW > 0 && profileReady(p) && hrMaxFor(p)) {   // senza fascia: stima dai watt
+    const m = metabolicFromPower(live.powerW, p);
+    if (m) { hr = hrRestFor(p) + m.pct * (hrMaxFor(p) - hrRestFor(p)); est = true; }
+  }
+  const lows = hr > 0 ? zoneLowsBpm(p) : null;
+  if (!lows) { if (!el.zoneBar.hidden) el.zoneBar.hidden = true; return; }
+  el.zoneBar.hidden = false;
+  const z = hrZoneFor(hr, p), hrMax = hrMaxFor(p);
+  const key = `${z}|${est}`;
+  if (key !== lastZoneKey) {
+    lastZoneKey = key;
+    el.zoneBar.style.setProperty('--zc', z ? ZONE_HEX[z - 1] : '#64748b');
+    el.zbName.textContent = z ? `${ZONES[z - 1].icon} Z${z} · ${ZONES[z - 1].name}` : '🧘 Sotto Z1 · Riscaldamento';
+    el.zbTrack.querySelectorAll('.zs').forEach((s, i) => s.classList.toggle('on', i === z - 1));
+  }
+  const hi = z ? (z < 5 ? lows[z] - 1 : hrMax) : lows[0] - 1;
+  const lo = z ? lows[z - 1] : null;
+  el.zbInfo.textContent = est ? '≈ stima dai watt' : `${Math.round((hr / hrMax) * 100)}% FC max`;
+  el.zbRng.textContent = est ? ' (senza fascia)' : ` · ${lo ? `${lo}–${hi}` : `sotto ${lows[0]}`} bpm`;
+  el.zbMark.style.left = (zonePosition(hr, p) * 100).toFixed(1) + '%';
+}
+
 /* =========================================================================
    9. TIMER E SESSIONE
    ========================================================================= */
 let lastTick = performance.now(), lastDraftAt = 0;
+const hrWin = [];                                      // ultimi 8 s di battiti, per il picco tenuto
 
 /** Ciclo ogni 0,5 s: azzera sensori muti, integra statistiche, aggiorna lo schermo */
 function tick() {
@@ -1926,8 +2056,13 @@ function tick() {
       S.choG += (m.choGMin * dt) / 60;
       S.kcalSrc = m.src;
     }
-    const z = hrZoneFor(bpm, Store.profile, CONFIG.HR_ZONES);
+    const z = hrZoneFor(bpm, Store.profile);
     if (z > 0) S.secZ[z - 1] += dt;
+    if (bpm) {                                         // picco "tenuto": il minimo degli ultimi 8 secondi
+      hrWin.push([now, bpm]);
+      while (hrWin.length && now - hrWin[0][0] > 8000) hrWin.shift();
+      if (now - hrWin[0][0] >= 7500) { const sus = Math.min(...hrWin.map((x) => x[1])); if (sus > S.hrPeak) S.hrPeak = sus; }
+    } else hrWin.length = 0;
     if (!live.deviceDistance) S.distM += (spd / 3.6) * dt;
     if (rpm > 0) {
       S.rpmSum += rpm * dt; S.rpmT += dt;
@@ -1937,7 +2072,7 @@ function tick() {
     if (bpm) {
       S.bpmSum += bpm * dt; S.bpmT += dt;
       if (bpm > S.bpmMax) S.bpmMax = bpm;
-      if (bpm > Store.profile.hrThreshold) S.secAbove += dt;
+      if (bpm > hrAlarmFor(Store.profile, CONFIG.HR_THRESHOLD_DEFAULT)) S.secAbove += dt;
     }
     const pw = currentPower();
     if (pw && pw.w > 0) {
@@ -2014,7 +2149,8 @@ function saveSession() {
     avgRpm: S.rpmT ? Math.round(S.rpmSum / S.rpmT) : null,
     avgBpm: S.bpmT ? Math.round(S.bpmSum / S.bpmT) : null,
     maxBpm: S.bpmMax || null,
-    hrThreshold: p.hrThreshold,
+    hrPeak: S.hrPeak || null,
+    hrThreshold: hrAlarmFor(p, CONFIG.HR_THRESHOLD_DEFAULT),
     secAboveHr: Math.round(S.secAbove),
     secRpmIdeal: Math.round(S.secIdeal),
     secRpmForce: Math.round(S.secForce),
@@ -2031,6 +2167,12 @@ function saveSession() {
     program: programSummary(),
     trace: S.trace.hr.length > 1 ? S.trace : null,
   });
+  // FC massima registrata: se la fascia ha misurato (per almeno 8 s) più della stima, la stima era bassa
+  const pred = hrMaxPredicted(p);
+  if (S.hrPeak > 0 && pred && S.hrPeak > Math.max(pred, p.hrMaxObs || 0) && S.hrPeak <= Math.min(230, pred + 30)) {
+    p.hrMaxObs = S.hrPeak; p.hrMaxObsDate = new Date().toISOString();
+    if (!(p.hrMax > 0)) setTimeout(() => toast(`❤️ Nuova FC massima registrata: ${S.hrPeak || p.hrMaxObs} bpm. Zone e soglia aggiornate`, 5000), 600);
+  }
   // i grafici dettagliati restano per le ultime 60 sessioni (per non riempire la memoria)
   p.history.forEach((h, i) => { if (i >= 60 && h.trace) delete h.trace; });
   Store.save();
@@ -2063,7 +2205,7 @@ function targetActual(tt) {
   if (tt === 'speed') return live.speed;
   if (tt === 'rpm') return live.rpm;
   if (tt === 'watt') { const pw = currentPower(); return pw ? pw.w : null; }
-  if (tt === 'zone') { const b = currentBpm(); return b ? hrZoneFor(b, Store.profile, CONFIG.HR_ZONES) : null; }
+  if (tt === 'zone') { const b = currentBpm(); return b ? hrZoneFor(b, Store.profile) : null; }
   return null;
 }
 function durWords(sec) {
@@ -2408,6 +2550,7 @@ const PROFILE_FIELDS = [
   ['height', 'setHeight', 120, 230, 'Altezza', true],
   ['hrRest', 'setHrRest', 30, 110, 'FC a riposo', true],
   ['hrMax', 'setHrMax', 120, 230, 'FC massima', true],
+  ['lthr', 'setLthr', 100, 210, 'FC di soglia', true],
   ['vo2max', 'setVo2', 15, 90, 'VO₂max', false],
   ['fatPct', 'setFatPct', 3, 60, '% grasso', false],
   ['bmrScale', 'setBmr', 800, 4000, 'Metabolismo basale', true],
@@ -2416,13 +2559,14 @@ const PROFILE_FIELDS = [
   ['waterPct', 'setWater', 30, 80, 'Acqua corporea', false],
   ['visceral', 'setVisceral', 1, 59, 'Grasso viscerale', true],
 ];
-const ZONE_NAMES = ['Molto leggera', 'Leggera', 'Moderata', 'Intensa', 'Massima'];
+const ZONE_NAMES = ['Recupero', 'Brucia grassi', 'Cardio', 'Soglia', 'Massima'];
 
 function openSettings() {
   const p = Store.profile;
   el.setTitle.textContent = p.name;
   el.setName.value = p.name;
   el.setHr.value = p.hrThreshold;
+  el.setAlarmMode.value = p.hrAlarm === 'manual' ? 'manual' : 'auto';
   el.setSex.value = p.sex === 'F' ? 'F' : 'M';
   el.setActivity.value = ACTIVITY[p.activity] ? p.activity : '';
   el.setZoneMethod.value = p.zoneMethod || 'auto';
@@ -2444,7 +2588,8 @@ function openSettings() {
 const numField = (input) => { const x = parseFloat(String(input.value).replace(',', '.')); return isFinite(x) && x > 0 ? x : null; };
 /** Profilo provvisorio con i valori scritti nel pannello */
 function settingsDraft() {
-  const d = { sex: el.setSex.value, activity: el.setActivity.value, zoneMethod: el.setZoneMethod.value };
+  const d = { sex: el.setSex.value, activity: el.setActivity.value, zoneMethod: el.setZoneMethod.value, hrAlarm: el.setAlarmMode.value,
+    hrMaxObs: Store.profile.hrMaxObs, hrMaxObsDate: Store.profile.hrMaxObsDate, hrThreshold: parseInt(el.setHr.value, 10) || null };
   for (const [key, id, , , , int] of PROFILE_FIELDS) {
     const v = numField(el[id]);
     d[key] = v == null ? null : (int ? Math.round(v) : round1(v));
@@ -2470,7 +2615,7 @@ function updateSummary() {
     card('VO₂max', vi ? fmtDec(vi.value, 1) : '--', vi ? esc(vi.method) : 'servono età e attività') +
     card('Metabolismo basale', bi ? bi.value.toLocaleString('it-IT') + ' kcal' : '--', bi ? esc(bi.method) : 'servono altezza o bilancia') +
     card('FC max · riposo', hm ? `${hm} · ${hrRestFor(d)}` : '--',
-         hm ? `${d.hrMax ? 'max inserita' : 'max stimata'} · ${d.hrRest ? 'riposo misurata' : 'riposo predefinita'}` : 'serve l\'età') +
+         hm ? `${d.hrMax ? 'max inserita' : d.hrMaxObs > hrMaxPredicted(d) ? 'max registrata' : 'max stimata'} · ${d.hrRest ? 'riposo misurata' : 'riposo tipica'}` : 'serve l\'età') +
     card('Zona brucia-grassi', fm ? `~${fm.bpm} bpm` : '--', fm ? `${Math.round((fm.bpm / hm) * 100)}% della FC max` : 'servono età e peso') +
     '</div>';
   if (bc && fc && (bc.key === 'over' || bc.key === 'obese') && fc.key === 'normal') {
@@ -2478,17 +2623,33 @@ function updateSummary() {
   }
   el.bodySummary.innerHTML = html;
 
-  // --- Tabella zone cardio in bpm ---
-  const lows = zoneLowsBpm(d, CONFIG.HR_ZONES);
+  // --- Soglia d'allarme e tabella zone cardio in bpm ---
+  const auto = d.hrAlarm !== 'manual';
+  const thrAuto = hrAlarmAuto(d);
+  el.setHr.disabled = auto;
+  if (auto && thrAuto) el.setHr.value = thrAuto;
+  const pr = hrMaxPredicted(d);
+  const METHOD = { pct: '% della FC massima (come Polar)', hrr: 'riserva cardiaca (Karvonen)', lthr: 'FC di soglia da test (Friel)' };
+  el.hrInfo.innerHTML = !hm ? 'Inserisci l\'età: FC massima, zone e soglia d\'allarme si calcolano da sole.' :
+    `<b>FC massima ${hm} bpm</b> — ${d.hrMax ? 'inserita da te (la scelta migliore se viene da un test da sforzo).'
+      : d.hrMaxObs > pr ? `registrata dalla fascia il ${new Date(d.hrMaxObsDate).toLocaleDateString('it-IT')}: più alta della stima per età (${pr}), quindi più vera. <button type="button" class="linkbtn" id="btnHrObsReset">azzera</button>`
+      : `stimata con la formula di Tanaka (208 − 0,7 × età), la più accurata per uomini e donne; errore tipico ±10 bpm. Se la fascia registra di più, l'app la aggiorna da sola.`}<br>` +
+    (auto ? `<b>Allarme automatico oltre ${thrAuto} bpm</b>: è l'inizio della zona 5, cioè l'intensità "molto alta" delle linee guida europee di cardiologia dello sport (ESC 2020: oltre il 90% della FC max, o l'85% della riserva cardiaca). `
+      : `<b>Allarme oltre ${d.hrThreshold || '--'} bpm</b>, scelto da te${thrAuto ? ` (quello automatico sarebbe ${thrAuto})` : ''}. `) +
+    `Se prendi farmaci che rallentano il cuore (es. beta-bloccanti) o hai problemi cardiaci, scegli "Scelta da me" e usa la soglia indicata dal medico.<br>` +
+    `<b>Zone</b>: in automatico l'app usa il metodo più preciso con i dati che hai: la FC di soglia da test se c'è, altrimenti la riserva cardiaca se hai inserito la FC a riposo (misurala al mattino appena sveglio), altrimenti le % della FC max come Polar. ` +
+    `La <b>FC di soglia</b> si ricava con un test: 30 minuti al massimo sforzo che riesci a tenere; è la media dei battiti negli ultimi 20 minuti.`;
+  const lows = zoneLowsBpm(d);
   if (lows) {
-    const thr = parseInt(el.setHr.value, 10);
-    const zThr = hrZoneFor(thr, d, CONFIG.HR_ZONES);
+    const thr = auto ? thrAuto : d.hrThreshold;
+    const zThr = hrZoneFor(thr, d);
     const rows = lows.map((lo, i) => {
       const hi = i < lows.length - 1 ? lows[i + 1] - 1 : hm;
-      return `<div class="zt-row"><span class="zt-badge z${i + 1}">Z${i + 1}</span><span>${ZONE_NAMES[i]}</span><b>${lo}–${hi} bpm</b></div>`;
+      return `<div class="zt-row"><span class="zt-badge z${i + 1}">Z${i + 1}</span><span>${ZONES[i].icon} <b>${ZONES[i].name}</b> <small>· ${ZONES[i].desc}</small></span><b>${lo}–${hi}</b></div>`;
     }).join('');
-    el.zoneTable.innerHTML = `<div class="ztable"><div class="zt-head">Le tue zone · ${zoneMethodFor(d) === 'hrr' ? 'riserva cardiaca (Karvonen)' : '% della FC massima'}</div>${rows}` +
-      (thr > 0 && zThr ? `<div class="zt-foot">La soglia di avviso (${thr} bpm) cade in Z${zThr}.</div>` : '') + '</div>';
+    el.zoneTable.innerHTML = `<div class="ztable"><div class="zt-head">Le tue zone (bpm) · ${METHOD[zoneMethodFor(d)]}</div>${rows}` +
+      (thr > 0 ? `<div class="zt-foot">Allarme oltre ${thr} bpm${zThr ? ` (in Z${zThr})` : ''}. ` +
+        `La zona brucia-grassi è dove bruci la quota più alta di grassi; in totale ne bruci di più restando a lungo in Z2–Z3.</div>` : '') + '</div>';
   } else el.zoneTable.innerHTML = '<p class="hint">Inserisci l\'età per vedere le tue zone cardio in bpm.</p>';
 
   // --- Quanto sono affinati i calcoli ---
@@ -2518,14 +2679,17 @@ function logBody(p) {
 function saveSettings() {
   const p = Store.profile;
   const thr = parseInt(el.setHr.value, 10);
-  if (!(thr >= 80 && thr <= 220)) { toast('Soglia BPM non valida (80–220)'); return; }
+  const manual = el.setAlarmMode.value === 'manual';
+  if (manual && !(thr >= 80 && thr <= 220)) { toast('Soglia d\'allarme non valida (80–220)'); return; }
   const d = settingsDraft();
+  if (d.lthr && hrMaxFor(d) && d.lthr >= hrMaxFor(d)) { toast('La FC di soglia deve essere più bassa della FC massima'); return; }
   for (const [key, , lo, hi, label] of PROFILE_FIELDS) {
     if (d[key] != null && !(d[key] >= lo && d[key] <= hi)) { toast(`${label} non valido (${lo}–${hi})`); return; }
   }
   if (hrMaxFor(d) && hrMaxFor(d) - hrRestFor(d) < 30) { toast('FC massima troppo vicina alla FC a riposo'); return; }
   p.name = el.setName.value.trim().slice(0, 16) || p.name || 'Profilo';
-  p.hrThreshold = thr;
+  if (manual) p.hrThreshold = thr;
+  delete d.hrThreshold;
   Object.assign(p, d);
   logBody(p);
   Store.data.settings.kcalSource = el.setKcalSrc.value;
@@ -3687,28 +3851,55 @@ function bindRoutes() {
 }
 
 /* =========================================================================
-   12e. SOVRIMPRESSIONE: ogni valore alla misura più grande che entra nel suo riquadro
-   (mai tagliato), con un massimo che dipende dall'orientamento dello schermo
+   12e. SOVRIMPRESSIONE: tutti i valori con la STESSA dimensione di carattere,
+   la più grande con cui entrano tutti nel proprio riquadro. Il riferimento è il valore più "largo"
+   (di solito il tempo 00:00), calcolato su uno schema fisso (8 al posto delle cifre) così la misura
+   non cambia mentre i numeri scorrono; cambia solo quando un valore diventa più lungo (es. oltre 1 ora).
    ========================================================================= */
-const fitKeys = new Map();
-let fitRaf = 0;
+const fitW = new Map();
+let fitRaf = 0, fitProbe = null, fitLast = '';
+/** Larghezza di un testo a 100 px con lo stesso carattere dei valori */
+function fitWidth(tpl) {
+  if (!fitW.has(tpl)) {
+    if (!fitProbe) {
+      fitProbe = document.createElement('span');
+      fitProbe.className = 'val';
+      Object.assign(fitProbe.style, { position: 'absolute', left: '-9999px', top: '0', visibility: 'hidden', width: 'auto', display: 'inline-block', fontSize: '100px' });
+      fitProbe.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(fitProbe);
+    }
+    fitProbe.textContent = tpl;
+    fitW.set(tpl, fitProbe.getBoundingClientRect().width);
+  }
+  return fitW.get(tpl);
+}
+/** Schema del valore: cifre → 8; mai più corto dello schema tipico del riquadro (es. distanza 88,88, tempo 88:88) */
+function fitTemplate(text, k) {
+  const sample = { spd: '88,8', fat: '88,8', dist: '88,88', time: '88:88' }[k] || '888';
+  const t = /\d/.test(text) ? String(text).replace(/\d/g, '8') : '';
+  return t.length > sample.length ? t : sample;
+}
 function fitVals() {
   fitRaf = 0;
-  const on = document.body.classList.contains('overlay');
+  const vals = document.querySelectorAll('#dash .tile .val');
+  if (!document.body.classList.contains('overlay')) {
+    if (fitLast) { vals.forEach((v) => { v.style.fontSize = ''; }); fitLast = ''; }
+    return;
+  }
   const land = window.innerWidth > window.innerHeight;
   const maxPx = Math.round(land ? Math.min(34, window.innerHeight * 0.1) : Math.min(36, window.innerWidth * 0.092));
-  document.querySelectorAll('#dash .tile .val').forEach((v) => {
-    if (!on) { if (v.style.fontSize) v.style.fontSize = ''; fitKeys.delete(v); return; }
-    const key = `${v.textContent.length}|${v.clientWidth}|${maxPx}`;
-    if (fitKeys.get(v) === key) return;
-    v.style.fontSize = maxPx + 'px';
-    if (v.scrollWidth > v.clientWidth + 0.5) {
-      let lo = 10, hi = maxPx;
-      while (hi - lo > 0.5) { const mid = (lo + hi) / 2; v.style.fontSize = mid + 'px'; if (v.scrollWidth <= v.clientWidth) lo = mid; else hi = mid; }
-      v.style.fontSize = Math.floor(lo) + 'px';
-    }
-    fitKeys.set(v, `${v.textContent.length}|${v.clientWidth}|${maxPx}`);
+  let size = maxPx;
+  vals.forEach((v) => {
+    const k = v.parentElement.dataset.k;
+    const w100 = fitWidth(fitTemplate(v.textContent, k));
+    const avail = v.clientWidth - 2;
+    if (w100 > 0 && avail > 0) size = Math.min(size, Math.floor((avail * 100) / w100));
   });
+  size = Math.max(12, size);
+  const key = size + 'px';
+  if (key === fitLast) return;
+  fitLast = key;
+  vals.forEach((v) => { v.style.fontSize = key; });
 }
 const scheduleFit = () => { if (!fitRaf) fitRaf = requestAnimationFrame(fitVals); };
 
@@ -3940,7 +4131,7 @@ function init() {
     'confirmBox', 'confirmMsg', 'confirmYes', 'confirmNo', 'toast', 'setVoice', 'dash', 'setLockLayout', 'btnLayoutReset', 'btnLayout2', 'btnLayoutDone', 'btnLayoutDefault',
     'progBar', 'pbStep', 'pbLeft', 'pbTarget', 'pbStatus', 'pbNext', 'pbTrack', 'tWatt', 'vWatt', 'zWatt',
     'scene', 'btnScenes', 'sheetScenes', 'sceneList', 'btnSceneOff',
-    'oStart', 'oPause', 'oReset', 'updBar', 'updVer', 'btnUpd', 'btnUpdX', 'btnCheckUpd',
+    'oStart', 'oPause', 'oReset', 'zoneBar', 'zbName', 'zbInfo', 'zbRng', 'zbTrack', 'zbMark', 'setLthr', 'setAlarmMode', 'hrInfo', 'updBar', 'updVer', 'btnUpd', 'btnUpdX', 'btnCheckUpd',
     'ytWrap', 'routeInfo', 'routeHint', 'btnRPlay', 'btnRNext', 'btnRMute', 'rCur', 'rSeek', 'rDur',
     'routeChips', 'routeList', 'btnRouteRandom', 'btnRouteAdd', 'setRouteSync', 'setRouteLoop',
     'btnPrograms', 'sheetPrograms', 'progList', 'btnProgFree', 'btnProgNew', 'btnProgReset',
@@ -4034,6 +4225,15 @@ function init() {
   el.btnUpd.addEventListener('click', applyUpdate);
   el.btnUpdX.addEventListener('click', () => { el.updBar.hidden = true; });
   el.btnCheckUpd.addEventListener('click', () => checkUpdate(true));
+  el.setAlarmMode.addEventListener('change', () => {
+    if (el.setAlarmMode.value === 'manual') { el.setHr.disabled = false; if (!Store.profile.hrThreshold) el.setHr.value = CONFIG.HR_THRESHOLD_DEFAULT; el.setHr.focus(); }
+    updateSummary();
+  });
+  el.hrInfo.addEventListener('click', async (e) => {
+    if (!e.target.closest('#btnHrObsReset')) return;
+    if (!(await askConfirm('Azzerare la FC massima registrata dalla fascia? Si tornerà alla stima per età.', 'Azzera'))) return;
+    Store.profile.hrMaxObs = null; Store.profile.hrMaxObsDate = null; Store.save(); updateSummary(); renderLive();
+  });
   new MutationObserver(scheduleFit).observe(el.dash, { subtree: true, characterData: true, childList: true });
   window.addEventListener('resize', scheduleFit);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastUpdCheck > 30 * 60000) checkUpdate(); });
@@ -4103,11 +4303,11 @@ function init() {
   if (/demo/i.test(location.hash + location.search)) { el.noBt.hidden = true; startDemo(); }
   else checkDraft();
   window.__cyclette = { live, route, Store, saveRoutePos };   // per la diagnostica dalla console
-  if (Store.data.settings.hintVer !== '1.7') {          // novità della versione, una sola volta
+  if (Store.data.settings.hintVer !== '1.8') {          // novità della versione, una sola volta
     const first = !Store.data.settings.hintVer || Store.data.settings.hintVer < '1.6';
-    Store.data.settings.hintVer = '1.7'; Store.save();
+    Store.data.settings.hintVer = '1.8'; Store.save();
     setTimeout(() => toast(first ? 'Novità: 🎬 Percorsi reali girati in bici, che scorrono alla tua velocità'
-      : 'Novità: parametri a tutto schermo più grandi e leggibili', 5000), 2500);
+      : 'Novità: zone di allenamento (brucia grassi, cardio…) e allarme battiti automatico', 5000), 2500);
   }
   setTimeout(() => checkUpdate(false), 4000);          // c'è una versione più nuova pubblicata?
 }
