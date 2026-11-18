@@ -116,7 +116,7 @@ body.audio-only:not(.scene-on):not(.route-on) #audioArt { display: flex; }
 body.scene-on:not(.has-video) #scene { display: block; }
 #pctl { display: flex; flex-direction: column; gap: 6px; }
 /* percorso reale (YouTube): il filmato riempie lo schermo, i comandi sono i nostri */
-#ytWrap { position: absolute; inset: 0; display: none; overflow: hidden; background: #000; }
+#ytWrap { position: absolute; inset: 0; display: none; overflow: hidden; background: #000; pointer-events: none; }
 body.route-on #ytWrap { display: block; }
 #ytWrap iframe, #ytHost { position: absolute; border: 0; left: 0; top: 0; width: 100%; height: 100%; }
 body.route-on #scene, body.route-on #audioArt, body.route-on #media, body.route-on #trackName { display: none !important; }
@@ -201,29 +201,31 @@ body[data-hr="alert"]::after { content: ""; position: fixed; inset: 0; pointer-e
 #tWatt[data-est="1"] .val { opacity: .9; }
 
 /* --- Barra del programma di allenamento --- */
-#progBar { --acc: #94a3b8; display: none; border-radius: var(--r); padding: 8px 12px 9px 15px; position: relative; overflow: hidden; overflow: clip;
-  background: linear-gradient(155deg, color-mix(in srgb, var(--acc) 34%, #121923), color-mix(in srgb, var(--acc) 14%, #111720));
-  border: 1.5px solid color-mix(in srgb, var(--acc) 50%, transparent); }
+#progBar { --acc: #94a3b8; display: none; border-radius: var(--r); padding: 6px 10px 7px 13px; position: relative; overflow: hidden; overflow: clip;
+  background: color-mix(in srgb, var(--acc) 16%, var(--panel)); border: 1px solid color-mix(in srgb, var(--acc) 40%, transparent); }
 #progBar::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--acc); }
 body.prog-on #progBar { display: block; }
 #progBar[data-kind="warm"] { --acc: #38bdf8; } #progBar[data-kind="work"] { --acc: #ff8a1f; }
 #progBar[data-kind="rest"] { --acc: #22c55e; } #progBar[data-kind="cool"] { --acc: #94a3b8; }
-.pb-top { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-.pb-step { font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
-.pb-step small { font-weight: 600; color: rgba(255, 255, 255, .7); }
-.pb-left { font-weight: 800; font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1; }
-.pb-mid { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 13.5px; min-width: 0; }
-.pb-target { font-weight: 700; white-space: nowrap; }
-.pb-status { font-weight: 800; padding: 2px 8px; border-radius: 999px; white-space: nowrap; font-size: 12.5px; }
-.pb-status.ok { background: rgba(34, 197, 94, .25); color: #86efac; }
-.pb-status.low, .pb-status.high { background: rgba(255, 176, 32, .25); color: #fcd34d; }
-.pb-next { margin-left: auto; color: rgba(255, 255, 255, .7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.pb-track { position: relative; display: flex; gap: 2px; height: 8px; margin-top: 7px; }
-.pb-track span { display: block; height: 100%; border-radius: 2px; opacity: .55; }
-.pb-track span.done { opacity: .95; }
-.pb-track span.cur { opacity: 1; outline: 1.5px solid #fff; outline-offset: 0; }
-.pb-marker { position: absolute; top: -3px; bottom: -3px; width: 3px; border-radius: 2px; background: #fff; box-shadow: 0 0 4px rgba(0,0,0,.6); }
-.k-warm { background: #38bdf8; } .k-work { background: #ff8a1f; } .k-rest { background: #22c55e; } .k-cool { background: #94a3b8; }
+/* una sola riga: passo · obiettivi (valore attuale / intervallo) · prossimo · tempo che manca */
+.pb-row { display: flex; align-items: center; gap: 7px; min-width: 0; font-size: 13.5px; }
+.pb-step { font-weight: 800; white-space: nowrap; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: color-mix(in srgb, var(--acc) 35%, #fff); }
+.pb-step small { font-weight: 700; color: rgba(255, 255, 255, .7); }
+.pb-targets { display: flex; gap: 5px; min-width: 0; flex: 0 1 auto; margin-right: auto; overflow: hidden; white-space: nowrap; color: rgba(255, 255, 255, .85); font-weight: 600; text-overflow: ellipsis; }
+.pb-chip { font-weight: 700; padding: 1px 7px; border-radius: 999px; white-space: nowrap; background: rgba(255, 255, 255, .1); }
+.pb-chip b { font-weight: 900; }
+.pb-chip small { font-weight: 600; opacity: .72; margin-left: 1px; }
+.pb-chip.ok { background: rgba(34, 197, 94, .28); color: #b7f7cd; }
+.pb-chip.low, .pb-chip.high { background: rgba(255, 176, 32, .3); color: #ffe08a; }
+.pb-next { color: rgba(255, 255, 255, .6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 2 auto; font-size: 12px; }
+.pb-left { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; line-height: 1; flex: 0 0 auto; }
+/* linea dei passi: larghezza = durata; il passo in corso si riempie, quelli fatti sono pieni */
+.pb-track { position: relative; display: flex; gap: 2px; height: 6px; margin-top: 5px; }
+.pb-track span { position: relative; display: block; height: 100%; border-radius: 2px; overflow: hidden; background: rgba(255, 255, 255, .14); }
+.pb-track span i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: currentColor; }
+.pb-track span.cur { box-shadow: 0 0 0 1px rgba(255, 255, 255, .7); }
+.prog .pb-track span, .ed-preview span { background: currentColor; }
+.k-warm { background: #38bdf8; color: #38bdf8; } .k-work { background: #ff8a1f; color: #ff8a1f; } .k-rest { background: #22c55e; color: #22c55e; } .k-cool { background: #94a3b8; color: #94a3b8; }
 
 /* --- Pulsanti timer --- */
 .timer-btns { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 8px; }
@@ -338,7 +340,7 @@ body.has-screen .tbtn { height: 46px; font-size: 17px; }
    ===================================================================== */
 body.overlay #header, body.overlay #connbar, body.overlay #noBt, body.overlay .loadbtn,
 body.overlay #trackName, body.overlay .zone, body.overlay .extra, body.overlay .tbtn .tx,
-body.overlay .pb-next, body.overlay .unit { display: none !important; }
+body.overlay .unit { display: none !important; }
 body.overlay #screen { position: fixed; inset: 0; height: auto !important; border-radius: 0; margin: 0; z-index: 5; }
 body.overlay #pctl { position: fixed; z-index: 7; bottom: calc(env(safe-area-inset-bottom) + 8px);
   left: calc(env(safe-area-inset-left) + 8px); right: calc(env(safe-area-inset-right) + 8px);
@@ -349,32 +351,39 @@ body.overlay #routeInfo { position: fixed; top: auto; z-index: 7; left: calc(env
   bottom: calc(env(safe-area-inset-bottom) + 112px); max-width: calc(100vw - 20px); }
 body.overlay.has-media #routeInfo { bottom: calc(env(safe-area-inset-bottom) + 160px); }
 body.overlay #dash { position: fixed; z-index: 6; left: 0; right: 0; top: 0; bottom: auto; overflow: visible;
-  grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px;
-  padding: calc(env(safe-area-inset-top) + 6px) max(8px, calc(env(safe-area-inset-right) - 40px)) 16px max(8px, calc(env(safe-area-inset-left) - 40px));
+  grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px;
+  padding: calc(env(safe-area-inset-top) + 5px) max(8px, calc(env(safe-area-inset-right) - 40px)) 10px max(8px, calc(env(safe-area-inset-left) - 40px));
   background: linear-gradient(to bottom, rgba(0, 0, 0, .62), rgba(0, 0, 0, .28) 75%, transparent); }
 /* riquadri compatti: etichetta piccola in alto, valore grande e centrato, nessuno spazio vuoto */
-body.overlay .tile { min-height: 0; padding: 7px 5px 6px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+body.overlay .tile { min-height: 0; padding: 4px 4px 4px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
   align-items: center; justify-content: center; gap: 2px; text-align: center;
   background: color-mix(in srgb, var(--acc) 30%, rgba(10, 13, 19, .74));
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 body.overlay .tile::before { right: 0; bottom: auto; width: auto; height: 3px; }      /* striscia colorata in alto */
 body.overlay .t-head { justify-content: center; width: 100%; }
-body.overlay .label { font-size: 9.5px; letter-spacing: .07em; white-space: nowrap; overflow: hidden; max-width: 100%; }
+body.overlay .label { font-size: 8.5px; letter-spacing: .07em; white-space: nowrap; overflow: hidden; max-width: 100%; }
 body.overlay .val, body.overlay .big .val, body.overlay .tile:not(.big) .val {
   width: 100%; text-align: center; margin: 0; font-size: 28px; }        /* la misura esatta la calcola fitVals() */
 body.overlay #dash > * { grid-column: auto !important; }
-body.overlay #dash > #progBar { grid-column: 1 / -1 !important; padding: 5px 10px 6px 13px; }
-body.overlay .pb-left { font-size: 22px; }
+body.overlay #dash > #progBar { grid-column: 1 / -1 !important; padding: 3px 9px 4px 11px; border-radius: 10px;
+  background: color-mix(in srgb, var(--acc) 22%, rgba(10, 13, 19, .7)); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+body.overlay .pb-row { font-size: 12.5px; gap: 6px; }
+body.overlay .pb-left { font-size: 16px; }
+body.overlay .pb-track { height: 4px; margin-top: 3px; }
+@media (orientation: portrait) { body.overlay .pb-next { display: none !important; } }
+/* comandi in basso che scompaiono mentre pedali o il video scorre: tocca lo schermo per rivederli */
+body.overlay #pctl, body.overlay #routeInfo { transition: opacity .35s, transform .35s; }
+body.overlay.ctl-hide #pctl, body.overlay.ctl-hide #routeInfo { opacity: 0; transform: translateY(14px); pointer-events: none; }
 body.overlay .timer-btns { display: none !important; }
-body.overlay #zoneBar { order: 50; grid-column: 1 / -1 !important; display: flex; align-items: center; gap: 10px; padding: 5px 10px;
-  border-radius: 12px; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+body.overlay #zoneBar { order: 50; grid-column: 1 / -1 !important; display: flex; align-items: center; gap: 10px; padding: 3px 9px;
+  border-radius: 10px; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   background: color-mix(in srgb, var(--zc) 32%, rgba(10, 13, 19, .74)); }
 body.overlay #zoneBar[hidden] { display: none; }
 body.overlay .zb-head { margin: 0; flex: 0 1 auto; gap: 8px; }
-body.overlay .zb-name { font-size: 14px; }
-body.overlay .zb-info { font-size: 11.5px; }
+body.overlay .zb-name { font-size: 12.5px; }
+body.overlay .zb-info { font-size: 11px; }
 @media (orientation: portrait) { body.overlay .zb-rng { display: none; } }
-body.overlay .zb-track { flex: 1 1 40%; height: 12px; min-width: 90px; }
+body.overlay .zb-track { flex: 1 1 40%; height: 8px; min-width: 90px; }
 body.overlay .zs i { display: none; }
 /* Start / Pausa / Reset in basso, insieme agli altri comandi */
 .otb { display: none; }
@@ -538,9 +547,15 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 .ed-block { background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; padding: 10px; margin-top: 10px; }
 .ed-bhead { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
 .ed-bhead span { white-space: nowrap; }
-.ed-lbl, .ed-step { display: grid; grid-template-columns: 1.35fr .62fr .62fr 1.2fr .85fr 32px; gap: 5px; align-items: center; }
-.ed-lbl { font-size: 11px; color: var(--muted); }
-.ed-step { padding: 5px 0; border-top: 1px solid rgba(255, 255, 255, .05); }
+.ed-step { padding: 7px 0; border-top: 1px solid rgba(255, 255, 255, .06); display: flex; flex-direction: column; gap: 6px; }
+.ed-r1, .ed-r2 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.ed-r1 span, .ed-r2 span { font-size: 12px; color: var(--muted); flex: 0 0 auto; }
+.ed-r1 select { flex: 1 1 auto; min-width: 0; }
+.ed-r1 input { width: 52px; flex: 0 0 52px; text-align: center; }
+.ed-r1 .del { margin-left: auto; width: 36px; flex: 0 0 36px; }
+.ed-r2 input { width: 54px; flex: 0 0 54px; text-align: center; padding-left: 3px !important; padding-right: 3px !important; }
+.ed-r2 select { flex: 1 1 auto; min-width: 0; max-width: 150px; }
+.ed-r2 .ed-l { font-weight: 700; color: #cbd5e1; font-size: 12.5px; width: 82px; flex: 0 0 82px; }
 .ed-step select, .ed-step input, .ed-bhead input { font: inherit; font-size: 14px; padding: 8px 5px; border-radius: 9px; border: 1px solid var(--line);
   background: #151c26; color: var(--text); width: 100%; min-width: 0; -webkit-appearance: none; appearance: none; }
 .ed-step input:disabled { opacity: .35; }
@@ -661,8 +676,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 
   <!-- Programma di allenamento in corso -->
   <div id="progBar" data-kind="warm">
-    <div class="pb-top"><span class="pb-step" id="pbStep">—</span><span class="pb-left" id="pbLeft">0:00</span></div>
-    <div class="pb-mid"><span class="pb-target" id="pbTarget"></span><span class="pb-status" id="pbStatus"></span><span class="pb-next" id="pbNext"></span></div>
+    <div class="pb-row"><span class="pb-step" id="pbStep">—</span><span class="pb-targets" id="pbTargets"></span><span class="pb-next" id="pbNext"></span><span class="pb-left" id="pbLeft">0:00</span></div>
     <div class="pb-track" id="pbTrack"></div>
   </div>
 
@@ -816,7 +830,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     <div class="pb-track ed-preview" id="edPreview"></div>
     <div id="edBlocks"></div>
     <button class="btn" id="btnEdAddBlock" style="width:100%;margin:10px 0">＋ Aggiungi blocco</button>
-    <p class="hint">Un <b>blocco</b> è un gruppo di passi ripetuto N volte (es. 5 × [3′ veloce + 5′ recupero]). Obiettivo: velocità in km/h, cadenza in RPM, potenza in watt, zona cardio da 1 a 5, oppure libero.</p>
+    <p class="hint">Un <b>blocco</b> è un gruppo di passi ripetuto N volte (es. 3 × [5′ agile + 3′ forza]). Per ogni passo: <b>cadenza</b> da–a in RPM e <b>battiti</b> come zona Z1–Z5 (calcolata sul profilo attivo) oppure da–a in bpm. Lascia vuoto per il ritmo libero. La resistenza la scegli tu sulla manopola della cyclette.</p>
     <div class="row"><button class="btn" data-close>Annulla</button><button class="btn primary" id="btnEdSave">Salva programma</button></div>
   </div>
 </div>
@@ -837,6 +851,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     </div>
     <label class="switch"><input type="checkbox" id="setRouteSync"> <span>Il video scorre alla mia velocità e si ferma quando smetto di pedalare</span></label>
     <label class="switch"><input type="checkbox" id="setRouteLoop"> <span>Giro continuo: finito un percorso ne parte un altro che non hai visto di recente</span></label>
+    <p class="hint">🎵 <b>Musica a velocità normale:</b> l'audio del filmato accelera e rallenta insieme al video, quindi tienilo spento (🔇). Carica i tuoi MP3 con 📂 <b>Carica Video / Musica</b>: suonano sempre a velocità normale mentre il percorso scorre. Anche Spotify o Musica in sottofondo continuano a suonare.</p>
     <h3>🎨 Animazioni (funzionano anche senza internet)</h3>
     <div id="sceneList" class="scene-list"></div>
     <button class="btn" id="btnSceneOff" style="width:100%;margin-top:10px">Nessun video</button>
@@ -925,6 +940,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     <label class="switch"><input type="checkbox" id="setBeep"> <span>Avvisi sonori (BPM sopra soglia e cambi esercizio dei programmi)</span></label>
     <label class="switch"><input type="checkbox" id="setVoice"> <span>Annunci vocali durante i programmi (cambio esercizio)</span></label>
     <label class="switch"><input type="checkbox" id="setScanAll"> <span>Mostra <b>tutti</b> i dispositivi nella ricerca Bluetooth (attivalo se la cyclette o la fascia non compaiono)</span></label>
+    <p class="hint" id="bikeInfo"></p>
     <button class="btn primary" id="btnSaveSettings" style="width:100%">Salva</button>
     <button class="btn" id="btnCheckUpd" style="width:100%;margin-top:8px">🔄 Controlla se c'è una versione nuova</button>
     <p class="hint" id="setInfo"></p>
@@ -978,7 +994,8 @@ const CONFIG = {
   BEEP_REPEAT_MS: 30000,                  // ripeti il beep ogni 30 s finché sei sopra soglia
   FATMAX_BAND: 0.90,                      // "zona brucia-grassi": ossidazione grassi ≥ 90% del massimo stimato
   STORAGE_KEY: 'cyclette-dashboard-v1',
-  APP_VERSION: '1.9',
+  CTL_HIDE_MS: 4000,                      // sovrimpressione: i comandi in basso spariscono dopo 4 s senza tocchi
+  APP_VERSION: '2.0',
 };
 
 /* =========================================================================
@@ -1319,10 +1336,29 @@ function powerFromHr(hr, p) {
   return Math.max(0, Math.round(((vo2 - 3.5 - vrest) * p.weight) / (1.8 * 6.12)));
 }
 
-/* ---------------- Programmi di allenamento ---------------- */
+/* ---------------- Programmi di allenamento ----------------
+   Ogni passo ha una durata e due obiettivi facoltativi, entrambi come INTERVALLO:
+   - cadenza: rpm [da, a]            es. [75, 80]
+   - battiti: bpm [da, a]  oppure una zona Z1…Z5 (convertita in bpm con il profilo attivo)
+   Senza obiettivi il passo è a ritmo libero. */
 const STEP_KINDS = { warm: 'Riscaldamento', work: 'Lavoro', rest: 'Recupero', cool: 'Defaticamento' };
 const STEP_SHORT = { warm: 'Riscald.', work: 'Lavoro', rest: 'Recupero', cool: 'Defatic.' };
-const TARGETS = { speed: 'km/h', rpm: 'RPM', watt: 'Watt', zone: 'Zona FC', free: 'Libero' };
+/** Intervallo valido [da, a] (ordinato e limitato), altrimenti null */
+function normRange(r, min, max) {
+  if (!Array.isArray(r) || !(r[0] > 0) || !(r[1] > 0)) return null;
+  const a = clamp(Math.round(Math.min(r[0], r[1])), min, max), b = clamp(Math.round(Math.max(r[0], r[1])), min, max);
+  return [a, b];
+}
+/** Passo nel formato attuale; converte anche il vecchio formato con obiettivo singolo (tt/tv) */
+function normStep(s) {
+  s = s || {};
+  const o = { kind: STEP_KINDS[s.kind] ? s.kind : 'work', sec: Math.max(5, Math.round(s.sec || 0)),
+              rpm: normRange(s.rpm, 20, 200), hr: normRange(s.hr, 40, 230), z: s.z >= 1 && s.z <= 5 ? Math.round(s.z) : null };
+  if (!o.rpm && s.tt === 'rpm' && s.tv > 0) o.rpm = normRange([s.tv - 5, s.tv + 5], 20, 200);
+  if (!o.z && !o.hr && s.tt === 'zone' && s.tv >= 1 && s.tv <= 5) o.z = Math.round(s.tv);
+  if (o.hr) o.z = null;                                   // i bpm espliciti hanno la precedenza sulla zona
+  return o;
+}
 /** Espande i blocchi con ripetizioni in una lista lineare di passi con inizio/fine in secondi */
 function flattenProgram(prog) {
   const steps = [];
@@ -1331,10 +1367,9 @@ function flattenProgram(prog) {
     const rep = Math.max(1, Math.round(b.repeat || 1));
     for (let r = 0; r < rep; r++) {
       (b.steps || []).forEach((s) => {
-        const sec = Math.max(5, Math.round(s.sec || 0));
-        steps.push({ kind: STEP_KINDS[s.kind] ? s.kind : 'work', sec, tt: TARGETS[s.tt] ? s.tt : 'free', tv: s.tv,
-                     start: t, end: t + sec, rep: rep > 1 ? `${r + 1}/${rep}` : '' });
-        t += sec;
+        const n = normStep(s);
+        steps.push(Object.assign(n, { start: t, end: t + n.sec, rep: rep > 1 ? `${r + 1}/${rep}` : '' }));
+        t += n.sec;
       });
     }
   });
@@ -1347,26 +1382,41 @@ function stepIndexAt(flat, sec) {
   for (let i = 0; i < flat.steps.length; i++) if (sec < flat.steps[i].end) return i;
   return -1;
 }
-/** Confronto valore attuale / obiettivo: 'low' | 'ok' | 'high' | null (libero o dato mancante) */
-function targetStatus(tt, tv, actual) {
-  if (tt === 'free' || tv == null || actual == null || !isFinite(actual)) return null;
-  if (tt === 'zone') return actual < tv ? 'low' : actual > tv ? 'high' : 'ok';
-  const tol = tt === 'watt' ? Math.max(8, tv * 0.08) : tt === 'rpm' ? 5 : 1.5;
-  return actual < tv - tol ? 'low' : actual > tv + tol ? 'high' : 'ok';
+/** Battiti obiettivo del passo per il profilo: bpm scritti nel passo, oppure i limiti della zona */
+function stepHrRange(st, p) {
+  if (st.hr) return st.hr;
+  if (!st.z || !p) return null;
+  const lows = zoneLowsBpm(p);
+  if (!lows) return null;
+  return [lows[st.z - 1], st.z < 5 ? lows[st.z] - 1 : hrMaxFor(p)];
 }
-function targetText(tt, tv) {
-  const n = String(tv == null ? '' : tv).replace('.', ',');
-  if (tt === 'speed') return `${n} km/h`;
-  if (tt === 'rpm') return `${n} RPM`;
-  if (tt === 'watt') return `${n} W`;
-  if (tt === 'zone') return `zona ${n}`;
-  return 'ritmo libero';
+/** Valore attuale rispetto all'intervallo: 'low' | 'ok' | 'high' | null (nessun obiettivo o dato) */
+function rangeStatus(r, actual, tol = 0) {
+  if (!r || actual == null || !isFinite(actual) || actual <= 0) return null;
+  return actual < r[0] - tol ? 'low' : actual > r[1] + tol ? 'high' : 'ok';
+}
+const rangeText = (r) => (r[0] === r[1] ? `${r[0]}` : `${r[0]}–${r[1]}`);
+/** Obiettivi in breve: "75–80 rpm · ❤️ 95–110" (con il profilo la zona diventa bpm) */
+function stepTargetText(st, p) {
+  const parts = [];
+  if (st.rpm) parts.push(`${rangeText(st.rpm)} rpm`);
+  const hr = stepHrRange(st, p);
+  if (hr) parts.push(`❤️ ${rangeText(hr)}${st.z ? ` (Z${st.z})` : ''}`);
+  else if (st.z) parts.push(`❤️ Z${st.z}`);
+  return parts.join(' · ') || 'ritmo libero';
+}
+/** Intensità 0…1 di un passo (per il grafico del programma) */
+function stepIntensity(st) {
+  if (st.z) return st.z / 5;
+  if (st.hr) return clamp((st.hr[0] + st.hr[1]) / 2 / 180, 0.15, 1);
+  if (st.rpm) return st.rpm[1] <= 72 ? 0.65 : 0.45;       // cadenza bassa = più resistenza
+  return 0.35;
 }
 function durShort(sec) { const m = Math.floor(sec / 60), s = sec % 60; return s ? (m ? `${m}′${s}″` : `${s}″`) : `${m}′`; }
-/** Descrizione compatta: "5′ km/h 20 · 5× (3′ 30 km/h + 5′ 22 km/h) · 5′ …" */
+/** Descrizione compatta: "5′ 80–90 rpm · ❤️ Z1 · 3× (5′ 75–80 rpm · ❤️ 95–110 + 3′ …) · …" */
 function describeProgram(prog) {
   return ((prog && prog.blocks) || []).map((b) => {
-    const parts = (b.steps || []).map((s) => `${durShort(Math.round(s.sec || 0))} ${s.tt === 'free' ? 'libero' : targetText(s.tt, s.tv)}`);
+    const parts = (b.steps || []).map((s) => { const n = normStep(s); return `${durShort(n.sec)} ${stepTargetText(n, null)}`; });
     return (b.repeat || 1) > 1 ? `${b.repeat}× (${parts.join(' + ')})` : parts.join(' · ');
   }).join(' · ');
 }
@@ -1524,35 +1574,34 @@ function askText(msg, value, okLabel = 'OK', { maxLen = 16, mode = 'text' } = {}
    ========================================================================= */
 /* Programmi predefiniti (modificabili; "Ripristina predefiniti" li riporta all'originale).
    kind: warm/work/rest/cool · tt (obiettivo): speed km/h, rpm, watt, zone 1-5, free · sec: durata */
+/* Programmi predefiniti: obiettivi di cadenza (rpm da–a) e battiti (zona del profilo o bpm da–a).
+   La velocità non è un obiettivo: dipende dalla resistenza scelta sulla cyclette. */
+const mkStep = (kind, min, rpm, hr) => (typeof hr === 'number' ? { kind, sec: min * 60, rpm, z: hr } : { kind, sec: min * 60, rpm, hr: hr || null });
 const DEFAULT_PROGRAMS = [
-  { id: 'def-ripetute', name: 'Ripetute 5×3′ veloci', note: 'Cambia la velocità con la resistenza o la cadenza.',
+  { id: 'def-ripetute', name: 'Ripetute 3 × (5′ agile + 3′ forza)',
+    note: 'Nei 3′ di forza alza la resistenza della cyclette: pedalata lenta e spinta. I battiti sono quelli di Andrea: per un altro profilo premi Modifica e scegli le zone.',
     blocks: [
-      { repeat: 1, steps: [{ kind: 'warm', sec: 300, tt: 'speed', tv: 20 }] },
-      { repeat: 5, steps: [{ kind: 'work', sec: 180, tt: 'speed', tv: 30 }, { kind: 'rest', sec: 300, tt: 'speed', tv: 22 }] },
-      { repeat: 1, steps: [{ kind: 'cool', sec: 300, tt: 'speed', tv: 18 }] }] },
+      { repeat: 1, steps: [mkStep('warm', 5, [80, 90], 1)] },
+      { repeat: 3, steps: [mkStep('rest', 5, [75, 80], [95, 110]), mkStep('work', 3, [60, 70], [130, 145])] },
+      { repeat: 1, steps: [mkStep('cool', 5, [75, 85], 1)] }] },
   { id: 'def-fondo', name: 'Fondo brucia-grassi 50′', note: 'Ritmo costante e comodo: dovresti riuscire a parlare.',
-    blocks: [
-      { repeat: 1, steps: [{ kind: 'warm', sec: 300, tt: 'zone', tv: 1 }, { kind: 'work', sec: 2400, tt: 'zone', tv: 2 }, { kind: 'cool', sec: 300, tt: 'zone', tv: 1 }] }] },
+    blocks: [{ repeat: 1, steps: [mkStep('warm', 5, [80, 90], 1), mkStep('work', 40, [80, 90], 2), mkStep('cool', 5, [75, 85], 1)] }] },
   { id: 'def-forza', name: 'Forza in salita 6×2′', note: 'Nei passi di lavoro alza la resistenza della cyclette e tieni 60–70 RPM.',
     blocks: [
-      { repeat: 1, steps: [{ kind: 'warm', sec: 300, tt: 'rpm', tv: 85 }] },
-      { repeat: 6, steps: [{ kind: 'work', sec: 120, tt: 'rpm', tv: 65 }, { kind: 'rest', sec: 120, tt: 'rpm', tv: 85 }] },
-      { repeat: 1, steps: [{ kind: 'cool', sec: 300, tt: 'rpm', tv: 80 }] }] },
-  { id: 'def-piramide', name: 'Piramide 1-2-3-4-3-2-1', note: 'Velocità crescente fino al blocco centrale, poi a scendere.',
-    blocks: [
-      { repeat: 1, steps: [{ kind: 'warm', sec: 300, tt: 'speed', tv: 20 },
-        { kind: 'work', sec: 60, tt: 'speed', tv: 26 }, { kind: 'rest', sec: 60, tt: 'speed', tv: 20 },
-        { kind: 'work', sec: 120, tt: 'speed', tv: 28 }, { kind: 'rest', sec: 60, tt: 'speed', tv: 20 },
-        { kind: 'work', sec: 180, tt: 'speed', tv: 30 }, { kind: 'rest', sec: 90, tt: 'speed', tv: 20 },
-        { kind: 'work', sec: 240, tt: 'speed', tv: 31 }, { kind: 'rest', sec: 120, tt: 'speed', tv: 20 },
-        { kind: 'work', sec: 180, tt: 'speed', tv: 30 }, { kind: 'rest', sec: 90, tt: 'speed', tv: 20 },
-        { kind: 'work', sec: 120, tt: 'speed', tv: 28 }, { kind: 'rest', sec: 60, tt: 'speed', tv: 20 },
-        { kind: 'work', sec: 60, tt: 'speed', tv: 26 }, { kind: 'cool', sec: 300, tt: 'speed', tv: 18 }] }] },
+      { repeat: 1, steps: [mkStep('warm', 5, [80, 90], 1)] },
+      { repeat: 6, steps: [mkStep('work', 2, [60, 70], 3), mkStep('rest', 2, [80, 90], 2)] },
+      { repeat: 1, steps: [mkStep('cool', 5, [75, 85], 1)] }] },
+  { id: 'def-piramide', name: 'Piramide 1-2-3-4-3-2-1', note: 'Intensità crescente fino al blocco centrale, poi a scendere: alza e abbassa la resistenza.',
+    blocks: [{ repeat: 1, steps: [mkStep('warm', 5, [80, 90], 1),
+      mkStep('work', 1, [85, 95], 3), mkStep('rest', 1, [80, 90], 2), mkStep('work', 2, [85, 95], 3), mkStep('rest', 1, [80, 90], 2),
+      mkStep('work', 3, [80, 90], 4), mkStep('rest', 1.5, [80, 90], 2), mkStep('work', 4, [80, 90], 4), mkStep('rest', 2, [80, 90], 2),
+      mkStep('work', 3, [80, 90], 4), mkStep('rest', 1.5, [80, 90], 2), mkStep('work', 2, [85, 95], 3), mkStep('rest', 1, [80, 90], 2),
+      mkStep('work', 1, [85, 95], 3), mkStep('cool', 5, [75, 85], 1)] }] },
   { id: 'def-agilita', name: 'Agilità 8×1′', note: 'Resistenza bassa: lavora sulla frequenza di pedalata.',
     blocks: [
-      { repeat: 1, steps: [{ kind: 'warm', sec: 300, tt: 'rpm', tv: 80 }] },
-      { repeat: 8, steps: [{ kind: 'work', sec: 60, tt: 'rpm', tv: 95 }, { kind: 'rest', sec: 60, tt: 'rpm', tv: 80 }] },
-      { repeat: 1, steps: [{ kind: 'cool', sec: 300, tt: 'rpm', tv: 75 }] }] },
+      { repeat: 1, steps: [mkStep('warm', 5, [80, 90], 1)] },
+      { repeat: 8, steps: [mkStep('work', 1, [95, 105], 3), mkStep('rest', 1, [80, 90], 2)] },
+      { repeat: 1, steps: [mkStep('cool', 5, [75, 85], 1)] }] },
 ];
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
@@ -1595,6 +1644,14 @@ const Store = {
     if (!Object.keys(d.profiles).length) d.profiles = def.profiles;
     if (!d.profiles[d.activeProfile]) d.activeProfile = Object.keys(d.profiles)[0];
     if (!Array.isArray(d.programs)) d.programs = clone(DEFAULT_PROGRAMS);
+    if (d.settings.progVer !== 2) {                       // v2.0: obiettivi rpm + battiti al posto di km/h
+      const mine = d.programs.filter((x) => x && Array.isArray(x.blocks) && !DEFAULT_PROGRAMS.some((y) => y.id === x.id));
+      mine.forEach((x) => x.blocks.forEach((b) => {
+        b.steps = (b.steps || []).map((s) => { const n = normStep(s); return { kind: n.kind, sec: n.sec, rpm: n.rpm, hr: n.hr, z: n.z }; });
+      }));
+      d.programs = clone(DEFAULT_PROGRAMS).concat(mine);  // predefiniti nuovi, poi i tuoi (convertiti)
+      d.settings.progVer = 2;
+    }
     if (d.activeProgramId && !d.programs.some((x) => x.id === d.activeProgramId)) d.activeProgramId = null;
     this.data = d;
   },
@@ -1777,6 +1834,8 @@ async function ftmsRequestStart(svc) {
 function onIndoorBikeData(ev) {
   const d = parseIndoorBikeData(ev.target.value);
   live.bikeLastPacket = performance.now();
+  const seen = live.bikeSeen || (live.bikeSeen = {});     // quali dati invia davvero la cyclette (vedi Impostazioni)
+  for (const k of ['speedKmh', 'cadenceRpm', 'totalDistanceM', 'resistance', 'powerW', 'totalEnergyKcal', 'heartRate']) if (d[k] !== undefined) seen[k] = true;
   if (d.speedKmh !== undefined) { live.speed = d.speedKmh; live.speedEstimated = false; }
   if (d.cadenceRpm !== undefined) live.rpm = d.cadenceRpm;
   if (d.powerW !== undefined) live.powerW = d.powerW;
@@ -2007,12 +2066,10 @@ const ZONES = [
 ];
 const ZONE_HEX = ['#8796a8', '#0a84ff', '#2ee86b', '#ffb020', '#ff3b30'];
 let lastZoneKey = '';
+/** Zona di allenamento: SOLO dai battiti veri (fascia o cyclette). Senza battiti la barra non compare:
+ *  i watt delle cyclette economiche sono troppo approssimativi per dedurre la zona. */
 function renderZone(bpm, p) {
-  let hr = bpm, est = false;
-  if (!(hr > 0) && live.powerW > 0 && profileReady(p) && hrMaxFor(p)) {   // senza fascia: stima dai watt
-    const m = metabolicFromPower(live.powerW, p);
-    if (m) { hr = hrRestFor(p) + m.pct * (hrMaxFor(p) - hrRestFor(p)); est = true; }
-  }
+  const hr = bpm, est = false;
   const lows = hr > 0 ? zoneLowsBpm(p) : null;
   if (!lows) { if (!el.zoneBar.hidden) el.zoneBar.hidden = true; return; }
   el.zoneBar.hidden = false;
@@ -2092,6 +2149,7 @@ function tick() {
 
   renderLive();
   renderTimer();
+  autoHideTick();
 }
 
 function startTimer() {
@@ -2200,35 +2258,31 @@ function attachProgram(id, startNow) {
   renderProgram();
 }
 
-/** Valore attuale da confrontare con l'obiettivo del passo */
-function targetActual(tt) {
-  if (tt === 'speed') return live.speed;
-  if (tt === 'rpm') return live.rpm;
-  if (tt === 'watt') { const pw = currentPower(); return pw ? pw.w : null; }
-  if (tt === 'zone') { const b = currentBpm(); return b ? hrZoneFor(b, Store.profile) : null; }
-  return null;
+/** Stato degli obiettivi del passo adesso: cadenza e battiti, ciascuno 'low' | 'ok' | 'high' | null */
+function stepStatus(st) {
+  const hrR = stepHrRange(st, Store.profile), rpm = live.rpm == null ? null : Math.round(live.rpm), bpm = currentBpm();
+  return { rpmR: st.rpm, hrR, rpm, bpm, r: rangeStatus(st.rpm, rpm), h: rangeStatus(hrR, bpm) };
 }
 function durWords(sec) {
   const m = Math.floor(sec / 60), s = sec % 60;
   return [m ? `${m} ${m === 1 ? 'minuto' : 'minuti'}` : '', s ? `${s} secondi` : ''].filter(Boolean).join(' e ');
 }
 function targetWords(st) {
-  const n = String(st.tv).replace('.', ',');
-  if (st.tt === 'speed') return `a ${n} chilometri orari`;
-  if (st.tt === 'rpm') return `a ${n} pedalate al minuto`;
-  if (st.tt === 'watt') return `a ${n} watt`;
-  if (st.tt === 'zone') return `in zona ${n}`;
-  return 'a ritmo libero';
+  const parts = [], hr = stepHrRange(st, Store.profile);
+  if (st.rpm) parts.push(st.rpm[0] === st.rpm[1] ? `cadenza ${st.rpm[0]}` : `cadenza da ${st.rpm[0]} a ${st.rpm[1]}`);
+  if (hr) parts.push(`battiti da ${hr[0]} a ${hr[1]}`);
+  else if (st.z) parts.push(`zona ${st.z}`);
+  return parts.length ? parts.join(', ') : 'ritmo libero';
 }
-function announceStep(st, idx, flat) {
-  const txt = `${STEP_KINDS[st.kind]}${st.rep ? ' ' + st.rep : ''}: ${durWords(st.sec)} ${targetWords(st)}`;
+function announceStep(st) {
+  const rep = st.rep ? ' ' + st.rep.replace('/', ' di ') : '';
   if (Store.data.settings.beep) { tone(880, 0.16); tone(1175, 0.22, 0.18); }
   vibrate([250]);
-  speak(txt);
-  toast(`▶ ${STEP_KINDS[st.kind]} · ${durShort(st.sec)} · ${targetText(st.tt, st.tv)}`, 3000);
+  speak(`${STEP_KINDS[st.kind]}${rep}: ${durWords(st.sec)}, ${targetWords(st)}`);
+  toast(`▶ ${STEP_KINDS[st.kind]} · ${durShort(st.sec)} · ${stepTargetText(st, Store.profile)}`, 3000);
 }
 
-/** Avanzamento del programma: cambio passo, conto alla rovescia, aderenza all'obiettivo */
+/** Avanzamento del programma: cambio passo, conto alla rovescia, aderenza agli obiettivi */
 function programTick(dt) {
   const flat = progFlat();
   if (!flat || !S.prog || !S.running) return;
@@ -2245,7 +2299,7 @@ function programTick(dt) {
         speak('Programma completato. Ottimo lavoro!');
         toast('🏁 Programma completato! Il timer continua: premi Reset per salvare.', 5000);
       }
-    } else announceStep(flat.steps[idx], idx, flat);
+    } else announceStep(flat.steps[idx]);
   }
   if (idx >= 0) {
     const st = flat.steps[idx];
@@ -2254,8 +2308,8 @@ function programTick(dt) {
       S.prog.beepSec = whole;
       if (Store.data.settings.beep) tone(660, 0.1);
     }
-    const stat = targetStatus(st.tt, st.tv, targetActual(st.tt));
-    if (stat) { S.prog.secT += dt; if (stat === 'ok') S.prog.secIn += dt; }
+    const ss = stepStatus(st), have = [ss.r, ss.h].filter(Boolean);
+    if (have.length) { S.prog.secT += dt; if (have.every((x) => x === 'ok')) S.prog.secIn += dt; }
   }
 }
 
@@ -2268,7 +2322,12 @@ function programSummary() {
     steps: flat ? flat.steps.map((s) => [Math.round(s.start + off), Math.round(s.end + off), s.kind]) : [] };
 }
 
-/** Barra del programma nel cruscotto */
+/** Barra del programma: UNA riga (passo · obiettivi con il valore attuale · tempo che manca)
+ *  e sotto la linea dei passi: ogni tratto si riempie mentre lo stai facendo. */
+function chipHtml(icon, range, unit, actual, status) {
+  const arrow = status === 'low' ? ' ▲' : status === 'high' ? ' ▼' : status === 'ok' ? ' ✓' : '';
+  return `<span class="pb-chip ${status || ''}">${icon} ${actual != null && actual > 0 ? `<b>${actual}</b><small>/${rangeText(range)}${unit}</small>` : `${rangeText(range)}<small>${unit}</small>`}${arrow}</span>`;
+}
 function renderProgram() {
   const prog = activeProgram(), flat = progFlat();
   const on = !!(prog && flat && flat.steps.length);
@@ -2276,56 +2335,47 @@ function renderProgram() {
   if (!on) return;
   if (progTrackKey !== progCache.key) {
     progTrackKey = progCache.key; progRenderIdx = null;
-    el.pbTrack.innerHTML = flat.steps.map((s) => `<span class="k-${s.kind}" style="flex:${s.sec} 0 0"></span>`).join('') +
-      '<i class="pb-marker"></i>';
+    el.pbTrack.innerHTML = flat.steps.map((s) => `<span class="k-${s.kind}" style="flex:${s.sec} 0 0"><i></i></span>`).join('');
   }
   const sec = progSec(), started = elapsedMs() > 0 || S.running;
   const idx = started ? stepIndexAt(flat, sec) : 0;
-  if (idx !== progRenderIdx) {
-    progRenderIdx = idx;
-    el.pbTrack.querySelectorAll('span').forEach((sp, i) => {
-      sp.classList.toggle('done', idx === -1 || i < idx);
-      sp.classList.toggle('cur', i === idx);
-    });
+  const spans = el.pbTrack.children, rkey = started ? idx : 'pre';
+  if (rkey !== progRenderIdx) {
+    progRenderIdx = rkey;
+    for (let i = 0; i < spans.length; i++) {
+      spans[i].classList.toggle('done', idx === -1 || i < idx);
+      spans[i].classList.toggle('cur', started && i === idx);
+      spans[i].firstChild.style.width = idx === -1 || i < idx ? '100%' : '0%';
+    }
   }
-  el.pbTrack.querySelector('.pb-marker').style.left = `calc(${Math.min(100, (sec / flat.total) * 100)}% - 1px)`;
-  const stat = (k) => { el.pbStatus.className = 'pb-status ' + (k || ''); el.pbStatus.hidden = !k; };
-
   if (!started) {
     const s0 = flat.steps[0];
     el.progBar.dataset.kind = s0.kind;
     el.pbStep.innerHTML = `🏁 ${esc(prog.name)}`;
-    el.pbLeft.textContent = fmtClock(flat.total);
-    el.pbTarget.textContent = `Si parte con: ${STEP_KINDS[s0.kind].toLowerCase()} ${durShort(s0.sec)} · ${targetText(s0.tt, s0.tv)}`;
-    stat(null);
+    el.pbTargets.textContent = `si parte: ${STEP_SHORT[s0.kind].toLowerCase()} ${durShort(s0.sec)} · ${stepTargetText(s0, Store.profile)}`;
     el.pbNext.textContent = 'premi Start';
+    el.pbLeft.textContent = fmtClock(flat.total);
     return;
   }
   if (idx === -1) {
     el.progBar.dataset.kind = 'rest';
-    el.pbStep.innerHTML = `🏁 Programma completato <small>· ${esc(prog.name)}</small>`;
-    el.pbLeft.textContent = '✓';
+    el.pbStep.innerHTML = '🏁 Completato';
     const ad = S.prog && S.prog.secT > 30 ? Math.round((S.prog.secIn / S.prog.secT) * 100) : null;
-    el.pbTarget.textContent = ad != null ? `Aderenza agli obiettivi: ${ad}%` : 'Ottimo lavoro!';
-    stat(null);
+    el.pbTargets.textContent = ad != null ? `obiettivi rispettati per il ${ad}% del tempo` : 'ottimo lavoro!';
     el.pbNext.textContent = 'Reset per salvare';
+    el.pbLeft.textContent = '✓';
     return;
   }
   const st = flat.steps[idx], nx = flat.steps[idx + 1];
+  spans[idx].firstChild.style.width = (clamp((sec - st.start) / st.sec, 0, 1) * 100).toFixed(1) + '%';
   el.progBar.dataset.kind = st.kind;
-  el.pbStep.innerHTML = `${STEP_KINDS[st.kind]} <small>${st.rep ? '· rip. ' + st.rep + ' ' : ''}· passo ${idx + 1}/${flat.steps.length}</small>`;
+  el.pbStep.innerHTML = `${STEP_SHORT[st.kind]}${st.rep ? ` <small>${st.rep}</small>` : ''}`;
+  const ss = stepStatus(st);
+  el.pbTargets.innerHTML = (ss.rpmR ? chipHtml('🚲', ss.rpmR, '', ss.rpm, ss.r) : '') +
+    (ss.hrR ? chipHtml('❤️', ss.hrR, '', ss.bpm, ss.h) : st.z ? `<span class="pb-chip">❤️ Z${st.z}</span>` : '') ||
+    '<span class="pb-chip">ritmo libero</span>';
+  el.pbNext.textContent = nx ? `poi ${STEP_SHORT[nx.kind].toLowerCase()} ${durShort(nx.sec)}` : 'ultimo passo';
   el.pbLeft.textContent = fmtMedia(Math.ceil(st.end - sec));
-  const act = targetActual(st.tt);
-  el.pbTarget.textContent = st.tt === 'free' ? '🎯 ritmo libero'
-    : `🎯 ${targetText(st.tt, st.tv)}` + (act != null ? ` · ora ${st.tt === 'speed' ? fmtDec(act, 1) : st.tt === 'zone' ? 'Z' + act : Math.round(act)}` : '');
-  const s = targetStatus(st.tt, st.tv, act);
-  if (!s) stat(null);
-  else {
-    stat(s);
-    const up = st.tt === 'zone' ? 'spingi di più' : 'aumenta', down = st.tt === 'zone' ? 'rallenta' : 'rallenta';
-    el.pbStatus.textContent = s === 'ok' ? '✓ ok' : s === 'low' ? `▲ ${up}` : `▼ ${down}`;
-  }
-  el.pbNext.textContent = nx ? `poi ${STEP_SHORT[nx.kind].toLowerCase()} ${durShort(nx.sec)} · ${targetText(nx.tt, nx.tv)}` : 'ultimo passo';
 }
 
 /* --- Elenco e modifica dei programmi --- */
@@ -2369,12 +2419,12 @@ async function programAction(act, id) {
 }
 
 let edProg = null;
-const DEFAULT_TV = { speed: 25, rpm: 85, watt: 120, zone: 2, free: null };
 function openEditor(p) {
   edProg = p ? clone(p) : { id: null, name: 'Nuovo programma', note: '',
-    blocks: [{ repeat: 1, steps: [{ kind: 'warm', sec: 300, tt: 'speed', tv: 20 }] },
-             { repeat: 5, steps: [{ kind: 'work', sec: 180, tt: 'speed', tv: 28 }, { kind: 'rest', sec: 180, tt: 'speed', tv: 22 }] },
-             { repeat: 1, steps: [{ kind: 'cool', sec: 300, tt: 'speed', tv: 18 }] }] };
+    blocks: [{ repeat: 1, steps: [mkStep('warm', 5, [80, 90], 1)] },
+             { repeat: 3, steps: [mkStep('work', 3, [60, 70], 3), mkStep('rest', 3, [80, 90], 2)] },
+             { repeat: 1, steps: [mkStep('cool', 5, [75, 85], 1)] }] };
+  edProg.blocks.forEach((b) => { b.steps = b.steps.map((s) => { const n = normStep(s); return { kind: n.kind, sec: n.sec, rpm: n.rpm, hr: n.hr, z: n.z }; }); });
   el.edName.value = edProg.name;
   renderEditor();
   el.sheetEditor.hidden = false;
@@ -2382,23 +2432,34 @@ function openEditor(p) {
 }
 function updateEditorHead() {
   const f = flattenProgram(edProg);
-  el.edSummary.textContent = `Durata totale ${fmtClock(f.total)} · ${f.steps.length} passi · ${describeProgram(edProg)}`;
+  el.edSummary.textContent = `Durata totale ${fmtClock(f.total)} · ${f.steps.length} passi`;
   el.edPreview.innerHTML = f.steps.map((s) => `<span class="k-${s.kind}" style="flex:${s.sec} 0 0;opacity:.9"></span>`).join('');
 }
 function renderEditor() {
   const opts = (map, v) => Object.entries(map).map(([k, l]) => `<option value="${k}"${k === v ? ' selected' : ''}>${l}</option>`).join('');
+  const num = (v) => (v > 0 ? v : '');
+  const p = Store.profile;
   el.edBlocks.innerHTML = edProg.blocks.map((b, bi) => `
     <div class="ed-block" data-b="${bi}">
       <div class="ed-bhead"><span>Blocco ${bi + 1} · ripeti</span> <input data-f="repeat" inputmode="numeric" value="${b.repeat || 1}"> <span>volte</span>
         <button class="hbtn" data-act="del-block" style="margin-left:auto">🗑 blocco</button></div>
-      <div class="ed-lbl"><span>Tipo</span><span>min</span><span>sec</span><span>Obiettivo</span><span>Valore</span><span></span></div>
-      ${b.steps.map((s, si) => `<div class="ed-step" data-s="${si}">
-        <select data-f="kind">${opts(STEP_SHORT, s.kind)}</select>
-        <input data-f="min" inputmode="numeric" value="${Math.floor(s.sec / 60)}">
-        <input data-f="secs" inputmode="numeric" value="${s.sec % 60}">
-        <select data-f="tt">${opts(TARGETS, s.tt)}</select>
-        <input data-f="tv" inputmode="decimal" value="${s.tt === 'free' || s.tv == null ? '' : String(s.tv).replace('.', ',')}"${s.tt === 'free' ? ' disabled' : ''}>
-        <button class="del" data-act="del-step" aria-label="Elimina passo">✕</button></div>`).join('')}
+      ${b.steps.map((s, si) => {
+        const mode = s.hr ? 'bpm' : s.z ? String(s.z) : '';
+        const zr = s.z ? stepHrRange({ z: s.z }, p) : null;
+        const hr = s.hr || [null, null];
+        const rpm = Array.isArray(s.rpm) ? s.rpm : [null, null];
+        return `<div class="ed-step" data-s="${si}">
+        <div class="ed-r1"><select data-f="kind">${opts(STEP_SHORT, s.kind)}</select>
+          <input data-f="min" inputmode="numeric" value="${Math.floor(s.sec / 60)}" aria-label="minuti"><span>min</span>
+          <input data-f="secs" inputmode="numeric" value="${s.sec % 60}" aria-label="secondi"><span>sec</span>
+          <button class="del" data-act="del-step" aria-label="Elimina passo">✕</button></div>
+        <div class="ed-r2"><span class="ed-l">🚲 Cadenza</span>
+          <input data-f="rpmLo" inputmode="numeric" placeholder="da" value="${num(rpm[0])}"><span>–</span><input data-f="rpmHi" inputmode="numeric" placeholder="a" value="${num(rpm[1])}"><span>rpm</span></div>
+        <div class="ed-r2"><span class="ed-l">❤️ Battiti</span><select data-f="hrMode"><option value=""${mode === '' ? ' selected' : ''}>libero</option>
+            ${[1, 2, 3, 4, 5].map((z) => `<option value="${z}"${mode === String(z) ? ' selected' : ''}>Z${z} ${ZONES[z - 1].short}</option>`).join('')}
+            <option value="bpm"${mode === 'bpm' ? ' selected' : ''}>bpm</option></select>
+          <input data-f="hrLo" inputmode="numeric" placeholder="${zr ? zr[0] : 'da'}" value="${mode === 'bpm' ? num(hr[0]) : ''}"${mode === 'bpm' ? '' : ' disabled'}><span>–</span><input data-f="hrHi" inputmode="numeric" placeholder="${zr ? zr[1] : 'a'}" value="${mode === 'bpm' ? num(hr[1]) : ''}"${mode === 'bpm' ? '' : ' disabled'}></div>
+      </div>`; }).join('')}
       <button class="ed-badd" data-act="add-step">＋ passo</button>
     </div>`).join('');
   updateEditorHead();
@@ -2411,13 +2472,23 @@ function editorField(t) {
   const row = t.closest('[data-s]');
   if (!row) return;
   const s = b.steps[+row.dataset.s];
+  const int = (k) => { const v = parseInt(row.querySelector(`[data-f="${k}"]`).value, 10); return v > 0 ? v : null; };
   if (f === 'kind') s.kind = t.value;
   else if (f === 'min' || f === 'secs') {
     const m = parseInt(row.querySelector('[data-f="min"]').value, 10) || 0;
     const x = clamp(parseInt(row.querySelector('[data-f="secs"]').value, 10) || 0, 0, 59);
     s.sec = Math.max(5, m * 60 + x);
-  } else if (f === 'tt') { s.tt = t.value; s.tv = DEFAULT_TV[s.tt]; }
-  else if (f === 'tv') { const v = parseFloat(String(t.value).replace(',', '.')); s.tv = isFinite(v) ? v : null; }
+  } else if (f === 'rpmLo' || f === 'rpmHi') {
+    const lo = int('rpmLo'), hi = int('rpmHi');
+    s.rpm = lo || hi ? [lo, hi] : null;
+  } else if (f === 'hrMode') {
+    const prev = stepHrRange(s, Store.profile);
+    if (t.value === 'bpm') { s.hr = prev || [100, 120]; s.z = null; }
+    else { s.hr = null; s.z = t.value ? +t.value : null; }
+    renderEditor();                                       // abilita/disabilita le caselle dei bpm
+  } else if (f === 'hrLo' || f === 'hrHi') {
+    s.hr = [int('hrLo'), int('hrHi')]; s.z = null;
+  }
 }
 function editorClick(e) {
   const a = e.target.closest('[data-act]');
@@ -2425,7 +2496,7 @@ function editorClick(e) {
   const bEl = a.closest('[data-b]'), bi = bEl ? +bEl.dataset.b : -1;
   if (a.dataset.act === 'add-step') {
     const steps = edProg.blocks[bi].steps, last = steps[steps.length - 1];
-    steps.push(last ? clone(last) : { kind: 'work', sec: 180, tt: 'speed', tv: 25 });
+    steps.push(last ? clone(last) : { kind: 'work', sec: 180, rpm: [80, 90], hr: null, z: 2 });
   } else if (a.dataset.act === 'del-step') {
     const steps = edProg.blocks[bi].steps;
     steps.splice(+a.closest('[data-s]').dataset.s, 1);
@@ -2439,19 +2510,24 @@ function saveEditor() {
   const f = flattenProgram(edProg);
   if (!f.steps.length) { toast('Aggiungi almeno un passo'); return; }
   for (const b of edProg.blocks) for (const s of b.steps) {
-    if (s.tt !== 'free' && !(s.tv > 0)) { toast(`Manca il valore dell'obiettivo (${TARGETS[s.tt]})`); return; }
-    if (s.tt === 'zone' && !(s.tv >= 1 && s.tv <= 5)) { toast('La zona cardio va da 1 a 5'); return; }
+    const pair = (r) => Array.isArray(r) && (r[0] > 0) !== (r[1] > 0);
+    if (pair(s.rpm)) { toast('Completa la cadenza: da … a … RPM (o lasciale vuote entrambe)'); return; }
+    if (s.rpm && s.rpm[0] > 0 && (s.rpm[0] < 20 || s.rpm[1] > 200)) { toast('La cadenza va da 20 a 200 RPM'); return; }
+    if (s.hr && !(s.hr[0] > 0 && s.hr[1] > 0)) { toast('Completa i battiti: da … a … bpm (o scegli una zona)'); return; }
+    if (s.hr && (Math.min(...s.hr) < 40 || Math.max(...s.hr) > 230)) { toast('I battiti vanno da 40 a 230 bpm'); return; }
   }
+  edProg.blocks.forEach((b) => { b.steps = b.steps.map((s) => { const n = normStep(s); return { kind: n.kind, sec: n.sec, rpm: n.rpm, hr: n.hr, z: n.z }; }); });
   const list = Store.data.programs;
   if (!edProg.id) { edProg.id = 'p' + Date.now().toString(36); list.push(edProg); }
   else { const i = list.findIndex((x) => x.id === edProg.id); if (i >= 0) list[i] = edProg; else list.push(edProg); }
   Store.save();
   el.sheetEditor.hidden = true;
+  progCache = { key: '', flat: null };
   renderProgramList(); renderProgram();
   toast('Programma salvato');
 }
 async function resetPrograms() {
-  if (!(await askConfirm('Ripristinare i 5 programmi predefiniti? Quelli che hai creato tu restano.', 'Ripristina'))) return;
+  if (!(await askConfirm('Ripristinare i programmi predefiniti? Quelli che hai creato tu restano.', 'Ripristina'))) return;
   for (const d of DEFAULT_PROGRAMS) {
     const i = Store.data.programs.findIndex((x) => x.id === d.id);
     if (i >= 0) Store.data.programs[i] = clone(d); else Store.data.programs.push(clone(d));
@@ -2561,6 +2637,19 @@ const PROFILE_FIELDS = [
 ];
 const ZONE_NAMES = ['Recupero', 'Brucia grassi', 'Cardio', 'Soglia', 'Massima'];
 
+/** Quali dati manda la cyclette e da dove arrivano i watt */
+function bikeInfoHtml() {
+  const seen = live.bikeSeen, proto = bikeLink && bikeLink.protocol;
+  if (!seen && proto !== 'CSC') return '📡 <b>Dati della cyclette:</b> pedala con la cyclette collegata e riapri le Impostazioni per vedere quali dati invia.';
+  if (!seen) return '📡 La cyclette usa il protocollo CSC: invia solo cadenza e velocità, niente watt né resistenza.';
+  const names = { speedKmh: 'velocità', cadenceRpm: 'cadenza', totalDistanceM: 'distanza', powerW: 'potenza (watt)', resistance: 'livello di resistenza', totalEnergyKcal: 'calorie', heartRate: 'battiti' };
+  const list = Object.keys(names).filter((k) => seen[k]).map((k) => names[k]).join(', ');
+  let w = '';
+  if (seen.powerW && seen.resistance) w = `I <b>watt</b> sono calcolati dalla cyclette e tengono conto del livello di resistenza (ora ${live.resistance != null ? live.resistance : '–'}).`;
+  else if (seen.powerW) w = 'I <b>watt</b> li calcola la cyclette, ma <b>non invia il livello di resistenza</b>: se girando la manopola a parità di cadenza i watt non cambiano, sono solo una stima dalla velocità. Per zone e calorie conta sulla fascia cardio.';
+  else w = 'La cyclette <b>non invia i watt</b>: con la fascia l\'app li stima dai battiti.';
+  return `📡 <b>La tua cyclette invia:</b> ${list}. ${w}`;
+}
 function openSettings() {
   const p = Store.profile;
   el.setTitle.textContent = p.name;
@@ -2580,6 +2669,7 @@ function openSettings() {
     `(errore tipico ±15–25%), non misure di laboratorio. ` +
     `Zone cadenza: ${CONFIG.RPM_FORCE_MIN}–${CONFIG.RPM_FORCE_MAX} rpm forza/salita, ${CONFIG.RPM_IDEAL_MIN}–${CONFIG.RPM_IDEAL_MAX} rpm ritmo ideale. ` +
     `Prova senza hardware: aggiungi #demo all'indirizzo. Versione ${CONFIG.APP_VERSION}.`;
+  el.bikeInfo.innerHTML = bikeInfoHtml();
   updateSummary();
   el.sheetSettings.hidden = false;
   el.sheetSettings.querySelector('.sheet-card').scrollTop = 0;
@@ -3437,10 +3527,7 @@ function drawProgramScene(ctx, W, H, dpr, top0 = 0, bottomPad = 14) {
     return;
   }
   const started = elapsedMs() > 0, sec = started ? progSec() : 0, idx = started ? stepIndexAt(flat, sec) : 0;
-  // intensità di ogni passo, normalizzata per tipo di obiettivo
-  const maxBy = {};
-  flat.steps.forEach((s) => { if (s.tt !== 'free' && s.tv) maxBy[s.tt] = Math.max(maxBy[s.tt] || 0, s.tv); });
-  const inten = (s) => s.tt === 'free' || !s.tv ? 0.35 : s.tt === 'zone' ? s.tv / 5 : 0.25 + 0.75 * Math.pow(s.tv / maxBy[s.tt], 2.2);
+  const inten = stepIntensity;                          // altezza delle barre: zona / battiti / cadenza
   const AH = H - top0 - bottomPad;                       // area disponibile sotto i parametri
   const top = top0 + AH * 0.42, bottom = H - bottomPad, x0 = 12 * dpr, w = W - 24 * dpr, ph = bottom - top;
   const ty = (f) => top0 + AH * f;
@@ -3463,7 +3550,7 @@ function drawProgramScene(ctx, W, H, dpr, top0 = 0, bottomPad = 14) {
   ctx.fillStyle = '#c9d3df';
   ctx.font = `600 ${Math.round(Math.min(W * 0.038, AH * 0.06))}px system-ui, -apple-system, sans-serif`;
   const s0 = st || flat.steps[0];
-  ctx.fillText(`🎯 ${targetText(s0.tt, s0.tv)}`, W / 2, ty(0.36));
+  ctx.fillText(`🎯 ${stepTargetText(s0, Store.profile)}`, W / 2, ty(0.36));
 }
 
 function renderSceneList() {
@@ -3707,6 +3794,7 @@ function toggleRouteSound() {
   try { muted = p.isMuted(); } catch (e) {}
   s.routeSound = muted;
   try { if (muted) { p.unMute(); p.setVolume(100); route.unmuteAt = Date.now(); } else p.mute(); } catch (e) {}
+  if (muted && s.routeSync) toast('🔊 L\'audio del filmato segue la velocità del video. Per la musica a velocità normale carica i tuoi MP3 con 📂, oppure usa Spotify in sottofondo.', 6500);
   Store.save();
   setTimeout(renderRouteButtons, 150);
 }
@@ -3902,7 +3990,7 @@ function fitVals() {
     return;
   }
   const land = window.innerWidth > window.innerHeight;
-  const maxPx = Math.round(land ? Math.min(34, window.innerHeight * 0.1) : Math.min(36, window.innerWidth * 0.092));
+  const maxPx = Math.round(land ? Math.min(26, window.innerHeight * 0.07) : Math.min(30, window.innerWidth * 0.08));   // più piccoli: più video
   let size = maxPx;
   vals.forEach((v) => {
     const k = v.parentElement.dataset.k;
@@ -3917,6 +4005,25 @@ function fitVals() {
   vals.forEach((v) => { v.style.fontSize = key; });
 }
 const scheduleFit = () => { if (!fitRaf) fitRaf = requestAnimationFrame(fitVals); };
+
+/* =========================================================================
+   12g. COMANDI A SCOMPARSA — in sovrimpressione, mentre pedali o il video scorre, la barra
+   del video e i pulsanti in basso spariscono; un tocco in qualsiasi punto li fa ricomparire.
+   ========================================================================= */
+let ctlLastTouch = 0;
+function ctlBusy() {
+  const b = document.body.classList;
+  return S.running || !!(route.cur && route.state === 1) || (b.contains('has-video') && !el.media.paused);
+}
+function autoHideTick() {
+  const b = document.body.classList;
+  const hide = b.contains('overlay') && ctlBusy() && !layoutEdit && performance.now() - ctlLastTouch > CONFIG.CTL_HIDE_MS;
+  if (hide !== b.contains('ctl-hide')) b.toggle('ctl-hide', hide);
+}
+function wakeControls() {
+  ctlLastTouch = performance.now();
+  document.body.classList.remove('ctl-hide');
+}
 
 /* =========================================================================
    12f. AGGIORNAMENTI: all'apertura controlla se su GitHub c'è una versione più nuova
@@ -4141,10 +4248,10 @@ function init() {
     'setSex', 'setAge', 'setWeight', 'setHrRest', 'setHrMax', 'setVo2', 'setAuto', 'setKcalSrc',
     'setHeight', 'setActivity', 'setZoneMethod', 'setFatPct', 'setBmr', 'setMuscle', 'setBone', 'setWater', 'setVisceral',
     'bodySummary', 'zoneTable', 'bodyLogList', 'btnStart', 'btnPause', 'btnReset', 'extra',
-    'sheetHistory', 'histProfile', 'histTotals', 'histList', 'btnExport', 'importFile', 'btnShowText', 'backupBox', 'backupText', 'btnCopy', 'btnImportText',
+    'bikeInfo', 'sheetHistory', 'histProfile', 'histTotals', 'histList', 'btnExport', 'importFile', 'btnShowText', 'backupBox', 'backupText', 'btnCopy', 'btnImportText',
     'sheetSettings', 'setTitle', 'setName', 'setHr', 'setBeep', 'setScanAll', 'btnSaveSettings', 'setInfo',
     'confirmBox', 'confirmMsg', 'confirmYes', 'confirmNo', 'toast', 'setVoice', 'dash', 'setLockLayout', 'btnLayoutReset', 'btnLayout2', 'btnLayoutDone', 'btnLayoutDefault',
-    'progBar', 'pbStep', 'pbLeft', 'pbTarget', 'pbStatus', 'pbNext', 'pbTrack', 'tWatt', 'vWatt', 'zWatt',
+    'progBar', 'pbStep', 'pbLeft', 'pbTargets', 'pbNext', 'pbTrack', 'tWatt', 'vWatt', 'zWatt',
     'scene', 'btnScenes', 'sheetScenes', 'sceneList', 'btnSceneOff',
     'oStart', 'oPause', 'oReset', 'zoneBar', 'zbName', 'zbInfo', 'zbRng', 'zbTrack', 'zbMark', 'setLthr', 'setAlarmMode', 'hrInfo', 'updBar', 'updVer', 'btnUpd', 'btnUpdX', 'btnCheckUpd',
     'ytWrap', 'routeInfo', 'routeHint', 'btnRPlay', 'btnRNext', 'btnRMute', 'rCur', 'rSeek', 'rDur',
@@ -4220,8 +4327,8 @@ function init() {
   });
   el.btnProgNew.addEventListener('click', () => openEditor(null));
   el.btnProgReset.addEventListener('click', resetPrograms);
-  el.edBlocks.addEventListener('input', (e) => { editorField(e.target); updateEditorHead(); });
-  el.edBlocks.addEventListener('change', (e) => { editorField(e.target); if (e.target.dataset.f === 'tt') renderEditor(); else updateEditorHead(); });
+  el.edBlocks.addEventListener('input', (e) => { if (e.target.tagName !== 'SELECT') { editorField(e.target); updateEditorHead(); } });
+  el.edBlocks.addEventListener('change', (e) => { if (e.target.tagName === 'SELECT') editorField(e.target); updateEditorHead(); });
   el.edBlocks.addEventListener('click', editorClick);
   el.btnEdAddBlock.addEventListener('click', () => { edProg.blocks.push({ repeat: 1, steps: [{ kind: 'work', sec: 300, tt: 'speed', tv: 25 }] }); renderEditor(); });
   el.btnEdSave.addEventListener('click', saveEditor);
@@ -4314,6 +4421,7 @@ function init() {
   renderConn(bikeLink); renderConn(hrLink);
   renderProfiles(); renderLive(); renderTimer();
   setInterval(tick, 500);
+  document.addEventListener('pointerdown', wakeControls, true);   // un tocco fa ricomparire i comandi
 
   if (/demo/i.test(location.hash + location.search)) { el.noBt.hidden = true; startDemo(); }
   else checkDraft();
@@ -4323,13 +4431,13 @@ function init() {
   if (restored) {                                       // appena ripristinato un backup completo
     const ps = Object.values(Store.data.profiles);
     const n = ps.reduce((a, p) => a + p.history.length, 0);
-    Store.data.settings.hintVer = '1.9'; Store.save();
+    Store.data.settings.hintVer = '2.0'; Store.save();
     setTimeout(() => toast(`✅ Backup ripristinato: ${ps.length} profili, ${n} sessioni`, 5000), 800);
-  } else if (Store.data.settings.hintVer !== '1.9') {   // novità della versione, una sola volta
+  } else if (Store.data.settings.hintVer !== '2.0') {   // novità della versione, una sola volta
     const first = !Store.data.settings.hintVer || Store.data.settings.hintVer < '1.6';
-    Store.data.settings.hintVer = '1.9'; Store.save();
+    Store.data.settings.hintVer = '2.0'; Store.save();
     setTimeout(() => toast(first ? 'Novità: 🎬 Percorsi reali girati in bici, che scorrono alla tua velocità'
-      : 'Novità: zone di allenamento (brucia grassi, cardio…) e allarme battiti automatico', 5000), 2500);
+      : 'Novità: programmi con cadenza e battiti, barra più piccola, comandi che spariscono durante il video', 5500), 2500);
   }
   setTimeout(() => checkUpdate(false), 4000);          // c'è una versione più nuova pubblicata?
 }
