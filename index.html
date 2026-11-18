@@ -768,7 +768,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 
     <section class="pane" data-pane="data" hidden>
       <h3>Backup</h3>
-      <p class="hint">I dati restano solo su questo telefono, dentro il browser (Bluefy su iPhone, Chrome su Android). Esporta ogni tanto un backup (es. in Note, File o Google Drive): serve anche per passare i dati su un altro telefono.</p>
+      <p class="hint">I dati restano solo su questo telefono, dentro l'app (o il browser: Bluefy su iPhone, Chrome su Android). Esporta ogni tanto un backup (es. in Note, File o Google Drive): serve anche per passare i dati su un altro telefono.</p>
       <div class="row">
         <button class="btn" id="btnExport">⬆️ Esporta</button>
         <label class="btnlike" for="importFile">⬇️ Importa file</label>
@@ -978,7 +978,7 @@ const CONFIG = {
   BEEP_REPEAT_MS: 30000,                  // ripeti il beep ogni 30 s finché sei sopra soglia
   FATMAX_BAND: 0.90,                      // "zona brucia-grassi": ossidazione grassi ≥ 90% del massimo stimato
   STORAGE_KEY: 'cyclette-dashboard-v1',
-  APP_VERSION: '1.8',
+  APP_VERSION: '1.9',
 };
 
 /* =========================================================================
@@ -3031,18 +3031,33 @@ async function copyBackupText() {
   catch (e) { el.backupText.select(); try { document.execCommand('copy'); toast('Copiato'); } catch (_) { toast('Seleziona e copia a mano'); } }
 }
 
-/** Importa unendo le sessioni (niente duplicati, nulla viene cancellato) */
+/** Importa un backup.
+ *  - App appena installata (nessuna sessione né dato personale): ripristino COMPLETO — profili con età, peso,
+ *    soglie e disposizione dei riquadri, programmi, percorsi e impostazioni — poi la pagina si ricarica.
+ *  - Altrimenti unisce le sessioni (niente duplicati, nulla viene cancellato);
+ *    i profili ancora vuoti vengono sostituiti interi da quelli del backup. */
 function importBackup(text) {
   let d;
   try { d = JSON.parse(text); } catch (e) { toast('Backup non valido'); return; }
-  if (!d || !d.profiles) { toast('Backup non riconosciuto'); return; }
+  if (!d || !d.profiles || typeof d.profiles !== 'object') { toast('Backup non riconosciuto'); return; }
+  const isEmpty = (p) => !p || ((!Array.isArray(p.history) || !p.history.length)
+    && (!Array.isArray(p.bodyLog) || !p.bodyLog.length) && p.age == null && p.weight == null);
+  if (!S.startedAt && Object.values(Store.data.profiles).every(isEmpty)) {
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(d));
+      try { sessionStorage.setItem('cyclette-restored', '1'); } catch (_) {}
+    } catch (e) { toast('⚠️ Memoria non disponibile: backup non ripristinato', 4000); return; }
+    location.reload();                                  // riparte con tutti i dati del backup
+    return;
+  }
   let added = 0, newProf = 0;
   for (const k of Object.keys(d.profiles)) {
     const src = d.profiles[k];
     if (!src || typeof src !== 'object' || !Array.isArray(src.history)) continue;
-    if (!Store.data.profiles[k]) {                      // profilo che qui non esiste: lo aggiungo intero
+    if (isEmpty(Store.data.profiles[k])) {              // profilo assente o mai usato: lo prendo intero dal backup
+      if (!Store.data.profiles[k]) newProf++;
       Store.data.profiles[k] = Object.assign(makeProfile(src.name || 'Profilo'), clone(src));
-      newProf++; added += src.history.length;
+      added += src.history.length;
       continue;
     }
     const dst = Store.data.profiles[k];
@@ -4303,9 +4318,16 @@ function init() {
   if (/demo/i.test(location.hash + location.search)) { el.noBt.hidden = true; startDemo(); }
   else checkDraft();
   window.__cyclette = { live, route, Store, saveRoutePos };   // per la diagnostica dalla console
-  if (Store.data.settings.hintVer !== '1.8') {          // novità della versione, una sola volta
+  let restored = false;
+  try { restored = sessionStorage.getItem('cyclette-restored') === '1'; sessionStorage.removeItem('cyclette-restored'); } catch (_) {}
+  if (restored) {                                       // appena ripristinato un backup completo
+    const ps = Object.values(Store.data.profiles);
+    const n = ps.reduce((a, p) => a + p.history.length, 0);
+    Store.data.settings.hintVer = '1.9'; Store.save();
+    setTimeout(() => toast(`✅ Backup ripristinato: ${ps.length} profili, ${n} sessioni`, 5000), 800);
+  } else if (Store.data.settings.hintVer !== '1.9') {   // novità della versione, una sola volta
     const first = !Store.data.settings.hintVer || Store.data.settings.hintVer < '1.6';
-    Store.data.settings.hintVer = '1.8'; Store.save();
+    Store.data.settings.hintVer = '1.9'; Store.save();
     setTimeout(() => toast(first ? 'Novità: 🎬 Percorsi reali girati in bici, che scorrono alla tua velocità'
       : 'Novità: zone di allenamento (brucia grassi, cardio…) e allarme battiti automatico', 5000), 2500);
   }
