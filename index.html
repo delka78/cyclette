@@ -221,7 +221,8 @@ body.prog-on #progBar { display: block; }
 .pb-left { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; line-height: 1; flex: 0 0 auto; }
 /* linea dei passi: larghezza = durata; il passo in corso si riempie, quelli fatti sono pieni */
 .pb-track { position: relative; display: flex; gap: 2px; height: 6px; margin-top: 5px; }
-.pb-track span { position: relative; display: block; height: 100%; border-radius: 2px; overflow: hidden; background: rgba(255, 255, 255, .14); }
+.pb-track span { position: relative; display: block; height: 100%; border-radius: 2px; overflow: hidden;
+  background: color-mix(in srgb, currentColor 42%, rgba(0, 0, 0, .35)); }
 .pb-track span i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: currentColor; }
 .pb-track span.cur { box-shadow: 0 0 0 1px rgba(255, 255, 255, .7); }
 .prog .pb-track span, .ed-preview span { background: currentColor; }
@@ -346,6 +347,18 @@ body.overlay #pctl { position: fixed; z-index: 7; bottom: calc(env(safe-area-ins
   left: calc(env(safe-area-inset-left) + 8px); right: calc(env(safe-area-inset-right) + 8px);
   background: rgba(0, 0, 0, .5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: 6px; border-radius: 14px; }
 body.overlay #pctl .prow { justify-content: flex-start; }
+.pclock { display: none; }
+.restbox { margin: 10px 0 2px; }
+.restbox > .hbtn { width: 100%; justify-content: center; }
+#restMeas { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 59, 48, .08); border: 1px solid rgba(255, 59, 48, .25); }
+.rm-row { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; font-size: 14px; }
+.rm-bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .1); margin: 8px 0 5px; overflow: hidden; }
+.rm-bar i { display: block; height: 100%; width: 0; background: #ff3b30; transition: width .5s linear; }
+#rmInfo { color: var(--muted); font-variant-numeric: tabular-nums; }
+body.overlay .pclock { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; padding: 0 10px 0 4px; margin-right: 2px;
+  border-right: 1px solid rgba(255, 255, 255, .18); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pclock b { font-size: 19px; font-weight: 800; }
+.pclock small { font-size: 11.5px; color: rgba(255, 255, 255, .75); text-transform: capitalize; }
 body.overlay:not(.has-media):not(.route-on) #pctl { right: auto; }
 body.overlay #routeInfo { position: fixed; top: auto; z-index: 7; left: calc(env(safe-area-inset-left) + 10px);
   bottom: calc(env(safe-area-inset-bottom) + 112px); max-width: calc(100vw - 20px); }
@@ -551,8 +564,13 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 .ed-r1, .ed-r2 { display: flex; align-items: center; gap: 5px; min-width: 0; }
 .ed-r1 span, .ed-r2 span { font-size: 12px; color: var(--muted); flex: 0 0 auto; }
 .ed-r1 select { flex: 1 1 auto; min-width: 0; }
-.ed-r1 input { width: 52px; flex: 0 0 52px; text-align: center; }
-.ed-r1 .del { margin-left: auto; width: 36px; flex: 0 0 36px; }
+.ed-r1 input { width: 46px; flex: 0 0 46px; text-align: center; padding-left: 2px !important; padding-right: 2px !important; }
+.ed-r1 .del { width: 32px; flex: 0 0 32px; }
+.ed-r1 .mv { width: 28px; flex: 0 0 28px; padding: 0; border-radius: 8px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .06); color: #cbd5e1; font-size: 12px; min-height: 32px; }
+.ed-r1 .mv:first-of-type { margin-left: auto; }
+.ed-r1 .mv:disabled, .ed-mv .hbtn:disabled { opacity: .3; }
+.ed-mv { display: inline-flex; gap: 4px; }
+.ed-mv .hbtn { min-width: 34px; padding-left: 8px; padding-right: 8px; }
 .ed-r2 input { width: 54px; flex: 0 0 54px; text-align: center; padding-left: 3px !important; padding-right: 3px !important; }
 .ed-r2 select { flex: 1 1 auto; min-width: 0; max-width: 150px; }
 .ed-r2 .ed-l { font-weight: 700; color: #cbd5e1; font-size: 12.5px; width: 82px; flex: 0 0 82px; }
@@ -575,6 +593,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 .route-opt.active { border-color: var(--green); }
 .ro-img { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #24384f, #10161f); display: grid; place-items: center; font-size: 30px; }
 .ro-img[data-k="mount"]::before { content: '⛰️'; } .ro-img[data-k="lake"]::before { content: '🏞️'; }
+.ro-img[data-k="up"]::before { content: '⛰️'; } .ro-img[data-k="down"]::before { content: '⬇️'; }
 .ro-img[data-k="sea"]::before { content: '🌊'; } .ro-img[data-k="green"]::before { content: '🌳'; } .ro-img[data-k="mine"]::before { content: '⭐'; }
 .ro-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ro-dur, .ro-res { position: absolute; bottom: 6px; font-size: 11px; font-weight: 800; color: #fff; padding: 1px 6px; border-radius: 6px; }
@@ -654,6 +673,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
       <span class="ptime" id="tDur">0:00</span>
     </div>
     <div class="prow">
+      <span class="pclock" id="pClock" aria-live="off"></span>
       <label class="loadbtn" for="fileInput">📂<span class="lb-long"> Carica Video / Musica</span><span class="lb-short"> File</span></label>
       <button class="loadbtn scenes" id="btnScenes">🎬<span class="lb-long"> Percorsi e video</span><span class="lb-short"> Percorsi</span></button>
       <input type="file" id="fileInput" class="vh" accept="video/*,audio/*,.mp3,.mp4,.m4a,.mov,.aac,.wav" multiple>
@@ -756,7 +776,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
       <div id="dashKpi"></div>
       <div class="chart-card">
         <div class="chart-head"><h3>Volume per settimana</h3>
-          <div class="seg mini" id="weekMetric"><button data-m="min" class="active">Minuti</button><button data-m="km">km</button><button data-m="kcal">kcal</button></div></div>
+          <div class="seg mini" id="weekMetric"><button data-m="min" class="active">Minuti</button><button data-m="km">km</button><button data-m="kcal">kcal</button><button data-m="trimp">Carico</button></div></div>
         <div class="chart" id="chWeek"></div>
       </div>
       <div class="chart-card">
@@ -851,6 +871,7 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
     </div>
     <label class="switch"><input type="checkbox" id="setRouteSync"> <span>Il video scorre alla mia velocità e si ferma quando smetto di pedalare</span></label>
     <label class="switch"><input type="checkbox" id="setRouteLoop"> <span>Giro continuo: finito un percorso ne parte un altro che non hai visto di recente</span></label>
+    <label class="switch"><input type="checkbox" id="setRouteTerrain"> <span>Con un programma, <b>strada adatta alla fase</b>: ⛰️ salita quando la cadenza è bassa e i battiti alti, ⬇️ discesa nel recupero dopo la salita e nel defaticamento, 🛣️ pianura nel resto</span></label>
     <p class="hint">🎵 <b>Musica a velocità normale:</b> l'audio del filmato accelera e rallenta insieme al video, quindi tienilo spento (🔇). Carica i tuoi MP3 con 📂 <b>Carica Video / Musica</b>: suonano sempre a velocità normale mentre il percorso scorre. Anche Spotify o Musica in sottofondo continuano a suonare.</p>
     <h3>🎨 Animazioni (funzionano anche senza internet)</h3>
     <div id="sceneList" class="scene-list"></div>
@@ -903,6 +924,14 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
         </select></label>
       <label class="field">Allarme oltre (bpm) <input id="setHr" type="number" inputmode="numeric" min="80" max="220"></label>
     </div>
+    <div class="restbox">
+      <button type="button" class="hbtn" id="btnRestMeas">📏 Misura la FC a riposo con la fascia (2½ minuti)</button>
+      <div id="restMeas" hidden>
+        <div class="rm-row"><span id="rmTitle"></span><button type="button" class="linkbtn" id="btnRestCancel">annulla</button></div>
+        <div class="rm-bar"><i id="rmFill"></i></div>
+        <small id="rmInfo"></small>
+      </div>
+    </div>
     <p class="hint" id="hrInfo"></p>
     <div id="zoneTable"></div>
 
@@ -938,7 +967,14 @@ details.tbl th:first-child, details.tbl td:first-child { text-align: left; }
 
     <h3>⚙️ App</h3>
     <label class="switch"><input type="checkbox" id="setBeep"> <span>Avvisi sonori (BPM sopra soglia e cambi esercizio dei programmi)</span></label>
-    <label class="switch"><input type="checkbox" id="setVoice"> <span>Annunci vocali durante i programmi (cambio esercizio)</span></label>
+    <label class="switch"><input type="checkbox" id="setVoice"> <span>Voce che ti guida: annunci dei programmi e frasi per darti la carica</span></label>
+    <div class="fields2" id="coachBox">
+      <label class="field"><span>Chi ti guida</span><select id="setCoach"></select></label>
+      <label class="field"><span>Quanto parla</span><select id="setCoachFreq"><option value="poco">Poco</option><option value="normale">Normale</option><option value="tanto">Tanto</option></select></label>
+      <label class="field" style="grid-column:1/-1"><span>Voce del telefono</span><select id="setCoachVoice"></select></label>
+    </div>
+    <p class="hint" id="coachInfo"></p>
+    <button class="btn" id="btnCoachTry" style="width:100%">🔊 Prova la voce</button>
     <label class="switch"><input type="checkbox" id="setScanAll"> <span>Mostra <b>tutti</b> i dispositivi nella ricerca Bluetooth (attivalo se la cyclette o la fascia non compaiono)</span></label>
     <p class="hint" id="bikeInfo"></p>
     <button class="btn primary" id="btnSaveSettings" style="width:100%">Salva</button>
@@ -994,8 +1030,12 @@ const CONFIG = {
   BEEP_REPEAT_MS: 30000,                  // ripeti il beep ogni 30 s finché sei sopra soglia
   FATMAX_BAND: 0.90,                      // "zona brucia-grassi": ossidazione grassi ≥ 90% del massimo stimato
   STORAGE_KEY: 'cyclette-dashboard-v1',
-  CTL_HIDE_MS: 4000,                      // sovrimpressione: i comandi in basso spariscono dopo 4 s senza tocchi
-  APP_VERSION: '2.0',
+  CTL_HIDE_MS: 4000,
+  PRE_ANNOUNCE_S: 5,                      // programmi: la voce annuncia il passo successivo 5 s prima del cambio                      // sovrimpressione: i comandi in basso spariscono dopo 4 s senza tocchi
+  HRREC_MIN_MS: 5 * 60000,               // recupero cardiaco: solo dopo almeno 5 minuti di pedalata
+  HRREC_S: 60,                            // … misurato dopo 60 secondi da fermo
+  REST_SETTLE_S: 30, REST_MEASURE_S: 120,  // FC a riposo: 30 s di assestamento + 2 minuti di misura
+  APP_VERSION: '2.3',
 };
 
 /* =========================================================================
@@ -1155,8 +1195,20 @@ function parseHeartRate(dv) {
    E) Intensità = riserva cardiaca: (FC − FC riposo) / (FC max − FC riposo)  (ACSM: ≈ % riserva VO₂).
       VO₂ = VO₂ riposo + intensità × (VO₂max − VO₂ riposo).
       Dai watt (se manca la FC): VO₂ = 1,8 × watt × 6,12 / peso + 3,5 + VO₂ riposo  (ACSM cicloergometro).
-   F) RER stimato dall'intensità (0,78 → 1,00); kcal/min = VO₂ (L/min) × (3,815 + 1,232 × RER);
-      quota grassi = (1 − RER) / 0,3; grassi g = kcal × quota / 9; carboidrati g = kcal × (1 − quota) / 4,1.
+   F) Calorie con la fascia: equazione di Keytel et al. 2005 (J Sports Sci 23:289), ricavata con la
+      calorimetria su cicloergometro e tapis roulant al 57–90% della FC max: kJ/min da FC, peso, età,
+      sesso e VO₂max (r = 0,913). Sotto il 50% della FC max (dove la FC non segue più la spesa
+      energetica) vale il modello VO₂ del punto E; tra 50 e 60% si passa gradualmente dall'uno all'altra.
+      RER stimato dall'intensità (0,78 → 1,00): quota grassi = (1 − RER) / 0,3;
+      grassi g = kcal × quota / 9; carboidrati g = kcal × (1 − quota) / 4,1.
+   G) Battiti: si usano solo con la fascia a contatto; gli intervalli RR (tra un battito e l'altro, in ms)
+      fuori da 300–2000 ms o diversi più del 25% dalla mediana recente sono scartati come disturbi.
+      FC a riposo misurata con la fascia: media dei RR in 2 minuti da fermo (dopo 30 s di assestamento),
+      con la variabilità RMSSD; la misura vale se i battiti scartati sono meno del 5%.
+   H) Carico di allenamento TRIMP (Banister 1991): Σ minuti × x × k·e^(b·x), con x = riserva cardiaca,
+      k = 0,64 e b = 1,92 per gli uomini, k = 0,86 e b = 1,67 per le donne.
+   I) Recupero cardiaco a 1 minuto (Cole et al., NEJM 1999): FC di picco a fine sforzo − FC dopo 60 s
+      fermo. Più è alto, meglio è; si confronta con le proprie misure precedenti.
    Sono STIME (errore tipico ±15–25%): la misura vera richiede l'analisi dei gas respiratori.
    ------------------------------------------------------------------------- */
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -1247,11 +1299,57 @@ function energyFromVo2(vo2, pct, weight, src) {
   const kcalMin = (vo2 * weight / 1000) * (3.815 + 1.232 * rer);
   return { src, pct, rer, fatFrac, kcalMin, fatGMin: (kcalMin * fatFrac) / 9, choGMin: (kcalMin * (1 - fatFrac)) / 4.1 };
 }
+/** Spesa energetica dai battiti, Keytel et al. 2005: kcal/min lordi (con VO₂max se disponibile) */
+function keytelKcalMin(hr, p, vo2max) {
+  if (!profileReady(p) || !(hr > 0)) return null;
+  const m = p.sex !== 'F', w = p.weight, a = p.age;
+  const kj = vo2max > 0
+    ? (m ? -95.7735 + 0.634 * hr + 0.404 * vo2max + 0.394 * w + 0.271 * a
+         : -59.3954 + 0.45 * hr + 0.380 * vo2max + 0.103 * w + 0.274 * a)
+    : (m ? -55.0969 + 0.6309 * hr + 0.1988 * w + 0.2017 * a
+         : -20.4022 + 0.4472 * hr - 0.1263 * w + 0.074 * a);
+  return kj / 4.184;
+}
 function metabolicFromHr(hr, p) {
   if (!profileReady(p) || !(hr > 0)) return null;
   const hrMax = hrMaxFor(p), hrRest = hrRestFor(p), vmax = vo2maxFor(p), vrest = vo2RestFor(p);
   const pct = clamp((hr - hrRest) / Math.max(1, hrMax - hrRest), 0, 1.1);
-  return energyFromVo2(vrest + pct * (vmax - vrest), pct, p.weight, 'hr');
+  const e = energyFromVo2(vrest + pct * (vmax - vrest), pct, p.weight, 'hr');
+  e.method = 'vo2r';
+  const k = keytelKcalMin(hr, p, vmax);
+  const w = clamp((hr / hrMax - 0.5) / 0.1, 0, 1);       // < 50% FC max: modello VO₂; > 60%: Keytel
+  if (k > 0 && w > 0 && e.kcalMin > 0) {
+    const f = (e.kcalMin * (1 - w) + k * w) / e.kcalMin;
+    e.kcalMin *= f; e.fatGMin *= f; e.choGMin *= f;
+    e.method = w >= 1 ? 'keytel' : 'misto';
+  }
+  return e;
+}
+/** Carico TRIMP al minuto (Banister 1991) alla FC data */
+function trimpPerMin(hr, p) {
+  if (!(hr > 0) || !p || !(p.age > 0)) return 0;
+  const hrMax = hrMaxFor(p), hrRest = hrRestFor(p);
+  const x = clamp((hr - hrRest) / Math.max(1, hrMax - hrRest), 0, 1);
+  return p.sex === 'F' ? x * 0.86 * Math.exp(1.67 * x) : x * 0.64 * Math.exp(1.92 * x);
+}
+function medianOf(a) {
+  if (!a.length) return null;
+  const b = a.slice().sort((x, y) => x - y), m = b.length >> 1;
+  return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2;
+}
+/** Un intervallo RR (ms) è un battito vero? Range fisiologico e vicino alla mediana dei battiti recenti */
+function rrValid(rr, recent) {
+  if (!(rr >= 300 && rr <= 2000)) return false;
+  if (!recent || recent.length < 5) return true;
+  const m = medianOf(recent);
+  return Math.abs(rr - m) <= 0.25 * m;
+}
+/** Variabilità cardiaca RMSSD (ms): radice della media dei quadrati delle differenze tra RR consecutivi */
+function rmssdOf(rr) {
+  if (!rr || rr.length < 3) return null;
+  let s = 0;
+  for (let i = 1; i < rr.length; i++) { const d = rr[i] - rr[i - 1]; s += d * d; }
+  return Math.sqrt(s / (rr.length - 1));
 }
 function metabolicFromPower(watt, p) {
   if (!profileReady(p) || !(watt > 0)) return null;
@@ -1368,7 +1466,7 @@ function flattenProgram(prog) {
     for (let r = 0; r < rep; r++) {
       (b.steps || []).forEach((s) => {
         const n = normStep(s);
-        steps.push(Object.assign(n, { start: t, end: t + n.sec, rep: rep > 1 ? `${r + 1}/${rep}` : '' }));
+        steps.push(Object.assign(n, { start: t, end: t + n.sec, rep: rep > 1 ? `${r + 1}/${rep}` : '', prev: steps[steps.length - 1] || null }));
         t += n.sec;
       });
     }
@@ -1405,6 +1503,20 @@ function stepTargetText(st, p) {
   else if (st.z) parts.push(`❤️ Z${st.z}`);
   return parts.join(' · ') || 'ritmo libero';
 }
+const TERRAIN_ICON = { up: '⛰️ salita', flat: '🛣️ pianura', down: '⬇️ discesa' };
+/** Che strada mostrare in un passo: 'up' salita = cadenza bassa (fino a 75 rpm) con battiti alti
+ *  (zona 3 o più, o almeno il 70% della FC max); 'down' discesa = defaticamento, o recupero subito
+ *  dopo una salita; altrimenti 'flat' pianura. */
+function stepTerrain(st, prev, p) {
+  if (!st) return 'flat';
+  const lowRpm = !!(st.rpm && st.rpm[1] <= 75);
+  let highHr = null;                                     // null = nessun obiettivo sui battiti
+  if (st.z) highHr = st.z >= 3;
+  else if (st.hr) { const mx = p ? hrMaxFor(p) : null; highHr = st.hr[0] >= (mx ? 0.7 * mx : 125); }
+  if (lowRpm && highHr !== false) return 'up';
+  if (st.kind === 'cool' || (st.kind === 'rest' && prev && stepTerrain(prev, null, p) === 'up')) return 'down';
+  return 'flat';
+}
 /** Intensità 0…1 di un passo (per il grafico del programma) */
 function stepIntensity(st) {
   if (st.z) return st.z / 5;
@@ -1434,14 +1546,14 @@ function weeklyTotals(history, n, now) {
   const w0 = weekStart(now), weeks = [];
   for (let i = n - 1; i >= 0; i--) {
     const s = new Date(w0); s.setDate(s.getDate() - 7 * i);
-    weeks.push({ start: s, min: 0, km: 0, kcal: 0, n: 0 });
+    weeks.push({ start: s, min: 0, km: 0, kcal: 0, trimp: 0, n: 0 });
   }
   for (const h of history || []) {
     const d = new Date(h.date);
     if (isNaN(d)) continue;
     const ws = weekStart(d).getTime();
     const w = weeks.find((x) => x.start.getTime() === ws);
-    if (w) { w.min += (h.durationSec || 0) / 60; w.km += h.distanceKm || 0; w.kcal += h.kcal || 0; w.n++; }
+    if (w) { w.min += (h.durationSec || 0) / 60; w.km += h.distanceKm || 0; w.kcal += h.kcal || 0; w.trimp += h.trimp || 0; w.n++; }
   }
   return weeks;
 }
@@ -1681,7 +1793,9 @@ function newSession() {
     distM: 0,
     rpmSum: 0, rpmT: 0, bpmSum: 0, bpmT: 0, bpmMax: 0, powSum: 0, powT: 0,
     secAbove: 0, secIdeal: 0, secForce: 0,
-    kcal: 0, fatG: 0, choG: 0, kcalSrc: null,
+    kcal: 0, fatG: 0, choG: 0, kcalSrc: null, kcalMethod: null,
+    trimp: 0,                     // carico di allenamento TRIMP
+    hrRec1: null,                 // recupero cardiaco a 1 minuto { drop, peak, after }
     secZ: [0, 0, 0, 0, 0],        // secondi in zona cardio Z1…Z5
     hrPeak: 0,                    // FC più alta tenuta per almeno 8 secondi (filtra i disturbi della fascia)
     powMax: 0, kj: 0, powEst: false,
@@ -1896,11 +2010,35 @@ async function setupHr(server, link) {
   } catch (e) { /* batteria non disponibile: pazienza */ }
 }
 
+/** Battiti dalla fascia. Senza contatto pelle i valori non sono affidabili e vengono ignorati.
+ *  Gli intervalli RR (la Polar H10 li manda a ogni battito) sono filtrati dai disturbi e servono
+ *  per la FC a riposo, la variabilità (RMSSD) e a scartare i valori di battito sbagliati. */
+const rrRecent = [];
+let rrRejects = 0, rrLastOk = 0;
 function onHeartRate(ev) {
   const h = parseHeartRate(ev.target.value);
-  live.hrLastPacket = performance.now();
-  live.bpm = h.bpm > 0 ? h.bpm : null;
+  const now = performance.now();
+  live.hrLastPacket = now;
   live.hrContact = !h.contactSupported || h.contact;
+  let bpm = live.hrContact && h.bpm >= 30 && h.bpm <= 230 ? h.bpm : null;
+  if (h.rr && h.rr.length && live.hrContact) {
+    if (now - rrLastOk > 5000) { rrRecent.length = 0; rrRejects = 0; }   // dopo una pausa si riparte da capo
+    for (const rr of h.rr) {
+      let ok = rrValid(rr, rrRecent);
+      if (!ok && rr >= 300 && rr <= 2000 && ++rrRejects >= 4) {        // il ritmo è cambiato davvero: nuovo riferimento
+        rrRecent.length = 0; ok = true;
+      }
+      if (ok) { rrRecent.push(rr); if (rrRecent.length > 15) rrRecent.shift(); rrRejects = 0; rrLastOk = now; }
+      live.rrSeen = true;
+      restRR(rr, ok);
+    }
+    // il valore della fascia deve essere coerente con i battiti veri degli ultimi secondi
+    const ref = rrRecent.length >= 5 ? 60000 / medianOf(rrRecent.slice(-8)) : null;
+    if (bpm && ref && Math.abs(bpm - ref) > 0.2 * ref) bpm = Math.round(ref);
+  }
+  live.bpm = bpm;
+  if (!bpm && !live.hrContact) rrRecent.length = 0;
+  restBpm(bpm);
   renderLive();
 }
 
@@ -2022,13 +2160,14 @@ function renderLive() {
   } else el.zFat.textContent = profileReady(p) ? 'serve la fascia o i watt' : '⚙️ inserisci peso ed età';
   el.tFat.dataset.fz = inFatZone ? '1' : '0';
 
-  // --- Potenza: watt reali dalla cyclette, altrimenti stima dai battiti ---
-  const pw = currentPower();
-  el.vWatt.textContent = pw ? pw.w : '--';
-  el.tWatt.dataset.est = pw && pw.est ? '1' : '0';
+  // --- Potenza: calcolata e salvata come prima, ma MOSTRATA solo se la cyclette invia il livello di
+  //     resistenza. Senza resistenza i watt sono una stima troppo grossolana: al loro posto "--". ---
+  const pw = currentPower(), showW = powerTrusted() && pw && !pw.est;
+  el.vWatt.textContent = showW ? pw.w : '--';
+  el.tWatt.dataset.est = '0';
   const avgW = S.powT > 0 ? Math.round(S.powSum / S.powT) : null;
-  if (!pw) el.zWatt.textContent = profileReady(p) ? 'servono watt o battiti' : 'dalla cyclette';
-  else el.zWatt.innerHTML = (pw.est ? 'stima da battiti' : (p.weight > 0 ? `${fmtDec(pw.w / p.weight, 1)} W/kg` : 'dalla cyclette')) +
+  if (!showW) el.zWatt.textContent = 'la cyclette non invia la resistenza';
+  else el.zWatt.innerHTML = (p.weight > 0 ? `${fmtDec(pw.w / p.weight, 1)} W/kg` : 'dalla cyclette') +
     (avgW != null ? `<span class="zx"> · media ${avgW}</span>` : '');
 
   // --- Dati extra, solo se la cyclette li invia ---
@@ -2112,9 +2251,11 @@ function tick() {
       S.fatG += (m.fatGMin * dt) / 60;
       S.choG += (m.choGMin * dt) / 60;
       S.kcalSrc = m.src;
+      if (m.method) S.kcalMethod = m.method === 'vo2r' && S.kcalMethod ? S.kcalMethod : m.method;
     }
     const z = hrZoneFor(bpm, Store.profile);
     if (z > 0) S.secZ[z - 1] += dt;
+    if (bpm) S.trimp += (trimpPerMin(bpm, Store.profile) * dt) / 60;   // carico di allenamento (Banister)
     if (bpm) {                                         // picco "tenuto": il minimo degli ultimi 8 secondi
       hrWin.push([now, bpm]);
       while (hrWin.length && now - hrWin[0][0] > 8000) hrWin.shift();
@@ -2150,10 +2291,15 @@ function tick() {
   renderLive();
   renderTimer();
   autoHideTick();
+  renderClock();
+  hrRecTick();
+  interruptTick();
+  coachTick();
 }
 
 function startTimer() {
   if (S.running) return;
+  intr.sessionPaused = false;
   unlockAudio();
   if (!S.startedAt && !profileReady(Store.profile)) toast('Per calorie e grassi inserisci peso ed età in ⚙️', 4000);
   S.running = true;
@@ -2161,7 +2307,10 @@ function startTimer() {
   if (!S.startedAt) S.startedAt = new Date().toISOString();
   lastTick = performance.now();
   requestWakeLock();
+  const resumed = S.accMs > 0, idxBefore = S.prog ? S.prog.idx : null;
   programTick(0);          // annuncia subito il primo passo (dentro il tocco: sblocca la voce su iPhone)
+  const announced = !!(S.prog && S.prog.idx !== idxBefore && S.prog.idx >= 0);
+  if (!announced) speak(coachLine(resumed ? 'resume' : 'start'));
   renderTimer();
 }
 
@@ -2169,8 +2318,36 @@ function pauseTimer() {
   if (!S.running) return;
   S.accMs += performance.now() - S.runStart;
   S.running = false;
+  startHrRecovery();
   saveDraft();
   renderTimer();
+}
+
+/* --- Recupero cardiaco a 1 minuto (Cole et al., NEJM 1999): dopo la pausa, se hai pedalato almeno
+       5 minuti e il cuore è sopra 100 bpm, l'app misura di quanto scende la FC in 60 secondi da fermo. --- */
+const hrRec = { on: false, t0: 0, peak: 0 };
+function startHrRecovery() {
+  if (intr.sessionPaused) return;
+  const bpm = currentBpm();
+  if (!hrLink.connected || !bpm || bpm < 100 || elapsedMs() < CONFIG.HRREC_MIN_MS) return;
+  const recent = hrWin.map((x) => x[1]);
+  Object.assign(hrRec, { on: true, t0: performance.now(), peak: Math.max(bpm, ...recent) });
+  toast('⏱ Resta seduto senza pedalare: tra 1 minuto misuro il recupero cardiaco', 4500);
+}
+function hrRecTick() {
+  if (!hrRec.on) return;
+  if (S.running || !hrLink.connected) { hrRec.on = false; return; }      // ripartito o fascia persa: annullata
+  if (performance.now() - hrRec.t0 < CONFIG.HRREC_S * 1000) return;
+  hrRec.on = false;
+  const after = currentBpm();
+  if (!after) return;
+  const drop = hrRec.peak - after;
+  S.hrRec1 = { drop, peak: hrRec.peak, after };
+  const prev = Store.profile.history.map((h) => h.hrRec1 && h.hrRec1.drop).filter((x) => x > 0);
+  const avg = prev.length ? Math.round(prev.reduce((a, b) => a + b, 0) / prev.length) : null;
+  toast(`❤️ Recupero cardiaco: −${drop} bpm in 1 minuto (da ${hrRec.peak} a ${after})` +
+    (avg ? ` · la tua media è −${avg}` : '') + '. Più scende, meglio è.', 7000);
+  saveDraft();
 }
 
 async function resetTimer() {
@@ -2188,6 +2365,8 @@ async function resetTimer() {
     pauseTimer();
   }
   S = newSession();
+  hrRec.on = false;
+  coachReset();
   attachProgram(Store.data.activeProgramId, false);
   clearDraft();
   releaseWakeLock();
@@ -2213,10 +2392,14 @@ function saveSession() {
     secRpmIdeal: Math.round(S.secIdeal),
     secRpmForce: Math.round(S.secForce),
     avgPowerW: S.powT ? Math.round(S.powSum / S.powT) : null,
+    powerOk: powerTrusted(),                             // watt mostrabili (la cyclette invia la resistenza)
     kcal: S.kcal > 0 ? Math.round(S.kcal) : null,
     fatG: S.fatG > 0 ? Math.round(S.fatG * 10) / 10 : null,
     choG: S.choG > 0 ? Math.round(S.choG) : null,
     kcalSrc: S.kcalSrc,
+    kcalMethod: S.kcalMethod,
+    trimp: S.trimp > 0 ? Math.round(S.trimp) : null,
+    hrRec1: S.hrRec1,
     secZ: S.secZ.map((s) => Math.round(s)),
     maxPowerW: S.powMax ? Math.round(S.powMax) : null,
     kJ: S.kj > 0 ? Math.round(S.kj) : null,
@@ -2274,12 +2457,17 @@ function targetWords(st) {
   else if (st.z) parts.push(`zona ${st.z}`);
   return parts.length ? parts.join(', ') : 'ritmo libero';
 }
-function announceStep(st) {
+function stepSentence(st) {
   const rep = st.rep ? ' ' + st.rep.replace('/', ' di ') : '';
+  return `${STEP_KINDS[st.kind]}${rep}: ${durWords(st.sec)}, ${targetWords(st)}`;
+}
+/** Cambio passo: segnale, vibrazione e messaggio. La voce di solito ha già parlato 5 secondi prima. */
+function announceStep(st, voice = true) {
   if (Store.data.settings.beep) { tone(880, 0.16); tone(1175, 0.22, 0.18); }
   vibrate([250]);
-  speak(`${STEP_KINDS[st.kind]}${rep}: ${durWords(st.sec)}, ${targetWords(st)}`);
-  toast(`▶ ${STEP_KINDS[st.kind]} · ${durShort(st.sec)} · ${stepTargetText(st, Store.profile)}`, 3000);
+  if (voice) speak(`${st.start === 0 ? coachLine('start') + ' ' : ''}${stepSentence(st)}. ${coachStepLine(st)}`);
+  const ter = TERRAIN_ICON[stepTerrain(st, st.prev, Store.profile)] || '';
+  toast(`▶ ${STEP_KINDS[st.kind]} · ${durShort(st.sec)} · ${stepTargetText(st, Store.profile)}${ter ? ' · ' + ter : ''}`, 3000);
 }
 
 /** Avanzamento del programma: cambio passo, conto alla rovescia, aderenza agli obiettivi */
@@ -2289,6 +2477,7 @@ function programTick(dt) {
   const sec = progSec();
   const idx = stepIndexAt(flat, sec);
   if (idx !== S.prog.idx) {
+    const said = S.prog.preFor != null && S.prog.preFor === S.prog.idx && S.prog.idx >= 0;   // annunciato 5 s prima
     S.prog.idx = idx;
     S.prog.beepSec = null;
     if (idx === -1) {
@@ -2296,17 +2485,25 @@ function programTick(dt) {
         S.prog.done = true;
         if (Store.data.settings.beep) [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.2, i * 0.17));
         vibrate([200, 100, 200, 100, 400]);
-        speak('Programma completato. Ottimo lavoro!');
+        speak(coachLine('done'));
         toast('🏁 Programma completato! Il timer continua: premi Reset per salvare.', 5000);
       }
-    } else announceStep(flat.steps[idx]);
+    } else {
+      announceStep(flat.steps[idx], !said);
+      applyTerrain(flat.steps[idx]);                      // video in salita / pianura / discesa
+    }
   }
   if (idx >= 0) {
     const st = flat.steps[idx];
     const left = st.end - sec, whole = Math.ceil(left);
-    if (left <= 3.05 && whole >= 1 && whole !== S.prog.beepSec) {    // 3-2-1 prima del cambio
+    if (left <= CONFIG.PRE_ANNOUNCE_S + 0.05 && left > 0.5 && S.prog.preFor !== idx) {   // la voce avvisa PRIMA del cambio
+      S.prog.preFor = idx;
+      const nx = flat.steps[idx + 1];
+      speak(nx ? `Tra ${CONFIG.PRE_ANNOUNCE_S} secondi, ${stepSentence(nx)}. ${coachStepLine(nx)}` : `Tra ${CONFIG.PRE_ANNOUNCE_S} secondi, fine del programma`);
+    }
+    if (left <= 3.05 && whole >= 1 && whole !== S.prog.beepSec) {    // 3-2-1 prima del cambio (solo senza voce)
       S.prog.beepSec = whole;
-      if (Store.data.settings.beep) tone(660, 0.1);
+      if (Store.data.settings.beep && !Store.data.settings.voice) tone(660, 0.1);
     }
     const ss = stepStatus(st), have = [ss.r, ss.h].filter(Boolean);
     if (have.length) { S.prog.secT += dt; if (have.every((x) => x === 'ok')) S.prog.secIn += dt; }
@@ -2442,7 +2639,8 @@ function renderEditor() {
   el.edBlocks.innerHTML = edProg.blocks.map((b, bi) => `
     <div class="ed-block" data-b="${bi}">
       <div class="ed-bhead"><span>Blocco ${bi + 1} · ripeti</span> <input data-f="repeat" inputmode="numeric" value="${b.repeat || 1}"> <span>volte</span>
-        <button class="hbtn" data-act="del-block" style="margin-left:auto">🗑 blocco</button></div>
+        <span class="ed-mv" style="margin-left:auto"><button class="hbtn" data-act="up-block" aria-label="Sposta il blocco su"${bi === 0 ? ' disabled' : ''}>▲</button><button class="hbtn" data-act="down-block" aria-label="Sposta il blocco giù"${bi === edProg.blocks.length - 1 ? ' disabled' : ''}>▼</button></span>
+        <button class="hbtn" data-act="del-block" aria-label="Elimina blocco">🗑</button></div>
       ${b.steps.map((s, si) => {
         const mode = s.hr ? 'bpm' : s.z ? String(s.z) : '';
         const zr = s.z ? stepHrRange({ z: s.z }, p) : null;
@@ -2451,7 +2649,8 @@ function renderEditor() {
         return `<div class="ed-step" data-s="${si}">
         <div class="ed-r1"><select data-f="kind">${opts(STEP_SHORT, s.kind)}</select>
           <input data-f="min" inputmode="numeric" value="${Math.floor(s.sec / 60)}" aria-label="minuti"><span>min</span>
-          <input data-f="secs" inputmode="numeric" value="${s.sec % 60}" aria-label="secondi"><span>sec</span>
+          <input data-f="secs" inputmode="numeric" value="${s.sec % 60}" aria-label="secondi"><span>s</span>
+          <button class="mv" data-act="up-step" aria-label="Sposta il passo su"${bi === 0 && si === 0 ? ' disabled' : ''}>▲</button><button class="mv" data-act="down-step" aria-label="Sposta il passo giù"${bi === edProg.blocks.length - 1 && si === b.steps.length - 1 ? ' disabled' : ''}>▼</button>
           <button class="del" data-act="del-step" aria-label="Elimina passo">✕</button></div>
         <div class="ed-r2"><span class="ed-l">🚲 Cadenza</span>
           <input data-f="rpmLo" inputmode="numeric" placeholder="da" value="${num(rpm[0])}"><span>–</span><input data-f="rpmHi" inputmode="numeric" placeholder="a" value="${num(rpm[1])}"><span>rpm</span></div>
@@ -2502,7 +2701,22 @@ function editorClick(e) {
     steps.splice(+a.closest('[data-s]').dataset.s, 1);
     if (!steps.length) edProg.blocks.splice(bi, 1);
   } else if (a.dataset.act === 'del-block') edProg.blocks.splice(bi, 1);
-  else return;
+  else if (a.dataset.act === 'up-block' || a.dataset.act === 'down-block') {     // sposta un blocco intero
+    const to = bi + (a.dataset.act === 'up-block' ? -1 : 1);
+    if (to < 0 || to >= edProg.blocks.length) return;
+    [edProg.blocks[bi], edProg.blocks[to]] = [edProg.blocks[to], edProg.blocks[bi]];
+  } else if (a.dataset.act === 'up-step' || a.dataset.act === 'down-step') {     // sposta un passo (anche nel blocco vicino)
+    const up = a.dataset.act === 'up-step', blocks = edProg.blocks, steps = blocks[bi].steps;
+    const si = +a.closest('[data-s]').dataset.s, to = si + (up ? -1 : 1);
+    if (to >= 0 && to < steps.length) [steps[si], steps[to]] = [steps[to], steps[si]];
+    else {
+      const nb = bi + (up ? -1 : 1);
+      if (nb < 0 || nb >= blocks.length) return;
+      const [st] = steps.splice(si, 1);
+      if (up) blocks[nb].steps.push(st); else blocks[nb].steps.unshift(st);
+      if (!steps.length) blocks.splice(bi, 1);
+    }
+  } else return;
   renderEditor();
 }
 function saveEditor() {
@@ -2637,6 +2851,8 @@ const PROFILE_FIELDS = [
 ];
 const ZONE_NAMES = ['Recupero', 'Brucia grassi', 'Cardio', 'Soglia', 'Massima'];
 
+/** I watt hanno senso solo se la cyclette conosce la resistenza (la invia nei dati FTMS) */
+const powerTrusted = () => !!(live.bikeSeen && live.bikeSeen.resistance);
 /** Quali dati manda la cyclette e da dove arrivano i watt */
 function bikeInfoHtml() {
   const seen = live.bikeSeen, proto = bikeLink && bikeLink.protocol;
@@ -2670,6 +2886,7 @@ function openSettings() {
     `Zone cadenza: ${CONFIG.RPM_FORCE_MIN}–${CONFIG.RPM_FORCE_MAX} rpm forza/salita, ${CONFIG.RPM_IDEAL_MIN}–${CONFIG.RPM_IDEAL_MAX} rpm ritmo ideale. ` +
     `Prova senza hardware: aggiungi #demo all'indirizzo. Versione ${CONFIG.APP_VERSION}.`;
   el.bikeInfo.innerHTML = bikeInfoHtml();
+  fillCoachSettings();
   updateSummary();
   el.sheetSettings.hidden = false;
   el.sheetSettings.querySelector('.sheet-card').scrollTop = 0;
@@ -2727,7 +2944,8 @@ function updateSummary() {
     (auto ? `<b>Allarme automatico oltre ${thrAuto} bpm</b>: è l'inizio della zona 5, cioè l'intensità "molto alta" delle linee guida europee di cardiologia dello sport (ESC 2020: oltre il 90% della FC max, o l'85% della riserva cardiaca). `
       : `<b>Allarme oltre ${d.hrThreshold || '--'} bpm</b>, scelto da te${thrAuto ? ` (quello automatico sarebbe ${thrAuto})` : ''}. `) +
     `Se prendi farmaci che rallentano il cuore (es. beta-bloccanti) o hai problemi cardiaci, scegli "Scelta da me" e usa la soglia indicata dal medico.<br>` +
-    `<b>Zone</b>: in automatico l'app usa il metodo più preciso con i dati che hai: la FC di soglia da test se c'è, altrimenti la riserva cardiaca se hai inserito la FC a riposo (misurala al mattino appena sveglio), altrimenti le % della FC max come Polar. ` +
+    (d.hrRest && Store.profile.hrRestDate && d.hrRest === Store.profile.hrRest ? `<b>FC a riposo ${d.hrRest} bpm</b> misurata con la fascia il ${new Date(Store.profile.hrRestDate).toLocaleDateString('it-IT')}${Store.profile.rmssd ? ` (variabilità RMSSD ${Store.profile.rmssd} ms)` : ''}.<br>` : '') +
+    `<b>Zone</b>: in automatico l'app usa il metodo più preciso con i dati che hai: la FC di soglia da test se c'è, altrimenti la riserva cardiaca se la FC a riposo è misurata (col pulsante 📏, meglio al mattino, seduto, prima di caffè e allenamento), altrimenti le % della FC max come Polar. ` +
     `La <b>FC di soglia</b> si ricava con un test: 30 minuti al massimo sforzo che riesci a tenere; è la media dei battiti negli ultimi 20 minuti.`;
   const lows = zoneLowsBpm(d);
   if (lows) {
@@ -2780,11 +2998,15 @@ function saveSettings() {
   p.name = el.setName.value.trim().slice(0, 16) || p.name || 'Profilo';
   if (manual) p.hrThreshold = thr;
   delete d.hrThreshold;
+  if (d.hrRest !== p.hrRest) { p.hrRestDate = null; p.rmssd = null; }    // cambiata a mano
   Object.assign(p, d);
   logBody(p);
   Store.data.settings.kcalSource = el.setKcalSrc.value;
   Store.data.settings.beep = el.setBeep.checked;
   Store.data.settings.voice = el.setVoice.checked;
+  Store.data.settings.coach = el.setCoach.value;
+  Store.data.settings.coachFreq = el.setCoachFreq.value;
+  Store.data.settings.coachVoice = el.setCoachVoice.value || null;
   Store.data.settings.lockLayout = el.setLockLayout.checked;
   Store.data.settings.scanAll = el.setScanAll.checked;
   Store.save();
@@ -2859,12 +3081,12 @@ function renderHistory() {
         ${cell(s.kcal != null ? s.kcal : '--', 'kcal')}
         ${cell(s.fatG != null ? fmtDec(s.fatG, 1) + ' g' : '--', 'grassi*')}
         ${cell(s.choG != null ? s.choG + ' g' : '--', 'carboidrati*')}
-        ${cell(s.avgPowerW != null ? s.avgPowerW + ' W' : '--', s.powerEst ? 'watt medi (stima)' : 'watt medi')}
-        ${cell(s.maxPowerW != null ? s.maxPowerW + ' W' : '--', 'watt max')}
-        ${cell(s.kJ != null ? s.kJ : '--', 'kJ di lavoro')}
+        ${cell(s.trimp != null ? s.trimp : '--', 'carico (TRIMP)')}
+        ${cell(s.hrRec1 ? '−' + s.hrRec1.drop + ' bpm' : '--', 'recupero 1′')}
+        ${cell(s.avgPowerW != null && s.powerOk ? s.avgPowerW + ' W' : '--', 'watt medi')}
       </div>${zoneBar(s.secZ)}
       ${s.trace ? `<button class="hbtn" data-det="${esc(s.id)}">📈 Grafici della sessione</button><div class="hdet" hidden></div>` : ''}</div>`;
-  }).join('') + '<p class="hint">* stime calcolate da battiti/watt e dati del profilo, non misure dirette.</p>';
+  }).join('') + '<p class="hint">* stime: con la fascia le calorie usano l\'equazione di Keytel (battiti, peso, età, sesso, VO₂max). Carico = TRIMP di Banister. Recupero 1′ = di quanto scende il cuore nel primo minuto da fermo, dopo la pausa: più è alto, meglio è.</p>';
 }
 
 /* =========================================================================
@@ -3012,9 +3234,10 @@ function renderOverview(h) {
   // volume settimanale (12 settimane)
   const wm = el.weekMetric.querySelector('.active').dataset.m;
   const weeks = weeklyTotals(h, 12, now);
-  const fmtW = { min: (v) => hm(v * 60), km: (v) => fmtDec(v, 1) + ' km', kcal: (v) => Math.round(v).toLocaleString('it-IT') + ' kcal' }[wm];
+  const fmtW = { min: (v) => hm(v * 60), km: (v) => fmtDec(v, 1) + ' km', kcal: (v) => Math.round(v).toLocaleString('it-IT') + ' kcal',
+                 trimp: (v) => Math.round(v) + ' TRIMP' }[wm];
   barChart(el.chWeek, weeks.map((w) => ({ label: dShort(w.start), value: w[wm], tip: `settimana dal ${dShort(w.start)} · ${w.n} sessioni` })),
-    { color: CH.blue, fmt: fmtW, head: ['Settimana', { min: 'Tempo', km: 'Distanza', kcal: 'Calorie' }[wm]] });
+    { color: CH.blue, fmt: fmtW, head: ['Settimana', { min: 'Tempo', km: 'Distanza', kcal: 'Calorie', trimp: 'Carico (TRIMP)' }[wm]] });
 
   // andamento per sessione (ultime 20, dalla più vecchia)
   const tm2 = el.trendMetric.querySelector('.active').dataset.m;
@@ -3022,7 +3245,7 @@ function renderOverview(h) {
   const conf = { spd: ['avgSpeedKmh', CH.blue, (v) => fmtDec(v, 1) + ' km/h', 'Velocità media'],
                  pw: ['avgPowerW', CH.yellow, (v) => Math.round(v) + ' W', 'Watt medi'],
                  bpm: ['avgBpm', CH.red, (v) => Math.round(v) + ' bpm', 'BPM medi'] }[tm2];
-  const pts = last.map((s) => ({ y: s[conf[0]] != null && s[conf[0]] > 0 ? s[conf[0]] : null, label: dShort(s.date) }));
+  const pts = last.map((s) => ({ y: s[conf[0]] != null && s[conf[0]] > 0 && (conf[0] !== 'avgPowerW' || s.powerOk) ? s[conf[0]] : null, label: dShort(s.date) }));
   lineChart(el.chTrend, pts, { color: conf[1], fmt: conf[2], head: ['Sessione', conf[3]],
     xLabels: last.length ? [[0, dShort(last[0].date)], [last.length - 1, dShort(last[last.length - 1].date)]] : [] });
 
@@ -3039,13 +3262,16 @@ function renderOverview(h) {
   }
 
   // record personali
-  const best = (key, f) => { let b = null; h.forEach((s) => { if (s[key] != null && (!b || s[key] > b[key])) b = s; }); return b ? `<div class="rec"><b>${f(b[key])}</b><span>${dShort(b.date)}</span></div>` : ''; };
+  const best = (key, f, ok = () => true) => { let b = null; h.forEach((s) => { if (s[key] != null && ok(s) && (!b || s[key] > b[key])) b = s; }); return b ? `<div class="rec"><b>${f(b[key])}</b><span>${dShort(b.date)}</span></div>` : ''; };
   const rec = (t, html) => (html ? html.replace('<span>', `<span>${t} · `) : '');
   const recs = [
     rec('sessione più lunga', best('durationSec', (v) => hm(v))),
     rec('distanza massima', best('distanceKm', (v) => fmtDec(v, 1) + ' km')),
     rec('velocità media migliore', best('avgSpeedKmh', (v) => fmtDec(v, 1) + ' km/h')),
-    rec('watt medi migliori', best('avgPowerW', (v) => v + ' W')),
+    rec('watt medi migliori', best('avgPowerW', (v) => v + ' W', (s) => s.powerOk)),
+    rec('recupero cardiaco migliore', (() => { const hh = h.filter((s) => s.hrRec1 && s.hrRec1.drop > 0).map((s) => Object.assign({}, s, { rec1: s.hrRec1.drop }));
+      let b = null; hh.forEach((s) => { if (!b || s.rec1 > b.rec1) b = s; });
+      return b ? `<div class="rec"><b>−${b.rec1} bpm</b><span>${dShort(new Date(b.date))}</span></div>` : ''; })()),
     rec('più calorie', best('kcal', (v) => v + ' kcal')),
     rec('più grassi bruciati*', best('fatG', (v) => fmtDec(v, 1) + ' g')),
   ].join('');
@@ -3232,12 +3458,15 @@ function tone(freq, dur, when = 0, vol = 0.25) {
 function vibrate(pattern) { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }
 /** Annuncio vocale in italiano */
 function speak(text) {
-  if (!Store.data.settings.voice || !('speechSynthesis' in window)) return;
+  if (!Store.data.settings.voice || !('speechSynthesis' in window) || !text) return;
   try {
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'it-IT'; u.rate = 1.05;
+    const c = coachOf(), u = new SpeechSynthesisUtterance(text);
+    u.lang = 'it-IT'; u.rate = c.rate; u.pitch = c.pitch;
+    const v = coachVoice(c);
+    if (v) u.voice = v;
     speechSynthesis.speak(u);
+    coach.last = Date.now();
   } catch (e) {}
 }
 function ensureMediaGraph() {
@@ -3289,6 +3518,7 @@ function loadTrack(i, autoplay) {
 
 /** Toglie il video caricato (la musica resta solo se è audio) */
 function unloadMedia() {
+  mediaWant = false;
   try { el.media.pause(); } catch (e) {}
   el.media.removeAttribute('src'); el.media.load();
   queue.forEach((t) => URL.revokeObjectURL(t.url));
@@ -3297,7 +3527,9 @@ function unloadMedia() {
   updateScreenState();
 }
 
+let mediaWant = false;                      // true = vuoi che suoni (l'hai avviato tu e non l'hai fermato)
 async function playMedia() {
+  mediaWant = true;
   setAudioSession('playback');             // il player suona anche con l'interruttore silenzioso
   try {
     if (audio.ctx && audio.ctx.state !== 'running') await audio.ctx.resume();
@@ -3312,12 +3544,15 @@ function bindPlayer() {
     el.fileInput.value = '';
     loadFiles(files);
   });
-  el.btnPlay.addEventListener('click', () => { if (m.paused) playMedia(); else m.pause(); });
+  el.btnPlay.addEventListener('click', () => { if (m.paused) playMedia(); else { mediaWant = false; m.pause(); } });
   el.btnPrev.addEventListener('click', () => { if (m.currentTime > 3 || qi <= 0) m.currentTime = 0; else loadTrack(qi - 1, true); });
   el.btnNext.addEventListener('click', () => { if (qi < queue.length - 1) loadTrack(qi + 1, true); });
   const upd = () => { el.btnPlay.textContent = m.paused ? '▶' : '❚❚'; };
   m.addEventListener('play', () => { upd(); if (audio.ctx && audio.ctx.state !== 'running') audio.ctx.resume().catch(() => {}); });
-  m.addEventListener('pause', upd);
+  m.addEventListener('pause', () => {
+    upd();
+    if (mediaWant && !m.ended && m.getAttribute('src')) setTimeout(() => { if (m.paused && mediaWant) onSystemPause(); }, 400);
+  });
   m.addEventListener('ended', () => { if (qi < queue.length - 1) loadTrack(qi + 1, true); else upd(); });
   m.addEventListener('loadedmetadata', () => {
     el.tDur.textContent = fmtMedia(m.duration);
@@ -3572,9 +3807,11 @@ function renderSceneList() {
    ========================================================================= */
 const ROUTE_KINDS = [
   { k: 'mount', name: '⛰️ Montagna' }, { k: 'lake', name: '🏞️ Laghi e fiumi' },
-  { k: 'sea', name: '🌊 Mare' }, { k: 'green', name: '🌳 Campagna e boschi' }, { k: 'mine', name: '⭐ I miei' },
+  { k: 'sea', name: '🌊 Mare' }, { k: 'green', name: '🌳 Campagna e boschi' },
+  { k: 'up', name: '⛰️ Salite' }, { k: 'down', name: '⬇️ Discese' }, { k: 'mine', name: '⭐ I miei' },
 ];
-// yt = ID del video su YouTube · min = durata indicativa · kmh = velocità media stimata del filmato
+// yt = ID del video su YouTube · min = durata indicativa · kmh = velocità alla quale il filmato scorre a 1×
+// (per salite e discese è la velocità "da cyclette" in quella fase, non quella reale sulla strada)
 const ROUTES = [
   { yt: '-PvzIkUp_D8', kind: 'mount', name: 'Strade alpine dell\'Alto Adige', place: 'Alto Adige', min: 45, kmh: 18 },
   { yt: 'H5FPwJIU3WY', kind: 'mount', name: 'Prato Piazza', place: 'Dolomiti di Braies', min: 44, kmh: 13 },
@@ -3598,7 +3835,20 @@ const ROUTES = [
   { yt: 'VbH08GNaS34', kind: 'green', name: 'Il Chianti in gravel', place: 'Toscana', kmh: 18 },
   { yt: 'AX8sC_kR46M', kind: 'green', name: 'La Baviera in autunno', place: 'Germania', min: 60, kmh: 18 },
   { yt: 'yt0xcYTGTiw', kind: 'green', name: 'Sentieri nel bosco in MTB', place: 'Inghilterra', min: 30, kmh: 14 },
+  // salite: usate nelle fasi di forza dei programmi (cadenza bassa, battiti alti)
+  { yt: 'cRkeR_CcqQA', kind: 'up', name: 'Alpe d\'Huez, le 21 curve', place: 'Francia', min: 63, kmh: 17 },
+  { yt: '53vZxvIdIaw', kind: 'up', name: 'Alpe d\'Huez da Bourg d\'Oisans', place: 'Francia', kmh: 17 },
+  { yt: 'cyjP8T1AX6o', kind: 'up', name: 'Passo dello Stelvio da Prato', place: 'Alto Adige', kmh: 17 },
+  { yt: 'NRz6dn9JNoc', kind: 'up', name: 'Mont Ventoux', place: 'Provenza', min: 73, kmh: 17 },
+  { yt: '0lDjbNUaeD4', kind: 'up', name: 'Mont Ventoux da Sault, con la neve', place: 'Provenza', min: 90, kmh: 17 },
+  { yt: 'WeaG_iGnZ_0', kind: 'up', name: 'Mont Ventoux, gli ultimi 6 km', place: 'Provenza', min: 40, kmh: 16 },
+  // discese: usate nel defaticamento e nei recuperi dopo una salita
+  { yt: 'xHTjrnLAefY', kind: 'down', name: 'Alpe d\'Huez in discesa', place: 'Francia', kmh: 30 },
+  { yt: 'MOCr4a8XtdQ', kind: 'down', name: 'Discesa dal Col de la Croix de Fer', place: 'Francia', kmh: 30 },
+  { yt: 'wlbqpEZuAII', kind: 'down', name: 'Discesa dal Pico de Veleta', place: 'Sierra Nevada', min: 45, kmh: 30 },
+  { yt: 'Y7tTfewA2sM', kind: 'down', name: 'Discesa dal Klausenpass', place: 'Svizzera', kmh: 30 },
 ];
+const routeTerrain = (r) => (r && r.kind === 'up' ? 'up' : r && r.kind === 'down' ? 'down' : 'flat');
 
 const route = {
   api: null, player: null, ready: false, cur: null, state: -1,
@@ -3647,7 +3897,7 @@ async function startRoute(yt, { autoplay = true, silent = false } = {}) {
   const b = document.body.classList;
   if (sceneState.id) { sceneState.id = null; Store.data.settings.scene = null; b.remove('scene-on'); }
   if (b.contains('has-video')) unloadMedia();
-  Object.assign(route, { cur: r, state: -1, waitStart: !autoplay, userPaused: false, autoPaused: false, slowSince: 0,
+  Object.assign(route, { cur: r, state: -1, waitStart: !autoplay, userPaused: false, autoPaused: false, sysPaused: false, slowSince: 0,
     rate: 1, wantRate: 1, wantSince: 0, rateTry: 0, unmuteAt: 0, startedAt: Date.now(), silent });
   const s = Store.data.settings;
   s.route = yt;
@@ -3713,13 +3963,16 @@ function onRouteState(st) {
   route.state = st;
   const p = route.player, s = Store.data.settings;
   if (st === 1) {                                      // in riproduzione
-    route.errors = 0; route.waitStart = false;
+    route.errors = 0; route.waitStart = false; route.sysPaused = false;
     if (s.routeSound && p.isMuted && p.isMuted() && !route.unmuteAt) { try { p.unMute(); p.setVolume(100); } catch (e) {} route.unmuteAt = Date.now(); }
   } else if (st === 2) {                               // in pausa: se è stato il telefono a bloccare l'audio, riparte muto
     if (route.unmuteAt && Date.now() - route.unmuteAt < 2000 && !route.userPaused && !route.autoPaused) {
       try { p.mute(); p.playVideo(); } catch (e) {}
       s.routeSound = false; Store.save();
       toast('Il telefono ha bloccato l\'audio del video: puoi ascoltare la tua musica con 📂', 5000);
+    } else if (!route.userPaused && !route.autoPaused) {   // non l'hai fermato tu né la sincronizzazione: telefonata, Siri…
+      route.sysPaused = true;
+      onSystemPause();
     }
     saveRoutePos(true);
   } else if (st === 0) {                               // finito
@@ -3743,9 +3996,45 @@ function onRouteError(code) {
   nextRoute();
 }
 
-/** Prossimo percorso: a caso tra quelli non visti di recente (mai lo stesso di adesso) */
+/* --- Strada adatta al programma: salita nelle fasi di forza, discesa nel recupero dopo una salita
+       e nel defaticamento, pianura nel resto. Per ogni tipo si continua lo stesso filmato
+       dal punto in cui era rimasto, così la salita riprende da dove l'avevi lasciata. --- */
+const terrainRoutes = { up: null, flat: null, down: null };
+function wantedTerrain() {
+  const flat = progFlat();
+  if (!flat || !S.prog || Store.data.settings.routeTerrain === false) return null;
+  const idx = stepIndexAt(flat, progSec());
+  return idx >= 0 ? stepTerrain(flat.steps[idx], flat.steps[idx].prev, Store.profile) : null;
+}
+function pickTerrainRoute(t, exceptYt) {
+  const s = Store.data.settings, keep = terrainRoutes[t];
+  if (keep && keep !== exceptYt && !route.bad.has(keep) && routeById(keep)) return keep;
+  const pool = allRoutes().filter((r) => routeTerrain(r) === t && !route.bad.has(r.yt) && r.yt !== exceptYt);
+  if (!pool.length) return null;
+  const fresh = pool.filter((r) => !(s.routeHist || []).includes(r.yt));
+  const list = fresh.length ? fresh : pool;
+  return list[Math.floor(Math.random() * list.length)].yt;
+}
+function applyTerrain(st) {
+  if (!route.cur || Store.data.settings.routeTerrain === false) return;   // solo con un percorso reale in corso
+  const t = stepTerrain(st, st.prev, Store.profile);
+  if (routeTerrain(route.cur) === t) { terrainRoutes[t] = route.cur.yt; return; }
+  const yt = pickTerrainRoute(t, null);
+  if (!yt) return;
+  terrainRoutes[t] = yt;
+  startRoute(yt, { autoplay: true, silent: true });
+}
+
+/** Prossimo percorso: a caso tra quelli non visti di recente (mai lo stesso di adesso).
+ *  Durante un programma resta sullo stesso tipo di strada del passo in corso. */
 function nextRoute() {
   const s = Store.data.settings, curId = route.cur && route.cur.yt;
+  const t = wantedTerrain();
+  if (t) {
+    terrainRoutes[t] = null;
+    const yt = pickTerrainRoute(t, curId);
+    if (yt) { terrainRoutes[t] = yt; startRoute(yt, { autoplay: true }); return; }
+  }
   const all = allRoutes().filter((r) => !route.bad.has(r.yt) && r.yt !== curId);
   if (!all.length) return;
   const recent = s.routeHist || [];
@@ -3782,8 +4071,8 @@ function fitRoute() {
 function toggleRoutePlay() {
   const p = route.player;
   if (!p || !route.ready || !route.cur) return;
-  if (route.state === 1 || route.state === 3) { route.userPaused = true; try { p.pauseVideo(); } catch (e) {} }
-  else { route.userPaused = false; route.autoPaused = false; route.waitStart = false; route.slowSince = 0; try { p.playVideo(); } catch (e) {} }
+  if (route.state === 1 || route.state === 3) { route.userPaused = true; route.sysPaused = false; try { p.pauseVideo(); } catch (e) {} }
+  else { route.userPaused = false; route.autoPaused = false; route.sysPaused = false; route.waitStart = false; route.slowSince = 0; try { p.playVideo(); } catch (e) {} }
   renderRouteInfo();
 }
 function toggleRouteSound() {
@@ -3888,6 +4177,7 @@ function renderRouteList() {
   }).join('') || '<p class="hint">Nessun percorso in questo gruppo.</p>';
   el.setRouteSync.checked = s.routeSync !== false;
   el.setRouteLoop.checked = s.routeLoop !== false;
+  el.setRouteTerrain.checked = s.routeTerrain !== false;
 }
 
 /** Aggiunge un video YouTube qualsiasi (incolla il link) */
@@ -3934,6 +4224,17 @@ function bindRoutes() {
   el.btnRouteAdd.addEventListener('click', addRoute);
   el.setRouteSync.addEventListener('change', () => { Store.data.settings.routeSync = el.setRouteSync.checked; Store.save(); });
   el.setRouteLoop.addEventListener('change', () => { Store.data.settings.routeLoop = el.setRouteLoop.checked; Store.save(); });
+  el.btnRestMeas.addEventListener('click', startRestMeasure);
+  el.setCoach.addEventListener('change', coachInfo);
+  el.setVoice.addEventListener('change', coachInfo);
+  el.btnCoachTry.addEventListener('click', () => { unlockAudio(); coachTry(); });
+  try { if ('speechSynthesis' in window) speechSynthesis.addEventListener('voiceschanged', () => { if (!el.sheetSettings.hidden) fillCoachSettings(); }); } catch (e) {}
+  el.btnRestCancel.addEventListener('click', () => { finishRest(''); el.restMeas.hidden = true; });
+  el.setRouteTerrain.addEventListener('change', () => {
+    Store.data.settings.routeTerrain = el.setRouteTerrain.checked; Store.save();
+    const flat = progFlat(), idx = flat && S.running ? stepIndexAt(flat, progSec()) : -1;
+    if (el.setRouteTerrain.checked && idx >= 0) applyTerrain(flat.steps[idx]);
+  });
   el.btnRPlay.addEventListener('click', toggleRoutePlay);
   el.btnRNext.addEventListener('click', nextRoute);
   el.btnRMute.addEventListener('click', toggleRouteSound);
@@ -4010,7 +4311,295 @@ const scheduleFit = () => { if (!fitRaf) fitRaf = requestAnimationFrame(fitVals)
    12g. COMANDI A SCOMPARSA — in sovrimpressione, mentre pedali o il video scorre, la barra
    del video e i pulsanti in basso spariscono; un tocco in qualsiasi punto li fa ricomparire.
    ========================================================================= */
-let ctlLastTouch = 0;
+/* =========================================================================
+   12j. ALLENATORI VOCALI — chi ti guida: voce del telefono con tono e velocità propri e frasi
+   originali per ogni momento (inizio, lavoro, recupero, salita, metà, ultimi 30 secondi,
+   fuori ritmo, chilometri, fine). L'avviso sui battiti troppo alti dice SEMPRE di rallentare.
+   ========================================================================= */
+const COACHES = {
+  coach: { name: '🙂 Coach', desc: 'annunci chiari e incoraggiamenti gentili', pitch: 1, rate: 1.05, voices: ['Alice', 'Federica', 'Emma', 'Paola'],
+    lines: {
+      start: ['Si parte! Buon allenamento.', 'Pronti? Via, con calma all\'inizio.'],
+      warm: ['Scaldiamo le gambe, senza fretta.', 'Respira e trova il ritmo.'],
+      work: ['Adesso si lavora, dai!', 'Concentrato, questa è la parte che conta.'],
+      rest: ['Recupera e respira profondo.', 'Bravo, ora tira il fiato.'],
+      cool: ['Ultimo tratto, sciogli le gambe.', 'Ottimo lavoro, ora defaticamento.'],
+      up: ['Inizia la salita: spingi rotondo e costante.', 'Salita! Resistenza su e pedalata potente.'],
+      down: ['Discesa: goditi il recupero.', 'Si scende, rilassa le spalle.'],
+      half: ['Sei a metà, continua così.', 'Metà fatta, tieni il ritmo.'],
+      last30: ['Ultimi trenta secondi, dai tutto!', 'Trenta secondi e hai finito questo pezzo!'],
+      rpmLow: ['Alza un po\' la cadenza.', 'Gira le gambe un po\' più veloce.'],
+      rpmHigh: ['Cadenza un po\' alta, rallenta appena.', 'Calma, abbassa un filo il ritmo.'],
+      hrLow: ['Battiti un po\' bassi: puoi spingere di più.', 'Hai margine, aumenta un poco.'],
+      hrHigh: ['Battiti alti: alleggerisci un attimo.', 'Respira e cala un po\' l\'intensità.'],
+      free: ['Stai andando bene.', 'Bel ritmo, continua così.', 'Ricordati di bere un sorso.'],
+      km: ['{n} chilometri! Ottimo.', 'Hai fatto {n} chilometri, bravo.'],
+      done: ['Programma completato. Ottimo lavoro!', 'Finito! Allenamento fatto bene.'],
+      resume: ['Si riparte!', 'Di nuovo in sella, bene.'],
+      alarm: ['Attenzione, battiti troppo alti: rallenta subito.', 'Sei sopra la soglia di sicurezza: cala l\'intensità adesso.'],
+    } },
+  sergente: { name: '🪖 Sergente istruttore', desc: 'ti tratta malissimo: urla, ordini e insulti da caserma', pitch: 0.7, rate: 1.12, voices: ['Luca', 'Giorgio', 'Diego'],
+    lines: {
+      start: ['In sella, recluta! E non voglio sentire lamentele!', 'Attenti! Da questo momento le tue gambe appartengono a me!'],
+      warm: ['Riscaldamento, recluta. Anche mia nonna scalderebbe più forte!', 'Muovi quelle gambe di gelatina, ti voglio caldo!'],
+      work: ['Adesso si soffre, recluta! Spingi!', 'Lavoro! Voglio vedere sudore, non scuse!', 'Non sei qui in vacanza, pedala!'],
+      rest: ['Recupero. Non ti abituare, mollusco!', 'Riposa pure, tanto fra poco ti rimetto sotto!'],
+      cool: ['Defaticamento. Sei sopravvissuto, per stavolta.', 'Hai finito di soffrire. Quasi. Gira piano.'],
+      up: ['Salita, recluta! La montagna non ha pietà e io nemmeno!', 'Alza la resistenza e spingi, sacco di patate!'],
+      down: ['Discesa. Non ti rilassare troppo, lumaca!', 'Si scende. Respira, che dopo si risale!'],
+      half: ['Sei a metà e già ansimi? Vergogna!', 'Metà strada, recluta! L\'altra metà la voglio più forte!'],
+      last30: ['Trenta secondi! Dammi tutto quello che hai, pappamolle!', 'Ultimi trenta secondi! Molla adesso e ricominci da capo!'],
+      rpmLow: ['Cadenza da lumaca! Gira quelle gambe!', 'Ti stai addormentando, recluta? Più veloce!', 'Più giri, polpetta lessa! Subito!'],
+      rpmHigh: ['Frena l\'entusiasmo, recluta: cadenza troppo alta!', 'Non sei un frullatore! Rispetta la cadenza!'],
+      hrLow: ['Battiti da pensionato! Spingi di più!', 'Il tuo cuore sta dormendo, sveglialo!'],
+      hrHigh: ['Calma i battiti, recluta: voglio un soldato, non un ricoverato!', 'Troppo su, rallenta un poco. È un ordine!'],
+      free: ['Non ti ho detto di riposare!', 'Ti tengo d\'occhio, recluta.', 'Questa la chiami pedalata? Più forte!'],
+      km: ['{n} chilometri. Mia nonna ne fa il doppio, ma va bene.', '{n} chilometri, recluta. Non montarti la testa.'],
+      done: ['Programma finito. Oggi non mi hai deluso. Troppo.', 'Hai finito, recluta. Domani si ricomincia e sarà peggio!'],
+      resume: ['Di nuovo in sella, recluta! Ti sei riposato fin troppo!', 'Pausa finita! Muoviti!'],
+      alarm: ['Stop, recluta! Battiti troppo alti: rallenta subito, è un ordine!', 'Battiti oltre la soglia! Cala adesso, voglio un soldato vivo!'],
+    } },
+  cafone: { name: '🍺 Il cafone', desc: 'papà sbracato e sboccato: sarcasmo, lamentele e parolacce', pitch: 0.85, rate: 1.0, voices: ['Luca', 'Giorgio', 'Diego'],
+    lines: {
+      start: ['Oh, ma davvero ti alleni? Va be\', partiamo, che palle.', 'Dai, pedala, che dopo ci facciamo una birra.'],
+      warm: ['Riscaldamento? Io mi scaldo sul divano, ma fai tu.', 'Piano piano, che tanto nessuno ti guarda.'],
+      work: ['Adesso spingi, cacchio, che la cyclette l\'hai pagata!', 'Dai che si suda, porca miseria!', 'Pedala, che la pancia non se ne va da sola!'],
+      rest: ['Recupero. Finalmente un po\' di respiro, eh?', 'Fermati un attimo, che io sono già stanco a guardarti.'],
+      cool: ['Hai finito di fare il fenomeno? Gira piano.', 'Ultimi giri, poi doccia e divano.'],
+      up: ['Salita! Ma chi te l\'ha fatto fare, dico io.', 'Spingi in salita, che in cima c\'è la porchetta!'],
+      down: ['Discesa, goditela che è gratis.', 'Si scende, finalmente! Lascia andare.'],
+      half: ['Sei a metà. Potevi stare a letto, eh.', 'Metà fatta, l\'altra metà è uguale, non ti illudere.'],
+      last30: ['Trenta secondi e hai finito, non fare il piagnone!', 'Ultimi trenta, dai che è quasi ora dell\'aperitivo!'],
+      rpmLow: ['Ma che fai, dormi? Gira quelle gambe, cacchio!', 'Più veloce, che così arriviamo domani!'],
+      rpmHigh: ['Ehi, calma, mica sei al Giro d\'Italia!', 'Rallenta, fenomeno, che ti si sciolgono le ginocchia!'],
+      hrLow: ['Battiti da bradipo. Spingi un po\', dai!', 'Il cuore ti sta facendo un pisolino.'],
+      hrHigh: ['Calma, che se ti senti male poi chi ti porta all\'ospedale?', 'Rallenta un attimo, che sei paonazzo!'],
+      free: ['Ma quanto manca? Ah, decidi tu? Che palle.', 'Va be\', almeno fai qualcosa.', 'Bevi un sorso, ma d\'acqua, eh.'],
+      km: ['{n} chilometri, e non ti sei mosso di un metro. Geniale.', '{n} chilometri! In macchina ci mettevi due minuti.'],
+      done: ['Finito! Adesso birra e divano, te lo sei meritato.', 'Fine. Visto? Non sei morto.'],
+      resume: ['Di nuovo qui? Va be\', ripartiamo.', 'Ah, ricominci? Contento tu.'],
+      alarm: ['Oh, fermo un attimo: battiti troppo alti, rallenta subito!', 'Rallenta adesso, che i battiti sono troppo alti, non scherzo!'],
+    } },
+  cronista: { name: '🎙️ Telecronista', desc: 'telecronaca da tappa di montagna, tutta in crescendo', pitch: 1.1, rate: 1.15, voices: ['Luca', 'Giorgio', 'Diego'],
+    lines: {
+      start: ['E partiti! Comincia la tappa di oggi!', 'Bandiera abbassata, il nostro corridore è in sella!'],
+      warm: ['Fase di studio, il gruppo procede compatto.', 'Si scaldano i motori, ritmo ancora tranquillo.'],
+      work: ['Attacco! Il nostro uomo prova l\'allungo!', 'Si accende la corsa, che azione!'],
+      rest: ['Momento di respiro, si riorganizza il gruppo.', 'Rifiata il corridore, gestisce le energie.'],
+      cool: ['Ultimi chilometri a ritmo tranquillo verso il traguardo.', 'Tappa ormai in archivio, si scioglie la tensione.'],
+      up: ['Si sale! Pendenze in doppia cifra, soffre ma non molla!', 'Inizia la salita, è qui che si decide la tappa!'],
+      down: ['Discesa tecnica, traiettorie pulite!', 'Scollina e si lancia in discesa!'],
+      half: ['Metà dello sforzo, ritmo impressionante!', 'Siamo a metà, la gamba sembra buona!'],
+      last30: ['Ultimi trenta secondi, è uno sprint!', 'Trenta secondi! Il pubblico è in piedi!'],
+      rpmLow: ['Sta perdendo ritmo, deve aumentare la frequenza!', 'Cadenza in calo, attenzione!'],
+      rpmHigh: ['Frequenza altissima, forse troppo!', 'Gira vorticosamente, deve gestirsi!'],
+      hrLow: ['Sembra in controllo, ha ancora margine!', 'Battiti bassi, potrebbe osare di più!'],
+      hrHigh: ['Il cuore va fuori giri, deve gestire!', 'Fatica evidente, meglio rallentare un attimo!'],
+      free: ['Andatura regolare, bella pedalata!', 'Che stile, signori!', 'Il corridore tiene un ritmo costante.'],
+      km: ['{n} chilometri percorsi, media di tutto rispetto!', 'Superato il chilometro {n}!'],
+      done: ['Traguardo! Vittoria per distacco!', 'Braccia al cielo, tappa conquistata!'],
+      resume: ['Si riprende la corsa!', 'Ripartenza dopo la neutralizzazione!'],
+      alarm: ['Attenzione, battiti troppo alti: il corridore deve rallentare subito!', 'Fuori soglia! Necessario calare l\'intensità adesso!'],
+    } },
+};
+const COACH_GAP_S = { poco: 150, normale: 75, tanto: 40 };   // pausa minima tra due frasi "di carica"
+const coach = { last: 0, lastLine: '', stepKey: null, said: {}, offR: 0, offH: 0, kmNext: 5, alarmAt: 0 };
+const coachOf = () => COACHES[Store.data.settings.coach] || COACHES.coach;
+/** Frase a caso per il momento dato (mai la stessa due volte di fila) */
+function coachLine(ev, n) {
+  const list = coachOf().lines[ev];
+  if (!list || !list.length) return '';
+  let i = Math.floor(Math.random() * list.length);
+  if (list.length > 1 && list[i] === coach.lastLine) i = (i + 1) % list.length;
+  coach.lastLine = list[i];
+  return list[i].replace('{n}', n != null ? n : '');
+}
+/** Frase del momento giusto per un passo: salita/discesa se il video la segue, altrimenti il tipo di passo */
+function coachStepLine(st) {
+  const t = stepTerrain(st, st.prev, Store.profile);
+  return coachLine(t === 'up' ? 'up' : t === 'down' && st.kind !== 'cool' ? 'down' : st.kind);
+}
+const speakingNow = () => { try { return speechSynthesis.speaking; } catch (e) { return false; } };
+/** Voce del telefono per l'allenatore: quella scelta nelle impostazioni, altrimenti la sua preferita */
+function coachVoice(c) {
+  let vs = [];
+  try { vs = speechSynthesis.getVoices().filter((v) => /^it/i.test(v.lang)); } catch (e) {}
+  if (!vs.length) return null;
+  const want = Store.data.settings.coachVoice;
+  if (want) { const v = vs.find((x) => x.name === want); if (v) return v; }
+  for (const n of c.voices) { const v = vs.find((x) => x.name.toLowerCase().includes(n.toLowerCase())); if (v) return v; }
+  return vs[0];
+}
+/** Impostazioni: elenco allenatori e voci italiane installate sul telefono */
+function fillCoachSettings() {
+  const st = Store.data.settings;
+  el.setCoach.innerHTML = Object.entries(COACHES).map(([k, c]) => `<option value="${k}"${k === (st.coach || 'coach') ? ' selected' : ''}>${c.name}</option>`).join('');
+  el.setCoachFreq.value = st.coachFreq || 'normale';
+  let vs = [];
+  try { vs = speechSynthesis.getVoices().filter((v) => /^it/i.test(v.lang)); } catch (e) {}
+  el.setCoachVoice.innerHTML = '<option value="">Automatica (adatta all\'allenatore)</option>' +
+    vs.map((v) => `<option${v.name === st.coachVoice ? ' selected' : ''}>${esc(v.name)}</option>`).join('');
+  coachInfo();
+}
+function coachInfo() {
+  const c = COACHES[el.setCoach.value] || COACHES.coach;
+  el.coachInfo.innerHTML = `${c.name}: ${c.desc}. Sul telefono trovi altre voci italiane, anche di qualità migliore, in Impostazioni → Accessibilità → Contenuto letto ad alta voce → Voci → Italiano.`;
+  el.coachBox.style.opacity = el.setVoice.checked ? '1' : '.45';
+}
+function coachTry() {
+  const st = Store.data.settings, keep = { coach: st.coach, coachVoice: st.coachVoice, voice: st.voice };
+  Object.assign(st, { coach: el.setCoach.value, coachVoice: el.setCoachVoice.value || null, voice: true });
+  speak(`${coachLine('start')} ${coachLine('work')}`);
+  Object.assign(st, keep);
+}
+/** Frase "di carica": rispetta la pausa minima scelta e non copre gli annunci */
+function coachSay(ev, n, minGapS) {
+  if (!Store.data.settings.voice || speakingNow()) return false;
+  const gap = (minGapS != null ? minGapS : COACH_GAP_S[Store.data.settings.coachFreq] || 75) * 1000;
+  if (Date.now() - coach.last < gap) return false;
+  const t = coachLine(ev, n);
+  if (!t) return false;
+  speak(t);
+  return true;
+}
+function coachReset() { Object.assign(coach, { stepKey: null, said: {}, offR: 0, offH: 0, kmNext: 5, alarmAt: 0 }); }
+/** Ogni mezzo secondo durante l'allenamento: quando dire qualcosa */
+function coachTick() {
+  if (!S.running || !Store.data.settings.voice) return;
+  const now = Date.now(), bpm = currentBpm(), p = Store.profile;
+  const thr = hrAlarmFor(p, CONFIG.HR_THRESHOLD_DEFAULT);
+  if (bpm && thr && bpm > thr) {                       // sicurezza prima di tutto: sempre "rallenta"
+    if (now - coach.alarmAt > 45000 && !speakingNow()) { coach.alarmAt = now; speak(coachLine('alarm')); }
+    return;
+  }
+  const flat = progFlat(), sec = progSec();
+  const idx = flat && S.prog ? stepIndexAt(flat, sec) : -1;
+  if (idx >= 0) {
+    const st = flat.steps[idx], done = sec - st.start, left = st.end - sec;
+    if (coach.stepKey !== idx) { coach.stepKey = idx; coach.said = {}; coach.offR = 0; coach.offH = 0; }
+    if (st.kind === 'work' && st.sec >= 120 && !coach.said.half && done >= st.sec / 2 && left > 20) { coach.said.half = true; coachSay('half', null, 10); return; }
+    if (st.kind === 'work' && st.sec >= 90 && !coach.said.last30 && left <= 30 && left > 12) { coach.said.last30 = true; coachSay('last30', null, 6); return; }
+    if (done < 20 || left < CONFIG.PRE_ANNOUNCE_S + 6) return;   // all'inizio e alla fine del passo parla il programma
+    const ss = stepStatus(st);
+    coach.offR = ss.r === 'low' || ss.r === 'high' ? coach.offR || now : 0;
+    coach.offH = ss.h === 'low' || ss.h === 'high' ? coach.offH || now : 0;
+    if (coach.offR && now - coach.offR > 15000) { if (coachSay(ss.r === 'low' ? 'rpmLow' : 'rpmHigh')) coach.offR = now; return; }
+    if (coach.offH && now - coach.offH > 25000) { if (coachSay(ss.h === 'low' ? 'hrLow' : 'hrHigh')) coach.offH = now; }
+    return;
+  }
+  if (flat && S.prog && S.prog.done) return;
+  const km = S.distM / 1000;                            // giro libero: chilometri e qualche frase ogni tanto
+  if (km >= coach.kmNext) {
+    const n = Math.floor(km / 5) * 5;
+    coach.kmNext = n + 5;
+    coachSay('km', n, 10);
+    return;
+  }
+  coachSay('free', null, (COACH_GAP_S[Store.data.settings.coachFreq] || 75) * 1.5);
+}
+
+/* =========================================================================
+   12i. INTERRUZIONI — telefonate (anche rifiutate), Siri, sveglie: iOS ferma video e musica.
+   Se non li hai fermati tu, l'allenamento va in pausa da solo; appena torni a pedalare
+   ripartono timer, programma, video e musica. Senza cyclette collegata ripartono video e musica.
+   ========================================================================= */
+const intr = { on: false, at: 0, tryAt: 0, stopAt: 0, sessionPaused: false };
+function onSystemPause() {
+  if (intr.on) return;                                 // già in corso (es. il telefono riferma il video mentre squilla)
+  Object.assign(intr, { on: true, at: Date.now(), tryAt: 0, stopAt: 0 });
+}
+function interruptTick() {
+  if (!intr.on) return;
+  const now = Date.now(), bikeOn = bikeLink.connected && live.speed != null;
+  const pedaling = (live.speed || 0) >= 3 || (live.rpm || 0) >= 25;
+  // hai smesso di pedalare durante l'interruzione (hai risposto): l'allenamento va in pausa
+  if (S.running && bikeOn && !pedaling) {
+    if (!intr.stopAt) intr.stopAt = now;
+    if (now - intr.stopAt > 3000) {
+      intr.sessionPaused = true;
+      pauseTimer();
+      toast('📞 Allenamento in pausa: riparte da solo quando torni a pedalare', 5000);
+    }
+  } else intr.stopAt = 0;
+  // finita la chiamata, torni a pedalare: riparte tutto
+  if (intr.sessionPaused && !S.running && pedaling) {
+    intr.sessionPaused = false;
+    startTimer();
+    toast('▶ Si riparte!', 2000);
+  }
+  const needRoute = !!(route.cur && route.sysPaused && !route.userPaused && route.state !== 1);
+  const needMedia = mediaWant && el.media.paused && !!el.media.getAttribute('src') && !el.media.ended;
+  if (!needRoute && !needMedia) { if (!intr.sessionPaused) intr.on = false; return; }
+  if (document.visibilityState !== 'visible' || (bikeOn && !pedaling)) return;   // con la cyclette: riparte quando pedali
+  if (now - intr.at < 2500 || now - intr.tryAt < 3000) return;
+  intr.tryAt = now;
+  if (audio.ctx && audio.ctx.state !== 'running') audio.ctx.resume().catch(() => {});
+  try { if ('speechSynthesis' in window) speechSynthesis.resume(); } catch (e) {}
+  if (needRoute) { route.autoPaused = false; try { route.player.playVideo(); } catch (e) {} }
+  if (needMedia) playMedia();
+}
+
+/* =========================================================================
+   12h. FC A RIPOSO MISURATA CON LA FASCIA — 30 s di assestamento, poi 2 minuti di battiti (RR)
+   ========================================================================= */
+const restMeas = { on: false, t0: 0, rr: [], bad: 0, bpm: [], timer: 0 };
+const restPhase = () => (performance.now() - restMeas.t0) / 1000;
+function restRR(rr, ok) { if (restMeas.on && restPhase() >= CONFIG.REST_SETTLE_S) { if (ok) restMeas.rr.push(rr); else restMeas.bad++; } }
+function restBpm(bpm) { if (restMeas.on && bpm && restPhase() >= CONFIG.REST_SETTLE_S) restMeas.bpm.push(bpm); }
+function startRestMeasure() {
+  if (!hrLink.connected || !currentBpm()) { toast('Collega e indossa la fascia cardio, poi riprova', 4000); return; }
+  if (S.running) { toast('Metti in pausa l\'allenamento: la FC a riposo si misura da fermi', 4000); return; }
+  Object.assign(restMeas, { on: true, t0: performance.now(), rr: [], bad: 0, bpm: [] });
+  el.restMeas.hidden = false; el.btnRestMeas.hidden = true; el.btnRestCancel.hidden = false;
+  clearInterval(restMeas.timer);
+  restMeas.timer = setInterval(restMeasTick, 500);
+  restMeasTick();
+}
+function finishRest(html, ok) {
+  restMeas.on = false; clearInterval(restMeas.timer);
+  el.btnRestMeas.hidden = false; el.btnRestCancel.hidden = true;
+  el.rmTitle.innerHTML = html; el.rmFill.style.width = ok ? '100%' : '0%'; el.rmInfo.textContent = '';
+}
+function restMeasTick() {
+  if (!restMeas.on) return;
+  const t = restPhase(), total = CONFIG.REST_SETTLE_S + CONFIG.REST_MEASURE_S, bpm = currentBpm();
+  el.rmFill.style.width = Math.min(100, (t / total) * 100).toFixed(1) + '%';
+  el.rmTitle.textContent = t < CONFIG.REST_SETTLE_S ? '🪑 Seduto e fermo, respira normalmente: mi preparo…' : '📏 Misuro i battiti… resta fermo e in silenzio';
+  el.rmInfo.textContent = `mancano ${fmtMedia(Math.max(0, Math.ceil(total - t)))} · ❤️ ${bpm || '--'} bpm`;
+  if (!hrLink.connected) { finishRest('Fascia scollegata: misura annullata.'); return; }
+  if (t < total) return;
+  const rr = restMeas.rr, n = rr.length + restMeas.bad;
+  let hr = null, rms = null;
+  if (rr.length >= 60) {
+    if (restMeas.bad / n > 0.05) {
+      finishRest(`Misura disturbata (${Math.round((restMeas.bad / n) * 100)}% di battiti irregolari): inumidisci gli elettrodi della fascia, stringila un po' e riprova.`);
+      return;
+    }
+    hr = Math.round(60000 / (rr.reduce((a, b) => a + b, 0) / rr.length));
+    rms = Math.round(rmssdOf(rr));
+  } else if (restMeas.bpm.length >= 30) hr = Math.round(medianOf(restMeas.bpm));   // fasce che non mandano gli RR
+  if (!hr) { finishRest('Non ho ricevuto abbastanza battiti: controlla la fascia e riprova.'); return; }
+  if (hr > 100) { finishRest(`${hr} bpm è troppo alta per un riposo: riprova dopo qualche minuto seduto, lontano dall'allenamento.`); return; }
+  const p = Store.profile;
+  p.hrRest = hr; p.hrRestDate = new Date().toISOString(); p.rmssd = rms;
+  Store.save();
+  el.setHrRest.value = hr;
+  updateSummary();
+  finishRest(`✅ FC a riposo <b>${hr} bpm</b>${rms ? ` · variabilità (RMSSD) <b>${rms} ms</b>` : ''}, salvata. Zone, VO₂max, calorie e carico ora usano il tuo valore misurato.`, true);
+}
+
+let ctlLastTouch = 0, clockLast = '';
+/** Data e ora nella barra dei comandi (sovrimpressione) */
+function renderClock() {
+  if (!document.body.classList.contains('overlay')) return;
+  const d = new Date();
+  const t = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const day = d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, '');
+  const k = t + day;
+  if (k === clockLast) return;
+  clockLast = k;
+  el.pClock.innerHTML = `<b>${t}</b><small>${day}</small>`;
+}
 function ctlBusy() {
   const b = document.body.classList;
   return S.running || !!(route.cur && route.state === 1) || (b.contains('has-video') && !el.media.paused);
@@ -4248,14 +4837,14 @@ function init() {
     'setSex', 'setAge', 'setWeight', 'setHrRest', 'setHrMax', 'setVo2', 'setAuto', 'setKcalSrc',
     'setHeight', 'setActivity', 'setZoneMethod', 'setFatPct', 'setBmr', 'setMuscle', 'setBone', 'setWater', 'setVisceral',
     'bodySummary', 'zoneTable', 'bodyLogList', 'btnStart', 'btnPause', 'btnReset', 'extra',
-    'bikeInfo', 'sheetHistory', 'histProfile', 'histTotals', 'histList', 'btnExport', 'importFile', 'btnShowText', 'backupBox', 'backupText', 'btnCopy', 'btnImportText',
+    'bikeInfo', 'setCoach', 'setCoachFreq', 'setCoachVoice', 'coachInfo', 'coachBox', 'btnCoachTry', 'btnRestMeas', 'restMeas', 'rmTitle', 'rmFill', 'rmInfo', 'btnRestCancel', 'sheetHistory', 'histProfile', 'histTotals', 'histList', 'btnExport', 'importFile', 'btnShowText', 'backupBox', 'backupText', 'btnCopy', 'btnImportText',
     'sheetSettings', 'setTitle', 'setName', 'setHr', 'setBeep', 'setScanAll', 'btnSaveSettings', 'setInfo',
     'confirmBox', 'confirmMsg', 'confirmYes', 'confirmNo', 'toast', 'setVoice', 'dash', 'setLockLayout', 'btnLayoutReset', 'btnLayout2', 'btnLayoutDone', 'btnLayoutDefault',
-    'progBar', 'pbStep', 'pbLeft', 'pbTargets', 'pbNext', 'pbTrack', 'tWatt', 'vWatt', 'zWatt',
+    'progBar', 'pbStep', 'pbLeft', 'pbTargets', 'pbNext', 'pbTrack', 'pClock', 'tWatt', 'vWatt', 'zWatt',
     'scene', 'btnScenes', 'sheetScenes', 'sceneList', 'btnSceneOff',
     'oStart', 'oPause', 'oReset', 'zoneBar', 'zbName', 'zbInfo', 'zbRng', 'zbTrack', 'zbMark', 'setLthr', 'setAlarmMode', 'hrInfo', 'updBar', 'updVer', 'btnUpd', 'btnUpdX', 'btnCheckUpd',
     'ytWrap', 'routeInfo', 'routeHint', 'btnRPlay', 'btnRNext', 'btnRMute', 'rCur', 'rSeek', 'rDur',
-    'routeChips', 'routeList', 'btnRouteRandom', 'btnRouteAdd', 'setRouteSync', 'setRouteLoop',
+    'routeChips', 'routeList', 'btnRouteRandom', 'btnRouteAdd', 'setRouteSync', 'setRouteLoop', 'setRouteTerrain',
     'btnPrograms', 'sheetPrograms', 'progList', 'btnProgFree', 'btnProgNew', 'btnProgReset',
     'sheetEditor', 'edName', 'edSummary', 'edPreview', 'edBlocks', 'btnEdAddBlock', 'btnEdSave',
     'dashTabs', 'dashKpi', 'weekMetric', 'chWeek', 'trendMetric', 'chTrend', 'dashZones', 'dashRecords', 'chWeight', 'chFatPct',
@@ -4407,6 +4996,7 @@ function init() {
     if (document.visibilityState === 'visible') {
       if (S.running) requestWakeLock();
       if (audio.ctx && audio.ctx.state !== 'running') audio.ctx.resume().catch(() => {});
+      intr.tryAt = 0;                                  // dopo una chiamata: riprova subito
     } else saveDraft();
   });
   window.addEventListener('pagehide', saveDraft);
@@ -4425,19 +5015,19 @@ function init() {
 
   if (/demo/i.test(location.hash + location.search)) { el.noBt.hidden = true; startDemo(); }
   else checkDraft();
-  window.__cyclette = { live, route, Store, saveRoutePos };   // per la diagnostica dalla console
+  window.__cyclette = { live, route, Store, saveRoutePos, CONFIG, hrLink, bikeLink, onHeartRate, session: () => S };   // diagnostica e test
   let restored = false;
   try { restored = sessionStorage.getItem('cyclette-restored') === '1'; sessionStorage.removeItem('cyclette-restored'); } catch (_) {}
   if (restored) {                                       // appena ripristinato un backup completo
     const ps = Object.values(Store.data.profiles);
     const n = ps.reduce((a, p) => a + p.history.length, 0);
-    Store.data.settings.hintVer = '2.0'; Store.save();
+    Store.data.settings.hintVer = '2.3'; Store.save();
     setTimeout(() => toast(`✅ Backup ripristinato: ${ps.length} profili, ${n} sessioni`, 5000), 800);
-  } else if (Store.data.settings.hintVer !== '2.0') {   // novità della versione, una sola volta
+  } else if (Store.data.settings.hintVer !== '2.3') {   // novità della versione, una sola volta
     const first = !Store.data.settings.hintVer || Store.data.settings.hintVer < '1.6';
-    Store.data.settings.hintVer = '2.0'; Store.save();
+    Store.data.settings.hintVer = '2.3'; Store.save();
     setTimeout(() => toast(first ? 'Novità: 🎬 Percorsi reali girati in bici, che scorrono alla tua velocità'
-      : 'Novità: programmi con cadenza e battiti, barra più piccola, comandi che spariscono durante il video', 5500), 2500);
+      : 'Novità: in ⚙️ scegli chi ti guida (🪖 sergente, 🍺 cafone, 🎙️ telecronista). Dopo una telefonata tutto riparte da solo', 6500), 2500);
   }
   setTimeout(() => checkUpdate(false), 4000);          // c'è una versione più nuova pubblicata?
 }
